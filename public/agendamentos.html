@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SistemaAeR - Bárbara Lana</title>
+  <link rel="stylesheet" href="css/agendamentos.css"/>
+  <link rel="icon" href="assets/img/Logo-barbara.png" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/colreorder/1.6.3/css/colReorder.dataTables.min.css">
+
+  <!-- Socket.io client -->
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <!-- Header -->
+  <header class="topbar">
+    <div class="logo-title">
+      <span class="menu-icon material-icons">menu</span>
+      <h2>SistemaAeR - Bárbara Lana</h2>
+    </div>
+
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="Procurar Agendamentos" />
+    </div>
+
+    <div class="actions">
+      <div class="user-dropdown">
+        <div class="user-icon" id="userToggle">B</div>
+        <div class="dropdown-menu" id="userMenu">
+          <div class="user-email">email@email.com</div>
+          <div class="dropdown-item" onclick="logout()">
+            <span class="material-icons">logout</span> Sair
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar collapsed">
+      <nav>
+        <ul>
+          <li data-tooltip="Detalhes">
+            <a href="index.html">
+              <span class="material-icons">info</span> <span>Detalhes</span>
+            </a>
+          </li>
+          <li data-tooltip="Convênios">
+            <a href="convenios.html">
+              <span class="material-icons">handshake</span> <span>Convênios</span>
+            </a>
+          </li>
+          <li data-tooltip="Filtrar Idades">
+            <a href="filtrar_idades.html">
+              <span class="material-icons">filter_alt</span> <span>Filtrar Idades</span>
+            </a>
+          </li>
+          <li data-tooltip="Pacientes">
+            <a href="pacientes.html">
+              <span class="material-icons">group</span> <span>Pacientes</span>
+            </a>
+          </li>
+          <li data-tooltip="Agenda">
+            <a href="agenda.html">
+              <span class="material-icons">calendar_today</span> <span>Agenda</span>
+            </a>
+          </li>
+          <li class="active" data-tooltip="Agendamentos">
+            <a href="agendamentos.html">
+              <span class="material-icons">event</span> <span>Agendamentos</span>
+            </a>
+          </li>
+          <li data-tooltip="Aniversariantes do Dia">
+            <a href="aniversariante_do_dia.html">
+              <span class="material-icons">cake</span> <span>Aniversariantes do Dia</span>
+            </a>
+          </li>
+          <li data-tooltip="Serviços">
+            <a href="servicos.html">
+              <span class="material-icons">home_repair_service</span> <span>Serviços</span>
+            </a>
+          </li>
+          <li data-tooltip="Financeiro">
+            <a href="financeiro.html">
+              <span class="material-icons">attach_money</span> <span>Financeiro</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main -->
+    <main class="main-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1>Agendamentos</h1>
+        <div class="action-buttons">
+          <button class="btn-icon" id="btnExport" title="Exportar">
+            <span class="material-icons">table_chart</span>
+          </button>
+          <button class="btn-adicionar" id="btnAdicionar">
+            <span class="material-icons">add</span>
+            ADICIONAR
+          </button>
+          <button class="btn-icon" id="btnFiltrar" title="Filtrar">
+            <span class="material-icons">filter_list</span>
+          </button>
+          <button class="btn-icon" id="btnSelecionar" title="Selecionar">
+            <span class="material-icons">check_box_outline_blank</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter panel -->
+      <div id="filterPanel" class="filter-panel">
+        <div class="filter-header">
+          <h3>Filtrar Agendamentos</h3>
+          <span class="close-filter material-icons" id="closeFilter">close</span>
+        </div>
+        <div class="filter-body">
+          <div class="filter-group">
+            <label for="filterNome">Nome do Paciente</label>
+            <input type="text" id="filterNome" placeholder="Digite o nome do paciente">
+          </div>
+          <div class="filter-group">
+            <label for="filterConvenio">Convênio</label>
+            <select id="filterConvenio">
+              <option value="">Todos</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filterData">Data da Consulta</label>
+            <input type="date" id="filterData">
+          </div>
+        </div>
+        <div class="filter-footer">
+          <button id="btnLimparFiltros" class="btn-limpar-filtros">Limpar Filtros</button>
+          <button id="btnAplicarFiltros" class="btn-aplicar-filtros">Aplicar Filtros</button>
+        </div>
+      </div>
+
+      <!-- Tabela de agendamentos (COLUNA TELEFONE REMOVIDA) -->
+      <table id="appointmentsTable" class="display">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Paciente</th>
+            <!-- TELEFONE REMOVIDO -->
+            <th>Início</th>
+            <th>Fim</th>
+            <th>Convênio</th>
+            <th>Consulta</th>
+            <th>Frequência</th>
+            <th>Valor</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <!-- Modal para adicionar/editar agendamento (mantido igual) -->
+      <div id="modal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 id="modalTitle">Adicionar Agendamento</h2>
+            <span class="close-modal" id="closeModal">×</span>
+          </div>
+
+          <form id="appointmentForm">
+            <div class="modal-form">
+              <!-- Seção 1: Dados Principais -->
+              <div class="form-section">
+                <h3>Dados da Consulta</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="dataConsulta">Data da Consulta <span class="required">*</span></label>
+                    <input type="date" id="dataConsulta" name="dataConsulta" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="inicio">Início <span class="required">*</span></label>
+                    <input type="time" id="inicio" name="inicio" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="fim">Fim <span class="required">*</span></label>
+                    <input type="time" id="fim" name="fim" required />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Seção 2: Paciente -->
+              <div class="form-section">
+                <h3>Paciente</h3>
+                <div class="form-row">
+                  <div class="form-group wide">
+                    <label for="nomePaciente">Nome do Paciente <span class="required">*</span></label>
+                    <select id="nomePaciente" name="nomePaciente" required>
+                      <option value="">Procurar paciente...</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="telefone">Telefone</label>
+                    <input type="text" id="telefone" name="telefone" placeholder="(00) 00000-0000" maxlength="15" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Seção 3: Convênio e Tipo -->
+              <div class="form-section">
+                <h3>Convênio e Tipo de Consulta</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="convenio">Convênio <span class="required">*</span></label>
+                    <select id="convenio" name="convenio" required>
+                      <option value="">Selecionar convênio...</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="consulta">Tipo de Consulta <span class="required">*</span></label>
+                    <select id="consulta" name="consulta" required>
+                      <option value="">Selecionar tipo...</option>
+                      <option value="Sessão de 30 min">Sessão de 30 min</option>
+                      <option value="Sessão de 1h">Sessão de 1h</option>
+                      <option value="Avaliação">Avaliação</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="modalidade">Modalidade <span class="required">*</span></label>
+                    <select id="modalidade" name="modalidade" required>
+                      <option value="Presencial">Presencial</option>
+                      <option value="Online">Online</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="frequencia">Frequência <span class="required">*</span></label>
+                    <select id="frequencia" name="frequencia" required>
+                      <option value="">Selecionar frequência...</option>
+                      <option value="ÚNICO">ÚNICO</option>
+                      <option value="SEMANAL">SEMANAL</option>
+                      <option value="QUINZENAL">QUINZENAL</option>
+                      <option value="MENSAL">MENSAL</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="valorConsulta">Valor da Consulta</label>
+                    <input type="text" id="valorConsulta" name="valorConsulta" placeholder="R$ 0,00" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Seção 4: Observações -->
+              <div class="form-section">
+                <h3>Observações</h3>
+                <div class="form-group wide">
+                  <textarea id="observacoes" name="observacoes" rows="4" placeholder="Digite observações sobre o agendamento..."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn-cancelar" id="btnCancelar">Cancelar</button>
+              <button type="submit" class="btn-salvar">Salvar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Modal de Detalhes do Agendamento (telefone continua aqui) -->
+      <div id="modalDetalhes" class="modal">
+        <div class="modal-content modal-detalhes">
+          <div class="modal-header">
+            <h2>DETALHES DO AGENDAMENTO</h2>
+            <span class="close-modal" id="closeDetalhes">×</span>
+          </div>
+          <div class="detalhes-content">
+            <div class="detalhes-section">
+              <h3>Informações da Consulta</h3>
+              <div class="detalhes-grid">
+                <div class="detalhes-item">
+                  <label>Data da Consulta:</label>
+                  <span id="detalheData">-</span>
+                </div>
+                <div class="detalhes-item">
+                  <label>Nome do Paciente:</label>
+                  <span id="detalheNome">-</span>
+                </div>
+                <div class="detalhes-item">
+                  <label>Telefone:</label>
+                  <span id="detalheTelefone">-</span>
+                </div>
+                <div class="detalhes-item">
+                  <label>Horário de Início:</label>
+                  <span id="detalheInicio">-</span>
+                </div>
+                <div class="detalhes-item">
+                  <label>Horário de Fim:</label>
+                  <span id="detalheFim">-</span>
+                </div>
+                <div class="detalhes-item">
+                  <label>Convênio:</label>
+                  <span id="detalheConvenio">-</span>
+                </div>
+                <div class="detalhes-item">
+                  <label>Tipo de Consulta:</label>
+                  <span id="detalheConsulta">-</span>
+                </div>
+                <div class="detalhes-item">
+                  <label>Modalidade:</label>
+                  <span id="detalheModalidade">-</span>
+                </div>
+                <div class="detalhes-item">
+                  <label>Frequência:</label>
+                  <span id="detalheFrequencia">-</span>
+                </div>
+                <div class="detalhes-item">
+                  <label>Valor da Consulta:</label>
+                  <span id="detalheValor">R$ 0,00</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="detalhes-section">
+              <h3>Observações</h3>
+              <div class="observacoes-box">
+                <p id="detalheObservacoes">Nenhuma observação registrada.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="modal-footer">
+            <button type="button" class="btn-cancelar" id="btnFecharDetalhes">Fechar</button>
+            <button type="button" class="btn-excluir" id="btnExcluirAgendamento">
+              <span class="material-icons">delete</span>
+              Excluir
+            </button>
+            <button type="button" class="btn-editar" id="btnEditarAgendamento">
+              <span class="material-icons">edit</span>
+              Editar
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/agendamentos.js"></script>
+
+  <!-- jQuery + DataTables + ColReorder -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/colreorder/1.6.3/js/dataTables.colReorder.min.js"></script>
+  <!-- SheetJS for XLSX export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</body>
+</html>

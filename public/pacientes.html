@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SistemaAeR - Bárbara Lana</title>
+  <link rel="stylesheet" href="css/pacientes.css"/>
+  <link rel="icon" href="assets/img/Logo-barbara.png" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/colreorder/1.6.3/css/colReorder.dataTables.min.css">
+</head>
+<body>
+  <!-- Cabeçalho -->
+  <header class="topbar">
+    <div class="logo-title">
+      <span class="menu-icon material-icons">menu</span>
+      <h2>SistemaAeR - Bárbara Lana</h2>
+    </div>
+
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="Procurar Pacientes" />
+    </div>
+
+    <div class="actions">
+      <div class="user-dropdown">
+        <div class="user-icon" id="userToggle">B</div>
+        <div class="dropdown-menu" id="userMenu">
+          <div class="user-email">email@email.com</div>
+          <div class="dropdown-item" onclick="logout()">
+            <span class="material-icons">logout</span> Sair
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Barra Lateral -->
+    <aside class="sidebar collapsed">
+      <nav>
+        <ul>
+          <li data-tooltip="Detalhes">
+            <a href="index.html">
+              <span class="material-icons">info</span> <span>Detalhes</span>
+            </a>
+          </li>
+          <li data-tooltip="Convênios">
+            <a href="convenios.html">
+              <span class="material-icons">handshake</span> <span>Convênios</span>
+            </a>
+          </li>
+          <li data-tooltip="Filtrar Idades">
+            <a href="filtrar_idades.html">
+              <span class="material-icons">filter_alt</span> <span>Filtrar Idades</span>
+            </a>
+          </li>
+          <li class="active" data-tooltip="Pacientes">
+            <a href="pacientes.html">
+              <span class="material-icons">group</span> <span>Pacientes</span>
+            </a>
+          </li>
+          <li data-tooltip="Agenda">
+            <a href="agenda.html">
+              <span class="material-icons">calendar_today</span> <span>Agenda</span>
+            </a>
+          </li>
+          <li data-tooltip="Agendamentos">
+            <a href="agendamentos.html">
+              <span class="material-icons">event</span> <span>Agendamentos</span>
+            </a>
+          </li>
+          <li data-tooltip="Aniversariantes do Dia">
+            <a href="aniversariante_do_dia.html">
+              <span class="material-icons">cake</span> <span>Aniversariantes do Dia</span>
+            </a>
+          </li>
+          <li data-tooltip="Serviços">
+            <a href="servicos.html">
+              <span class="material-icons">home_repair_service</span> <span>Serviços</span>
+            </a>
+          </li>
+          <li data-tooltip="Financeiro">
+            <a href="financeiro.html">
+              <span class="material-icons">attach_money</span> <span>Financeiro</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main -->
+    <main class="main-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1>Pacientes</h1>
+        <div class="action-buttons">
+          <button class="btn-adicionar" id="btnAdicionar">
+            <span class="material-icons">add</span>
+            ADICIONAR
+          </button>
+          <button class="btn-icon" id="btnFiltrar" title="Filtrar">
+            <span class="material-icons">filter_list</span>
+          </button>
+          <button class="btn-icon" id="btnSelecionar" title="Selecionar">
+            <span class="material-icons">check_box_outline_blank</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Painel de Filtros -->
+      <div id="filterPanel" class="filter-panel">
+        <div class="filter-header">
+          <h3>Filtrar Pacientes</h3>
+          <span class="close-filter material-icons" id="closeFilter">close</span>
+        </div>
+        <div class="filter-body">
+          <div class="filter-group">
+            <label for="filterNome">Nome do Paciente</label>
+            <input type="text" id="filterNome" placeholder="Digite o nome do paciente">
+          </div>
+          <div class="filter-group">
+            <label for="filterConvenio">Convênio</label>
+            <select id="filterConvenio">
+              <option value="">Todos</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filterSituacao">Situação</label>
+            <select id="filterSituacao">
+              <option value="">Todos</option>
+              <option value="Ativo">Ativo</option>
+              <option value="Inativo">Inativo</option>
+            </select>
+          </div>
+        </div>
+        <div class="filter-footer">
+          <button type="button" class="btn-limpar-filtros" id="btnLimparFiltros">Limpar Filtros</button>
+          <button type="button" class="btn-aplicar-filtros" id="btnAplicarFiltros">Aplicar Filtros</button>
+        </div>  
+      </div>
+
+      <div class="patients-report">
+        <h3>RELATÓRIO DE PACIENTES</h3>
+        <table id="relatorio-pacientes">
+          <thead>
+  <tr>
+    <th>PACIENTE</th>
+    <th>IDADE</th>
+    <th>CPF</th>
+    <th>CONVÊNIO</th>
+    <th>SITUAÇÃO</th>
+    <th>AÇÕES</th>
+  </tr>
+</thead>
+          <tbody>
+            <!-- Dados serão carregados do banco via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <!-- Modal para adicionar/editar paciente -->
+    <div id="modalPaciente" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>PACIENTE</h2>
+          <span class="close-modal" id="closeModal">&times;</span>
+        </div>
+        <form id="formPaciente" class="modal-form">
+          <!-- Formulário completo mantido (igual ao original) -->
+          <div class="form-section">
+            <h3>Dados do Paciente</h3>
+            <div class="form-group">
+              <label for="nomeCompleto">Nome completo <span class="required">*</span></label>
+              <input type="text" id="nomeCompleto" name="nomeCompleto" required>
+            </div>
+            <div class="form-group">
+              <label for="genero">Gênero <span class="required">*</span></label>
+              <select id="genero" name="genero" required>
+                <option value="">Selecione</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Feminino">Feminino</option>
+                <option value="Outro">Outro</option>
+                <option value="Prefiro não dizer">Prefiro não dizer</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="responsavel">Responsável</label>
+              <input type="text" id="responsavel" name="responsavel" placeholder="Nome do responsável (se aplicável)">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="telefone">Telefone <span class="required">*</span></label>
+                <input type="tel" id="telefone" name="telefone" required>
+              </div>
+              <div class="form-group">
+                <label for="email">Email <span class="required">*</span></label>
+                <input type="email" id="email" name="email" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="dataNascimento">Data de nascimento <span class="required">*</span></label>
+                <input type="date" id="dataNascimento" name="dataNascimento" required>
+              </div>
+              <div class="form-group">
+                <label for="cpf">CPF <span class="required">*</span></label>
+                <input type="text" id="cpf" name="cpf" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="convenio">Convênio <span class="required">*</span></label>
+              <select id="convenio" name="convenio" required>
+                <option value="">Selecione</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="situacao">Situação <span class="required">*</span></label>
+              <select id="situacao" name="situacao" required>
+                <option value="Ativo" selected>Ativo</option>
+                <option value="Inativo">Inativo</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Endereço do Paciente</h3>
+            <div class="form-row">
+              <div class="form-group form-group-small">
+                <label for="cep">CEP <span class="required">*</span></label>
+                <input type="tel" id="cep" name="cep" required inputmode="numeric" pattern="\d{5}-\d{3}">
+              </div>
+              <div class="form-group form-group-large">
+                <label for="logradouro">Logradouro <span class="required">*</span></label>
+                <input type="text" id="logradouro" name="logradouro" required>
+              </div>
+              <div class="form-group form-group-small">
+                <label for="numero">Número <span class="required">*</span></label>
+                <input type="tel" id="numero" name="numero" required inputmode="numeric" pattern="[0-9]*">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="bairro">Bairro <span class="required">*</span></label>
+                <input type="text" id="bairro" name="bairro" required>
+              </div>
+              <div class="form-group">
+                <label for="cidade">Cidade <span class="required">*</span></label>
+                <input type="text" id="cidade" name="cidade" required>
+              </div>
+              <div class="form-group form-group-small">
+                <label for="estado">Estado <span class="required">*</span></label>
+                <select id="estado" name="estado" required>
+                  <option value="">Selecione</option>
+                  <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
+                  <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
+                  <option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option>
+                  <option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+                  <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option>
+                  <option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option>
+                  <option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option>
+                  <option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+                  <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-cancelar" id="btnCancelar">Cancelar</button>
+            <button type="submit" class="btn-salvar">Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal para visualizar detalhes do paciente -->
+    <div id="modalDetalhes" class="modal">
+      <div class="modal-content modal-detalhes">
+        <div class="modal-header">
+          <h2>DETALHES DO PACIENTE</h2>
+          <span class="close-modal" id="closeModalDetalhes">&times;</span>
+        </div>
+        <div class="modal-body-detalhes">
+          <div class="detalhes-section">
+            <h3>Dados do Paciente</h3>
+            <div class="detalhes-grid">
+              <div class="detalhe-item"><label>Nome Completo:</label><span id="detalheNome"></span></div>
+              <div class="detalhe-item"><label>Gênero:</label><span id="detalheGenero"></span></div>
+              <div class="detalhe-item"><label>Responsável:</label><span id="detalheResponsavel"></span></div>
+              <div class="detalhe-item"><label>Telefone:</label><span id="detalheTelefone"></span></div>
+              <div class="detalhe-item"><label>Email:</label><span id="detalheEmail"></span></div>
+              <div class="detalhe-item"><label>Data de Nascimento:</label><span id="detalheDataNascimento"></span></div>
+              <div class="detalhe-item"><label>Idade:</label><span id="detalheIdade"></span></div>
+              <div class="detalhe-item"><label>CPF:</label><span id="detalheCpf"></span></div>
+              <div class="detalhe-item"><label>Convênio:</label><span id="detalheConvenio"></span></div>
+              <div class="detalhe-item"><label>Situação:</label><span id="detalheSituacao"></span></div>
+            </div>
+          </div>
+
+          <div class="detalhes-section">
+            <h3>Endereço</h3>
+            <div class="form-row">
+              <div class="detalhe-item form-group-small"><label>CEP:</label><span id="detalheCep"></span></div>
+              <div class="detalhe-item form-group-large"><label>Logradouro:</label><span id="detalheLogradouro"></span></div>
+              <div class="detalhe-item form-group-small"><label>Número:</label><span id="detalheNumero"></span></div>
+            </div>
+            <div class="form-row">
+              <div class="detalhe-item form-group"><label>Bairro:</label><span id="detalheBairro"></span></div>
+              <div class="detalhe-item form-group"><label>Cidade:</label><span id="detalheCidade"></span></div>
+              <div class="detalhe-item form-group-small"><label>Estado:</label><span id="detalheEstado"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer com os três botões: Fechar | Excluir | Editar -->
+        <div class="modal-footer">
+          <button type="button" class="btn-cancelar" id="btnFecharDetalhes">Fechar</button>
+          
+          <button type="button" class="btn-excluir" id="btnExcluirPaciente">
+            <span class="material-icons" style="color: red; font-size: 18px;">delete</span>
+            Excluir
+          </button>
+
+          <button type="button" class="btn-editar" id="btnEditarPaciente">
+            <span class="material-icons">edit</span>
+            Editar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/pacientes.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/colreorder/1.6.3/js/dataTables.colReorder.min.js"></script>
+</body>
+</html>

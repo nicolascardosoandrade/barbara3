@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SistemaAeR - Bárbara Lana</title>
+  <link rel="stylesheet" href="css/financeiro.css"/>
+  <link rel="icon" href="assets/img/Logo-barbara.png" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+
+  <!-- Chart.js para gráficos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <!-- Cabeçalho -->
+  <header class="topbar">
+    <div class="logo-title">
+      <span class="menu-icon material-icons">menu</span>
+      <h2>SistemaAeR - Bárbara Lana</h2>
+    </div>
+
+    <div class="search-container">
+      <input type="text" placeholder="Procurar Financeiro" />
+    </div>
+
+    <div class="actions">
+      <div class="user-dropdown">
+        <div class="user-icon" id="userToggle">B</div>
+        <div class="dropdown-menu" id="userMenu">
+          <div class="user-email">email@email.com</div>
+          <div class="dropdown-item" onclick="logout()">
+            <span class="material-icons">logout</span> Sair
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Barra Lateral -->
+    <aside class="sidebar collapsed">
+      <nav>
+        <ul>
+          <li data-tooltip="Detalhes"><a href="index.html"><span class="material-icons">info</span><span>Detalhes</span></a></li>
+          <li data-tooltip="Convênios"><a href="convenios.html"><span class="material-icons">handshake</span><span>Convênios</span></a></li>
+          <li data-tooltip="Filtrar Idades"><a href="filtrar_idades.html"><span class="material-icons">filter_alt</span><span>Filtrar Idades</span></a></li>
+          <li data-tooltip="Pacientes"><a href="pacientes.html"><span class="material-icons">group</span><span>Pacientes</span></a></li>
+          <li data-tooltip="Agenda"><a href="agenda.html"><span class="material-icons">calendar_today</span><span>Agenda</span></a></li>
+          <li data-tooltip="Agendamentos"><a href="agendamentos.html"><span class="material-icons">event</span><span>Agendamentos</span></a></li>
+          <li data-tooltip="Aniversariantes do Dia"><a href="aniversariante_do_dia.html"><span class="material-icons">cake</span><span>Aniversariantes do Dia</span></a></li>
+          <li data-tooltip="Serviços"><a href="servicos.html"><span class="material-icons">home_repair_service</span><span>Serviços</span></a></li>
+          <li class="active" data-tooltip="Financeiro"><a href="financeiro.html"><span class="material-icons">attach_money</span><span>Financeiro</span></a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main -->
+    <main class="main-content">
+      <h1>Financeiro</h1>
+
+      <!-- RESUMO FINANCEIRO -->
+      <div class="financial-summary">
+        <div class="summary-item">
+          <label>DATA INÍCIO</label>
+          <input type="date" id="start-date" />
+        </div>
+        <div class="summary-item">
+          <label>DATA FINAL</label>
+          <input type="date" id="end-date" />
+        </div>
+        <div class="summary-item">
+          <label>Agendado</label>
+          <span></span>
+        </div>
+        <div class="summary-item">
+          <label>Atendido</label>
+          <span></span>
+        </div>
+        <div class="summary-item">
+          <label>N Desmarc.</label>
+          <span></span>
+        </div>
+
+        <!-- TOTAL SEM DESCONTO -->
+        <div class="summary-item total" id="total-item">
+          <label>Total s/ Desc.</label>
+          <span id="total-value"></span>
+        </div>
+
+        <!-- % CLÍNICA -->
+        <div class="summary-item" id="clinica-item">
+          <label>CLÍNICA</label>
+          <span id="clinica-percent"></span>
+        </div>
+
+        <!-- NOVO: TOTAL COM DESCONTO -->
+        <div class="summary-item total" id="total-com-desconto-item">
+          <label>Total c/ Desc.</label>
+          <span id="total-com-desconto-value"></span>
+        </div>
+
+        <!-- % IMPOSTOS -->
+        <div class="summary-item" id="imposto-item">
+          <label>IMPOSTOS</label>
+          <span id="imposto-percent"></span>
+        </div>
+
+        <!-- VALOR A RECEBER -->
+        <div class="summary-item">
+          <label>Receber</label>
+          <span id="receber-value"></span>
+        </div>
+
+        <button id="edit-btn" class="edit-btn">Editar</button>
+      </div>
+
+      <!-- GRÁFICOS REMOVENDO TABELA E ADICIONANDO VISUALIZAÇÕES -->
+      <div class="charts-section">
+        <div class="charts-header">
+          <h3>ANÁLISE FINANCEIRA</h3>
+          <div class="charts-tabs">
+            <button class="tab-btn active" data-period="day">Dia</button>
+            <button class="tab-btn" data-period="week">Semana</button>
+            <button class="tab-btn" data-period="month">Mês</button>
+          </div>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-card">
+            <h4>Faturamento</h4>
+            <div class="chart-container">
+              <canvas id="revenueChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <h4>Status das Consultas</h4>
+            <div class="chart-container">
+              <canvas id="statusChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <h4>Receita por Convênio</h4>
+            <div class="chart-container">
+              <canvas id="convênioChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <h4>Tendência de Faturamento</h4>
+            <div class="chart-container">
+              <canvas id="trendChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Socket.io Client -->
+  <script src="/socket.io/socket.io.js"></script>
+  <!-- Scripts -->
+  <script src="js/financeiro.js"></script>
+</body>
+</html>

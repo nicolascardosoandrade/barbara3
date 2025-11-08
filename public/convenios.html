@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SistemaAeR - Bárbara Lana</title>
+  <link rel="stylesheet" href="css/convenios.css"/>
+  <link rel="icon" href="assets/img/Logo-barbara.png" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/colreorder/1.6.3/css/colReorder.dataTables.min.css">
+</head>
+<body>
+  <!-- Cabeçalho -->
+  <header class="topbar">
+    <div class="logo-title">
+      <span class="menu-icon material-icons">menu</span>
+      <h2>SistemaAeR - Bárbara Lana</h2>
+    </div>
+
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="Procurar Convênios" />
+    </div>
+
+    <div class="actions">
+      <div class="user-dropdown">
+        <div class="user-icon" id="userToggle">B</div>
+        <div class="dropdown-menu" id="userMenu">
+          <div class="user-email">email@email.com</div>
+          <div class="dropdown-item" onclick="logout()">
+            <span class="material-icons">logout</span> Sair
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Barra Lateral -->
+    <aside class="sidebar collapsed">
+      <nav>
+        <ul>
+          <li data-tooltip="Detalhes">
+            <a href="index.html">
+              <span class="material-icons">info</span> <span>Detalhes</span>
+            </a>
+          </li>
+          <li class="active" data-tooltip="Convênios">
+            <a href="convenios.html">
+              <span class="material-icons">handshake</span> <span>Convênios</span>
+            </a>
+          </li>
+          <li data-tooltip="Filtrar Idades">
+            <a href="filtrar_idades.html">
+              <span class="material-icons">filter_alt</span> <span>Filtrar Idades</span>
+            </a>
+          </li>
+          <li data-tooltip="Pacientes">
+            <a href="pacientes.html">
+              <span class="material-icons">group</span> <span>Pacientes</span>
+            </a>
+          </li>
+          <li data-tooltip="Agenda">
+            <a href="agenda.html">
+              <span class="material-icons">calendar_today</span> <span>Agenda</span>
+            </a>
+          </li>
+          <li data-tooltip="Agendamentos">
+            <a href="agendamentos.html">
+              <span class="material-icons">event</span> <span>Agendamentos</span>
+            </a>
+          </li>
+          <li data-tooltip="Aniversariantes do Dia">
+            <a href="aniversariante_do_dia.html">
+              <span class="material-icons">cake</span> <span>Aniversariantes do Dia</span>
+            </a>
+          </li>
+          <li data-tooltip="Serviços">
+            <a href="servicos.html">
+              <span class="material-icons">home_repair_service</span> <span>Serviços</span>
+            </a>
+          </li>
+          <li data-tooltip="Financeiro">
+            <a href="financeiro.html">
+              <span class="material-icons">attach_money</span> <span>Financeiro</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main -->
+    <main class="main-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1>Convênios</h1>
+        <div class="action-buttons">
+          <button class="btn-adicionar" id="btnAdicionar">
+            <span class="material-icons">add</span>
+            ADICIONAR
+          </button>
+          <button class="btn-icon" id="btnFiltrar" title="Filtrar">
+            <span class="material-icons">filter_list</span>
+          </button>
+          <button class="btn-icon" id="btnSelecionar" title="Selecionar">
+            <span class="material-icons">check_box_outline_blank</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter Panel -->
+      <div id="filterPanel" class="filter-panel">
+        <div class="filter-header">
+          <h3>Filtrar Convênios</h3>
+          <button class="filter-close" id="closeFilter">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+        <div class="filter-body">
+          <div class="filter-group">
+            <label for="filterNome">Nome do Convênio</label>
+            <input type="text" id="filterNome" placeholder="Digite o nome do convênio">
+          </div>
+          <div class="filter-group">
+            <label for="filterStatus">Status</label>
+            <select id="filterStatus">
+              <option value="">Todos</option>
+              <option value="ativo">Ativo</option>
+              <option value="inativo">Inativo</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filterTipo">Tipo</label>
+            <select id="filterTipo">
+              <option value="">Todos</option>
+              <option value="particular">Particular</option>
+              <option value="plano">Plano de Saúde</option>
+              <option value="convenio">Convênio Empresarial</option>
+            </select>
+          </div>
+        </div>
+        <div class="filter-footer">
+          <button class="btn-limpar-filtros" id="btnLimparFiltros">Limpar Filtros</button>
+          <button class="btn-aplicar-filtros" id="btnAplicarFiltros">Aplicar Filtros</button>
+        </div>
+      </div>
+
+      <!-- Tabela de Convênios -->
+      <div class="convenios-report">
+        <h3>RELATÓRIO DE CONVÊNIOS</h3>
+        <table id="conveniosTable">
+          <thead>
+            <tr>
+              <th>NOME DO CONVÊNIO</th>
+              <th>CONSULTA</th>
+              <th>DURAÇÃO</th>
+              <th>VALOR</th>
+              <th>PAGAMENTO (DIAS)</th>
+              <th>AÇÕES</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dados carregados dinamicamente -->
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <!-- Modal de Adicionar/Editar Convênio -->
+    <div id="modalConvenio" class="modal-overlay">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h2 id="modalTitle">CONVÊNIO</h2>
+          <button class="modal-close" id="closeModal">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+        
+        <form id="formConvenio" class="modal-body">
+          <div class="form-section">
+            <div class="form-group">
+              <label for="nomeConvenio">CONVÊNIO <span class="required">*</span></label>
+              <input type="text" id="nomeConvenio" name="nomeConvenio" required placeholder="Nome do convênio">
+            </div>
+
+            <div class="form-group">
+              <label for="consulta">CONSULTA <span class="required">*</span></label>
+              <input type="text" id="consulta" name="consulta" required placeholder="Tipo de consulta">
+            </div>
+
+            <div class="form-group">
+              <label for="duracao">DURAÇÃO <span class="required">*</span></label>
+              <input type="text" id="duracao" name="duracao" required placeholder="hh:mm" maxlength="5">
+            </div>
+
+            <div class="form-group">
+              <label for="valor">VALOR <span class="required">*</span></label>
+              <input type="text" id="valor" name="valor" required placeholder="R$ 0,00">
+            </div>
+
+            <div class="form-group">
+              <label for="pagamento">PAGAMENTO <span class="required">*</span></label>
+              <input type="number" id="pagamento" name="pagamento" required placeholder="Dias para pagamento" min="0">
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-cancelar" id="btnCancelar">Cancelar</button>
+            <button type="submit" class="btn-salvar" id="btnSalvar">Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Popup "Ver Mais" -->
+    <div id="modalDetalhes" class="modal">
+      <div class="modal-content modal-detalhes">
+        <div class="modal-header">
+          <h2>DETALHES DO CONVÊNIO</h2>
+          <span class="close-modal" id="closeModalDetalhes">&times;</span>
+        </div>
+        <div class="modal-body-detalhes">
+          <div class="detalhes-section">
+            <h3>Dados do Convênio</h3>
+            <div class="detalhes-grid">
+              <div class="detalhe-item">
+                <label>Nome do Convênio:</label>
+                <span id="detalheNome"></span>
+              </div>
+              <div class="detalhe-item">
+                <label>Tipo de Consulta:</label>
+                <span id="detalheConsulta"></span>
+              </div>
+              <div class="detalhe-item">
+                <label>Duração:</label>
+                <span id="detalheDuracao"></span>
+              </div>
+              <div class="detalhe-item">
+                <label>Valor:</label>
+                <span id="detalheValor"></span>
+              </div>
+              <div class="detalhe-item">
+                <label>Prazo de Pagamento:</label>
+                <span id="detalhePagamento"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer buttons styled consistently with pacientes.html -->
+        <div class="modal-footer">
+          <button type="button" class="btn-cancelar" id="btnFecharDetalhes">Fechar</button>
+          
+          <button type="button" class="btn-excluir" id="btnExcluirConvenio">
+            <span class="material-icons" style="color: red; font-size: 18px;">delete</span>
+            Excluir
+          </button>
+
+          <button type="button" class="btn-editar" id="btnEditarConvenio">
+            <span class="material-icons">edit</span>
+            Editar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/colreorder/1.6.3/js/dataTables.colReorder.min.js"></script>
+  <script src="js/convenios.js"></script>
+</body>
+</html>

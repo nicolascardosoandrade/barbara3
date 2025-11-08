@@ -1,0 +1,1051 @@
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  font-family: "Segoe UI", sans-serif;
+  display: flex;
+  flex-direction: column;
+  background-color: #f4f4f4;
+  min-height: 100vh;
+}
+
+.container {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  margin-top: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ==== SIDEBAR GERAL ==== */
+.sidebar {
+  background-color: #efcef3;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: calc(100vh - 60px);
+  transition: width 0.3s ease, padding 0.3s ease, transform 0.3s ease;
+  overflow-x: hidden;
+  flex-shrink: 0;
+  position: relative;
+}
+
+/* ==== SIDEBAR PADRÃO (DESKTOP EXPANDIDA) ==== */
+.sidebar:not(.collapsed):not(.mobile-hidden) {
+  width: 250px;
+  padding: 20px 10px;
+}
+
+/* ==== SIDEBAR COLAPSADA (DESKTOP) ==== */
+.sidebar.collapsed {
+  width: 60px;
+  padding: 20px 0;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar nav ul {
+  list-style: none;
+  flex: 1;
+  padding: 0;
+}
+
+.sidebar nav ul li {
+  position: relative;
+  margin-bottom: 5px;
+}
+
+.sidebar nav ul li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease-in-out;
+  white-space: nowrap;
+  color: #333;
+  text-decoration: none;
+}
+
+.sidebar nav ul li a .material-icons {
+  font-size: 22px;
+  color: #333;
+}
+
+.sidebar nav ul li a:hover {
+  background-color: #f0f0f0;
+}
+
+.sidebar nav ul li.active a {
+  background-color: #dca0e5;
+  font-weight: bold;
+}
+
+.sidebar nav ul li.active a .material-icons {
+  color: #333;
+}
+
+/* Esconder texto quando colapsado */
+.sidebar.collapsed nav ul li a span:not(:first-child) {
+  display: none;
+}
+
+/* Ícones centralizados quando colapsado */
+.sidebar.collapsed nav ul li a {
+  justify-content: center;
+  padding: 12px 0;
+  width: 100%;
+  gap: 0;
+}
+
+/* Para o item ativo quando a sidebar está colapsada */
+.sidebar.collapsed nav ul li.active a {
+  background-color: #dca0e5;
+  font-weight: bold;
+  border-radius: 0;
+}
+
+/* Tooltip visível ao passar o mouse */
+.sidebar.collapsed nav ul li:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 70px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #444;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  font-size: 12px;
+  z-index: 1000;
+}
+
+/* ==== MAIN CONTENT ==== */
+.main-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  min-height: calc(100vh - 60px);
+  transition: margin-left 0.3s ease;
+}
+
+.main-content h1 {
+  font-size: 24px;
+  color: #5e2d79;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+/* ==== HEADER (TOPBAR) ==== */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #e7b5e8;
+  padding: 10px 20px;
+  color: #333;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  height: 60px;
+}
+
+.logo-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-title h2 {
+  font-size: 16px;
+  font-weight: normal;
+  color: #333;
+}
+
+.menu-icon {
+  font-size: 22px;
+  cursor: pointer;
+  color: #333;
+}
+
+/* ==== BARRA DE PESQUISA - DESKTOP (COMO ESTAVA ANTES) ==== */
+.search-container {
+  flex: 1;
+  max-width: 400px;
+  margin: 0 20px;
+}
+
+.search-container input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  background-color: #fff;
+  font-size: 14px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease;
+}
+
+.search-container input:focus {
+  box-shadow: 0 0 0 2px #b39ddb;
+}
+
+/* === DROPDOWN DE USUÁRIO === */
+.user-dropdown {
+  position: relative;
+}
+
+.user-icon {
+  background-color: #5e2d79;
+  color: white;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  display: none;
+  flex-direction: column;
+  min-width: 200px;
+  z-index: 1001;
+}
+
+.dropdown-menu .user-email {
+  padding: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  border-bottom: 1px solid #eee;
+  color: #333;
+}
+
+.dropdown-item {
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  transition: background 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
+}
+
+/* ==== CALENDÁRIO HEADER ==== */
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.calendar-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  position: relative;
+}
+
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  background-color: #e1bee7;
+  color: #fff;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.1s ease;
+  position: relative;
+}
+
+.icon-btn:hover {
+  background-color: #ce93d8;
+  transform: translateY(-1px);
+}
+
+.icon-btn .material-icons {
+  color: #5e2d79;
+}
+
+.icon-btn:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #444;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  font-size: 12px;
+  z-index: 1000;
+  margin-top: 5px;
+}
+
+/* Cores específicas */
+.excel-btn {
+  background-color: #c8e6c9;
+}
+.excel-btn:hover {
+  background-color: #a5d6a7;
+}
+.excel-btn .material-icons {
+  color: #2e7d32;
+}
+
+.add-btn {
+  background-color: #f3e5f5;
+}
+.add-btn:hover {
+  background-color: #e1bee7;
+}
+.add-btn .material-icons {
+  color: #7b1fa2;
+}
+
+.filter-btn {
+  background-color: #e0f2f1;
+}
+.filter-btn:hover {
+  background-color: #b2dfdb;
+}
+.filter-btn .material-icons {
+  color: #00695c;
+}
+
+.today-btn {
+  background-color: #fff3e0;
+}
+.today-btn:hover {
+  background-color: #ffe0b2;
+}
+.today-btn .material-icons {
+  color: #ef6c00;
+}
+
+/* ==== CALENDAR VIEWS ==== */
+.calendar-views {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding: 10px 15px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.calendar-views .view-btn {
+  padding: 6px 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.calendar-views .view-btn:hover {
+  background-color: #f0f0f0;
+}
+
+.calendar-views .view-btn.active {
+  background-color: #dca0e5;
+  color: #fff;
+  border-color: #dca0e5;
+}
+
+/* ==== CALENDÁRIO ==== */
+#calendar {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin: 10px;
+  transition: all 0.3s ease;
+}
+
+/* ==== ALTURA DOS SLOTS E EVENTOS (LEGIBILIDADE) ==== */
+/* Aumentando altura dos slots para 70px para exibir nomes completos */
+.fc-timegrid-slot {
+  height: 70px !important;
+  min-height: 70px !important;
+}
+
+.fc-timegrid-slot-label {
+  padding: 4px 0 !important;
+  font-size: 11px !important;
+  text-align: right;
+}
+
+/* Aumentando altura mínima dos eventos para 64px e ajustando padding */
+.fc-timegrid-event {
+  margin: 2px 1px !important;
+  min-height: 64px !important;
+  padding: 8px 6px !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+  line-height: 1.4 !important;
+  color: white !important;
+  font-weight: 500 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.fc-timegrid-event:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+  z-index: 10;
+}
+
+/* Ajustando line-height e removendo truncamento de texto */
+.fc-event-title {
+  white-space: normal !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  font-size: 13px !important;
+  line-height: 1.4 !important;
+  margin-top: 3px !important;
+  display: block !important;
+}
+
+.fc-event-time {
+  font-weight: bold !important;
+  font-size: 12px !important;
+  display: block !important;
+  margin-bottom: 3px !important;
+  opacity: 0.9 !important;
+}
+
+/* CORES DOS EVENTOS */
+.fc-event.green {
+  background: linear-gradient(135deg, #1b5e20, #2e7d32) !important;
+  border-color: #2e7d32 !important;
+}
+
+/* TOOLBAR */
+.fc-header-toolbar {
+  margin-bottom: 10px;
+  padding: 10px;
+  background: #fff;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.fc-prev-button,
+.fc-next-button {
+  background-color: #dca0e5;
+  color: #fff;
+  border: none;
+  padding: 0;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.2s ease;
+  font-size: 18px;
+  margin: 0 4px;
+}
+
+.fc-prev-button:hover,
+.fc-next-button:hover {
+  background-color: #ce93d8;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* ==== MODAL POPUP DE DETALHES DO AGENDAMENTO ==== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background-color: #fff;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+  z-index: 10;
+}
+
+.modal-close:hover {
+  background-color: #f0f0f0;
+}
+
+.modal-close .material-icons {
+  font-size: 24px;
+  color: #666;
+}
+
+.modal-header {
+  padding: 30px 20px 20px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.modal-header h2 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.modal-header p {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+}
+
+.modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 20px;
+  justify-content: center;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: #f0f0f0;
+  min-width: 70px;
+  min-height: 70px;
+}
+
+.action-btn .material-icons {
+  font-size: 28px;
+}
+
+.action-btn span:not(.material-icons) {
+  font-size: 10px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
+  max-width: 80px;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Cores específicas para cada botão de ação */
+.attended-btn {
+  background-color: #e1bee7;
+}
+
+.attended-btn .material-icons {
+  color: #7b1fa2;
+}
+
+.attended-btn:hover {
+  background-color: #ce93d8;
+}
+
+.cancelled-btn {
+  background-color: #e1bee7;
+}
+
+.cancelled-btn .material-icons {
+  color: #7b1fa2;
+}
+
+.cancelled-btn:hover {
+  background-color: #ce93d8;
+}
+
+.not-unmarked-btn {
+  background-color: #e1bee7;
+}
+
+.not-unmarked-btn .material-icons {
+  color: #7b1fa2;
+}
+
+.not-unmarked-btn:hover {
+  background-color: #ce93d8;
+}
+
+.back-btn {
+  background-color: #e1bee7;
+}
+
+.back-btn .material-icons {
+  color: #7b1fa2;
+}
+
+.back-btn:hover {
+  background-color: #ce93d8;
+}
+
+.weekly-btn {
+  background-color: #e1bee7;
+}
+
+.weekly-btn .material-icons {
+  color: #7b1fa2;
+}
+
+.weekly-btn:hover {
+  background-color: #ce93d8;
+}
+
+.modal-info {
+  padding: 20px;
+}
+
+.info-row {
+  display: flex;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #999;
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+.info-value {
+  font-size: 14px;
+  color: #333;
+  flex: 1;
+}
+
+.info-value.frequency {
+  color: #00bcd4;
+  font-weight: 600;
+}
+
+.info-value-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.info-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.info-icon:hover {
+  background-color: #e0e0e0;
+  transform: scale(1.1);
+}
+
+.info-icon .material-icons {
+  font-size: 18px;
+  color: #5e2d79;
+}
+
+.info-icon:nth-child(3) .material-icons {
+  color: #25d366;
+}
+
+.info-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #333;
+  resize: vertical;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #fafafa;
+}
+
+.info-textarea:focus {
+  outline: none;
+  border-color: #dca0e5;
+}
+
+/* ==== RESPONSIVIDADE ==== */
+@media (max-width: 768px) {
+  .logo-title h2 {
+    display: none;
+  }
+  .search-container {
+    margin: 0 10px;
+    max-width: 300px;
+  }
+  .topbar {
+    padding: 10px 15px;
+  }
+  .main-content {
+    padding: 10px;
+  }
+  .main-content h1 {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 280px;
+    height: calc(100vh - 60px);
+    transform: translateX(-100%);
+    box-shadow: none;
+    z-index: 999;
+    padding: 0;
+    transition: transform 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+    padding: 20px 10px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+  }
+
+  body.no-scroll {
+    overflow: hidden;
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+  }
+
+  .topbar .menu-icon {
+    display: block;
+    margin-right: 10px;
+  }
+
+  .sidebar nav ul li:hover::after {
+    content: none;
+  }
+
+  .calendar-header {
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+  }
+  .calendar-views {
+    flex-wrap: wrap;
+  }
+
+  .fc-toolbar-title {
+    font-size: 14px !important;
+    white-space: normal !important;
+    line-height: 1.2;
+  }
+
+  .fc-prev-button,
+  .fc-next-button {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 16px !important;
+  }
+
+  .fc {
+    font-size: 12px;
+  }
+  /* Ajustando altura dos slots no mobile para 60px */
+  .fc-timegrid-slot {
+    height: 60px !important;
+    min-height: 60px !important;
+  }
+  /* Ajustando altura dos eventos no mobile para 54px */
+  .fc-timegrid-event {
+    min-height: 54px !important;
+    font-size: 11px !important;
+    padding: 6px 4px !important;
+  }
+  .fc-event-time {
+    font-size: 10px !important;
+  }
+  .fc-event-title {
+    font-size: 11px !important;
+  }
+
+  .icon-btn {
+    padding: 6px;
+  }
+  .icon-btn:hover::after {
+    display: none;
+  }
+
+  #calendar {
+    overflow-x: auto;
+  }
+
+  /* Responsividade do modal */
+  .modal-content {
+    width: 95%;
+    max-height: 85vh;
+  }
+
+  .modal-header h2 {
+    font-size: 18px;
+  }
+
+  .modal-header p {
+    font-size: 14px;
+  }
+
+  .modal-actions {
+    gap: 8px;
+    padding: 15px;
+  }
+
+  .action-btn {
+    min-width: 60px;
+    min-height: 60px;
+    padding: 10px 12px;
+  }
+
+  .action-btn .material-icons {
+    font-size: 24px;
+  }
+
+  .action-btn span:not(.material-icons) {
+    font-size: 9px;
+  }
+
+  .info-label {
+    min-width: 100px;
+    font-size: 13px;
+  }
+
+  .info-value {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-container {
+    max-width: 150px;
+    margin: 0 5px;
+  }
+  .search-container input {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+  .topbar {
+    padding: 10px;
+  }
+  .main-content h1 {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  .calendar-actions {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .icon-btn {
+    padding: 4px 6px;
+    font-size: 12px;
+  }
+  .calendar-views {
+    flex-wrap: wrap;
+    padding: 5px;
+  }
+  .calendar-views .view-btn {
+    padding: 4px 10px;
+    font-size: 12px;
+  }
+
+  .fc-toolbar-title {
+    font-size: 12px !important;
+  }
+  .fc-prev-button,
+  .fc-next-button {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 14px !important;
+  }
+
+  .fc {
+    font-size: 11px;
+  }
+  /* Ajustando altura dos slots em telas pequenas para 55px */
+  .fc-timegrid-slot {
+    height: 55px !important;
+    min-height: 55px !important;
+  }
+  /* Ajustando altura dos eventos em telas pequenas para 50px */
+  .fc-timegrid-event {
+    min-height: 50px !important;
+    font-size: 10px !important;
+    padding: 5px 3px !important;
+  }
+  .fc-event-time {
+    font-size: 9px !important;
+  }
+  .fc-event-title {
+    font-size: 10px !important;
+  }
+
+  /* Responsividade do modal em telas pequenas */
+  .modal-content {
+    width: 98%;
+    border-radius: 6px;
+  }
+
+  .modal-header {
+    padding: 25px 15px 15px;
+  }
+
+  .modal-header h2 {
+    font-size: 16px;
+  }
+
+  .modal-header p {
+    font-size: 13px;
+  }
+
+  .modal-actions {
+    gap: 6px;
+    padding: 12px;
+  }
+
+  .action-btn {
+    min-width: 55px;
+    min-height: 55px;
+    padding: 8px 10px;
+  }
+
+  .action-btn .material-icons {
+    font-size: 22px;
+  }
+
+  .action-btn span:not(.material-icons) {
+    font-size: 8px;
+  }
+
+  .modal-info {
+    padding: 15px;
+  }
+
+  .info-row {
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px 0;
+  }
+
+  .info-label {
+    min-width: auto;
+    font-size: 12px;
+  }
+
+  .info-value {
+    font-size: 13px;
+  }
+
+  .info-textarea {
+    min-height: 60px;
+    font-size: 13px;
+  }
+}

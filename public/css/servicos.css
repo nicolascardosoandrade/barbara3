@@ -1,0 +1,505 @@
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  background-color: #f4f4f4;
+  min-height: 100vh;
+}
+
+.container {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  margin-top: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ==== SIDEBAR GERAL ==== */
+.sidebar {
+  background-color: #efcef3;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: calc(100vh - 60px);
+  transition: width 0.3s ease, padding 0.3s ease, transform 0.3s ease;
+  overflow-x: hidden;
+  flex-shrink: 0;
+  position: relative;
+}
+
+/* ==== SIDEBAR PADRÃO (DESKTOP EXPANDIDA) ==== */
+.sidebar:not(.collapsed):not(.mobile-hidden) {
+  width: 250px;
+  padding: 20px 10px;
+}
+
+/* ==== SIDEBAR COLAPSADA (DESKTOP) ==== */
+.sidebar.collapsed {
+  width: 60px;
+  padding: 20px 0;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar nav ul {
+  list-style: none;
+  flex: 1;
+  padding: 0;
+}
+
+.sidebar nav ul li {
+  position: relative;
+  margin-bottom: 5px;
+}
+
+.sidebar nav ul li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease-in-out;
+  white-space: nowrap;
+  color: #333;
+  text-decoration: none;
+}
+
+.sidebar nav ul li a .material-icons {
+  font-size: 22px;
+  color: #333;
+}
+
+.sidebar nav ul li a:hover {
+  background-color: #f0f0f0;
+}
+
+.sidebar nav ul li.active a {
+  background-color: #dca0e5;
+  font-weight: bold;
+}
+
+.sidebar nav ul li.active a .material-icons {
+  color: #333;
+}
+
+/* Esconder texto quando colapsado */
+.sidebar.collapsed nav ul li a span:not(:first-child) {
+  display: none;
+}
+
+/* Ícones centralizados quando colapsado */
+.sidebar.collapsed nav ul li a {
+  justify-content: center;
+  padding: 12px 0;
+  width: 100%;
+  gap: 0;
+}
+
+/* Para o item ativo quando a sidebar está colapsada */
+.sidebar.collapsed nav ul li.active a {
+  background-color: #dca0e5;
+  font-weight: bold;
+  border-radius: 0;
+}
+
+/* Tooltip visível ao passar o mouse */
+.sidebar.collapsed nav ul li:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 70px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #444;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  font-size: 12px;
+  z-index: 1000;
+}
+
+/* ==== HEADER ==== */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #e7b5e8;
+  padding: 10px 20px;
+  color: #333;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  height: 60px;
+}
+
+.logo-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-title h2 {
+  font-size: 16px;
+  font-weight: normal;
+  color: #333;
+}
+
+.menu-icon {
+  font-size: 22px;
+  cursor: pointer;
+  color: #333;
+}
+
+.search-container {
+  flex: 1;
+  max-width: 400px;
+  margin: 0 20px;
+}
+
+.search-container input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* === DROPDOWN DE USUÁRIO === */
+.user-dropdown {
+  position: relative;
+}
+
+.user-icon {
+  background-color: #5e2d79;
+  color: white;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  display: none;
+  flex-direction: column;
+  min-width: 200px;
+  z-index: 1001;
+}
+
+.dropdown-menu .user-email {
+  padding: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  border-bottom: 1px solid #eee;
+  color: #333;
+}
+
+.dropdown-item {
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  transition: background 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
+}
+
+/* ==== MAIN CONTENT ==== */
+.main-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  min-height: calc(100vh - 60px);
+  transition: margin-left 0.3s ease;
+}
+
+.main-content h1 {
+  font-size: 24px;
+  color: #5e2d79;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.services-report {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 6px;
+}
+
+.services-report h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table th, table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+table th {
+  background-color: #e7b5e8;
+  color: #333;
+}
+
+/* ==== ACTION BUTTONS ==== */
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-adicionar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #e7b5e8;
+  color: #333;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-adicionar:hover {
+  background-color: #dca0e5;
+}
+
+.btn-adicionar .material-icons {
+  font-size: 18px;
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-icon:hover {
+  background-color: #f0f0f0;
+  border-color: #999;
+}
+
+.btn-icon .material-icons {
+  font-size: 20px;
+  color: #333;
+}
+
+.btn-icon.active {
+  background-color: #e7b5e8;
+  border-color: #dca0e5;
+}
+
+/* ==== RESPONSIVIDADE ==== */
+@media (max-width: 768px) {
+  .logo-title h2 {
+    display: none;
+  }
+
+  .search-container {
+    margin: 0 10px;
+  }
+
+  .topbar {
+    padding: 10px 15px;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 280px;
+    height: calc(100vh - 60px);
+    transform: translateX(-100%);
+    box-shadow: none;
+    z-index: 999;
+    padding: 0;
+    transition: transform 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+    padding: 20px 10px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+  }
+
+  body.no-scroll {
+    overflow: hidden;
+  }
+
+  .main-content {
+    width: 100%;
+    padding: 10px;
+    margin-left: 0 !important;
+  }
+
+  .main-content h1 {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+
+  .topbar .menu-icon {
+    display: block;
+    margin-right: 10px;
+  }
+
+  .sidebar nav ul li:hover::after {
+    content: none;
+  }
+
+  .action-buttons {
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  .services-report {
+    padding: 0;
+  }
+
+  .services-report h3 {
+    font-size: 16px;
+    padding: 0 10px 10px 10px;
+  }
+
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  tr {
+    border: 1px solid #ccc;
+    margin: 0 10px 10px 10px;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+
+  td {
+    border: none;
+    position: relative;
+    padding: 8px 0;
+    text-align: left;
+    width: 100%;
+    padding-left: 0;
+  }
+
+  td:before {
+    position: static;
+    left: auto;
+    width: auto;
+    padding-right: 0;
+    white-space: normal;
+    content: attr(data-label) ':';
+    font-weight: bold;
+    text-align: left;
+    display: block;
+    margin-bottom: 2px;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-container {
+    max-width: 150px;
+    margin: 0 5px;
+  }
+
+  .search-container input {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+
+  .actions {
+    gap: 10px;
+  }
+
+  .topbar {
+    padding: 10px;
+  }
+
+  .main-content h1 {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .services-report {
+    padding: 0;
+  }
+
+  .services-report h3 {
+    font-size: 15px;
+    padding: 0 10px 10px 10px;
+  }
+
+  tr {
+    margin: 0 10px 8px 10px;
+    padding: 8px;
+  }
+
+  td {
+    padding: 6px 0;
+  }
+
+  td:before {
+    margin-bottom: 1px;
+  }
+}

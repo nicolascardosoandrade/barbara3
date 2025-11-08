@@ -1,0 +1,519 @@
+document.addEventListener("DOMContentLoaded", () => {
+  const sidebar = document.querySelector(".sidebar")
+  const menuIcon = document.querySelector(".menu-icon")
+  const userToggle = document.getElementById("userToggle")
+  const userMenu = document.getElementById("userMenu")
+  const editBtn = document.getElementById("edit-btn")
+  const clinicaSpan = document.getElementById("clinica-percent")
+  const impostoSpan = document.getElementById("imposto-percent")
+  const totalValueSpan = document.getElementById("total-value")
+  const totalComDescontoSpan = document.getElementById("total-com-desconto-value")
+  const receberValueSpan = document.getElementById("receber-value")
+  const startDateInput = document.getElementById("start-date")
+  const endDateInput = document.getElementById("end-date")
+  let isEditing = false
+  const currentCharts = {}
+
+  // Declare the io variable before using it
+  const io = window.io
+  const socket = io()
+  socket.on("agendamento-updated", () => {
+    console.log("[v0] Agendamento atualizado - recarregando financeiro")
+    carregarDadosFinanceiros()
+  })
+
+  function parseMoney(str) {
+    return Number.parseFloat(str.replace(/[^\d,]/g, "").replace(",", "."))
+  }
+
+  function formatMoney(num) {
+    return "R$ " + num.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  }
+
+  function atualizarTotalComDesconto() {
+    const totalSemDesc = parseMoney(totalValueSpan.textContent)
+    const percClinicaText = clinicaSpan.textContent.replace("%", "").trim()
+    const percClinica = Number.parseFloat(percClinicaText) || 0
+
+    const desconto = totalSemDesc * (percClinica / 100)
+    const totalComDesc = totalSemDesc - desconto
+
+    totalComDescontoSpan.textContent = formatMoney(totalComDesc)
+
+    const percImpostoText = impostoSpan.textContent.replace("%", "").trim()
+    const percImposto = Number.parseFloat(percImpostoText) || 0
+
+    const imposto = totalComDesc * (percImposto / 100)
+    const aReceber = totalComDesc - imposto
+
+    receberValueSpan.textContent = formatMoney(aReceber)
+  }
+
+  function inicializarValores() {
+    const hoje = new Date("2025-11-07")
+    const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1)
+    startDateInput.value = inicioMes.toISOString().split("T")[0]
+    endDateInput.value = hoje.toISOString().split("T")[0]
+
+    const agendadoSpan = document.querySelector(".summary-item:nth-child(3) span")
+    const atendidoSpan = document.querySelector(".summary-item:nth-child(4) span")
+    const naoDesmarcadoSpan = document.querySelector(".summary-item:nth-child(5) span")
+
+    agendadoSpan.textContent = formatMoney(0)
+    agendadoSpan.style.color = "#22c55e"
+    atendidoSpan.textContent = formatMoney(0)
+    atendidoSpan.style.color = "#3b82f6"
+    naoDesmarcadoSpan.textContent = formatMoney(0)
+    naoDesmarcadoSpan.style.color = "#a855f7"
+    totalValueSpan.textContent = formatMoney(0)
+
+    clinicaSpan.textContent = "% 45"
+    impostoSpan.textContent = "% 6"
+
+    totalComDescontoSpan.textContent = formatMoney(0)
+    receberValueSpan.textContent = formatMoney(0)
+
+    atualizarTotalComDesconto()
+  }
+
+  async function carregarDadosFinanceiros() {
+    try {
+      const startDate = startDateInput.value
+      const endDate = endDateInput.value
+
+      console.log("[v0] Carregando dados financeiros:", { startDate, endDate })
+
+      const response = await fetch(`/api/financeiro/resumo?startDate=${startDate}&endDate=${endDate}`)
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      const data = await response.json()
+
+      console.log("[v0] Dados recebidos:", data)
+
+      if (!data || !data.resumo) {
+        console.error("[v0] Erro: dados de resumo não encontrados")
+        return
+      }
+
+      const agendadoSpan = document.querySelector(".summary-item:nth-child(3) span")
+      const atendidoSpan = document.querySelector(".summary-item:nth-child(4) span")
+      const naoDesmarcadoSpan = document.querySelector(".summary-item:nth-child(5) span")
+
+      agendadoSpan.textContent = formatMoney(data.resumo.agendado || 0)
+      agendadoSpan.style.color = "#22c55e"
+      atendidoSpan.textContent = formatMoney(data.resumo.atendido || 0)
+      atendidoSpan.style.color = "#3b82f6"
+      naoDesmarcadoSpan.textContent = formatMoney(data.resumo.naoDesmarcado || 0)
+      naoDesmarcadoSpan.style.color = "#a855f7"
+
+      totalValueSpan.textContent = formatMoney(data.resumo.totalSemDesconto || 0)
+
+      atualizarTotalComDesconto()
+
+      if (data.agendamentos && data.agendamentos.length > 0) {
+        atualizarGraficosComDados(data.agendamentos)
+      } else {
+        console.log("[v0] Nenhum agendamento encontrado para gráficos")
+      }
+    } catch (error) {
+      console.error("[v0] Erro ao carregar dados financeiros:", error)
+      const agendadoSpan = document.querySelector(".summary-item:nth-child(3) span")
+      const atendidoSpan = document.querySelector(".summary-item:nth-child(4) span")
+      const naoDesmarcadoSpan = document.querySelector(".summary-item:nth-child(5) span")
+      agendadoSpan.textContent = formatMoney(0)
+      atendidoSpan.textContent = formatMoney(0)
+      naoDesmarcadoSpan.textContent = formatMoney(0)
+      totalValueSpan.textContent = formatMoney(0)
+      atualizarTotalComDesconto()
+    }
+  }
+
+  function atualizarGraficosComDados(agendamentos) {
+    const hoje = new Date().toISOString().split("T")[0]
+
+    const dataAtual = new Date(hoje)
+
+    const diaAgendamentos = agendamentos.filter((a) => {
+      const dataConsulta = new Date(a.data_consulta).toISOString().split("T")[0]
+      return dataConsulta === hoje
+    })
+
+    const inicioSemana = new Date(dataAtual)
+    inicioSemana.setDate(dataAtual.getDate() - dataAtual.getDay())
+    const fimSemana = new Date(inicioSemana)
+    fimSemana.setDate(inicioSemana.getDate() + 6)
+
+    const semanaAgendamentos = agendamentos.filter((a) => {
+      const data = new Date(a.data_consulta)
+      return data >= inicioSemana && data <= fimSemana
+    })
+
+    const inicioMes = new Date(dataAtual.getFullYear(), dataAtual.getMonth(), 1)
+    const fimMes = new Date(dataAtual.getFullYear(), dataAtual.getMonth() + 1, 0)
+
+    const mesAgendamentos = agendamentos.filter((a) => {
+      const data = new Date(a.data_consulta)
+      return data >= inicioMes && data <= fimMes
+    })
+
+    const chartData = {
+      day: prepararDadosGraficos(diaAgendamentos, "dia"),
+      week: prepararDadosGraficos(semanaAgendamentos, "semana"),
+      month: prepararDadosGraficos(mesAgendamentos, "mes"),
+    }
+
+    updateAllCharts("day", chartData)
+    window.currentChartData = chartData
+  }
+
+  function prepararDadosGraficos(agendamentos, periodo) {
+    const statusCounts = {
+      agendado: 0,
+      atendido: 0,
+      nao_desmarcado: 0,
+    }
+
+    const statusValues = {
+      agendado: 0,
+      atendido: 0,
+      nao_desmarcado: 0,
+    }
+
+    const convenioCounts = {}
+    const convenioValues = {}
+    const trendData = {}
+
+    agendamentos.forEach((agendamento) => {
+      const valor = Number.parseFloat(agendamento.valor) || 0
+      const status = agendamento.status || "agendado"
+
+      if (statusCounts[status] !== undefined) {
+        statusCounts[status]++
+        statusValues[status] += valor
+      }
+
+      if (!convenioCounts[agendamento.convenio]) {
+        convenioCounts[agendamento.convenio] = 0
+        convenioValues[agendamento.convenio] = 0
+      }
+      convenioCounts[agendamento.convenio]++
+      convenioValues[agendamento.convenio] += valor
+
+      const data = new Date(agendamento.data_consulta).toISOString().split("T")[0]
+      if (!trendData[data]) {
+        trendData[data] = 0
+      }
+      trendData[data] += valor
+    })
+
+    const labels = Object.keys(trendData).sort()
+    const revenueData = labels.map((label) => trendData[label])
+
+    return {
+      revenue: revenueData.length > 0 ? revenueData : [0],
+      labels: labels.length > 0 ? labels : ["Sem dados"],
+      status: Object.values(statusValues),
+      statusLabels: ["Agendado", "Atendido", "Não Desmarcado"],
+      convenio: Object.values(convenioValues),
+      convenioLabels: Object.keys(convenioValues),
+      trend: revenueData,
+    }
+  }
+
+  function initializeSidebarState() {
+    if (window.innerWidth >= 768) {
+      sidebar.classList.add("collapsed")
+      sidebar.classList.remove("active")
+      document.body.classList.remove("no-scroll")
+    } else {
+      sidebar.classList.remove("collapsed")
+      sidebar.classList.remove("active")
+      document.body.classList.remove("no-scroll")
+    }
+  }
+
+  initializeSidebarState()
+
+  menuIcon.addEventListener("click", () => {
+    if (window.innerWidth < 768) {
+      sidebar.classList.toggle("active")
+      document.body.classList.toggle("no-scroll")
+    } else {
+      sidebar.classList.toggle("collapsed")
+      sidebar.classList.remove("active")
+      document.body.classList.remove("no-scroll")
+    }
+  })
+
+  sidebar.querySelectorAll("nav ul li a").forEach((item) => {
+    item.addEventListener("click", () => {
+      if (window.innerWidth < 768 && sidebar.classList.contains("active")) {
+        sidebar.classList.remove("active")
+        document.body.classList.remove("no-scroll")
+      }
+    })
+  })
+
+  document.addEventListener("click", (e) => {
+    if (
+      window.innerWidth < 768 &&
+      sidebar.classList.contains("active") &&
+      !sidebar.contains(e.target) &&
+      !menuIcon.contains(e.target)
+    ) {
+      sidebar.classList.remove("active")
+      document.body.classList.remove("no-scroll")
+    }
+  })
+
+  window.addEventListener("resize", initializeSidebarState)
+
+  userToggle.addEventListener("click", (e) => {
+    e.stopPropagation()
+    userMenu.style.display = userMenu.style.display === "flex" ? "none" : "flex"
+  })
+
+  document.addEventListener("click", (e) => {
+    if (!userMenu.contains(e.target) && e.target !== userToggle) {
+      userMenu.style.display = "none"
+    }
+  })
+
+  window.logout = () => {
+    alert("Você saiu com sucesso!")
+  }
+
+  editBtn.addEventListener("click", () => {
+    if (!isEditing) {
+      const currentClinica = Number.parseFloat(clinicaSpan.textContent.replace("%", "").trim())
+      const currentImposto = Number.parseFloat(impostoSpan.textContent.replace("%", "").trim())
+
+      const clinicaInput = document.createElement("input")
+      clinicaInput.type = "number"
+      clinicaInput.min = 0
+      clinicaInput.max = 100
+      clinicaInput.step = 1
+      clinicaInput.value = currentClinica
+      clinicaInput.className = "percent-input"
+
+      const percentClinicaText = document.createTextNode("%")
+      const clinicaItem = document.getElementById("clinica-item")
+      clinicaItem.removeChild(clinicaSpan)
+      clinicaItem.appendChild(clinicaInput)
+      clinicaItem.appendChild(percentClinicaText)
+
+      const impostoInput = document.createElement("input")
+      impostoInput.type = "number"
+      impostoInput.min = 0
+      impostoInput.max = 100
+      impostoInput.step = 1
+      impostoInput.value = currentImposto
+      impostoInput.className = "percent-input"
+
+      const percentImpostoText = document.createTextNode("%")
+      const impostoItem = document.getElementById("imposto-item")
+      impostoItem.removeChild(impostoSpan)
+      impostoItem.appendChild(impostoInput)
+      impostoItem.appendChild(percentImpostoText)
+
+      editBtn.textContent = "Salvar"
+      editBtn.classList.remove("edit-btn")
+      editBtn.classList.add("save-btn")
+      isEditing = true
+
+      clinicaInput.addEventListener("input", atualizarTotalComDesconto)
+      impostoInput.addEventListener("input", atualizarTotalComDesconto)
+    } else {
+      const clinicaInput = document.querySelector("#clinica-item input")
+      const impostoInput = document.querySelector("#imposto-item input")
+
+      const newClinica = Number.parseFloat(clinicaInput.value) || 0
+      const newImposto = Number.parseFloat(impostoInput.value) || 0
+
+      const newClinicaSpan = document.createElement("span")
+      newClinicaSpan.id = "clinica-percent"
+      newClinicaSpan.textContent = `% ${newClinica}`
+      const clinicaItem = document.getElementById("clinica-item")
+      const percentClinicaText = clinicaItem.lastChild
+      clinicaItem.removeChild(clinicaInput)
+      clinicaItem.removeChild(percentClinicaText)
+      clinicaItem.appendChild(newClinicaSpan)
+
+      const newImpostoSpan = document.createElement("span")
+      newImpostoSpan.id = "imposto-percent"
+      newImpostoSpan.textContent = `% ${newImposto}`
+      const impostoItem = document.getElementById("imposto-item")
+      const percentImpostoText = impostoItem.lastChild
+      impostoItem.removeChild(impostoInput)
+      impostoItem.removeChild(percentImpostoText)
+      impostoItem.appendChild(newImpostoSpan)
+
+      editBtn.textContent = "Editar"
+      editBtn.classList.remove("save-btn")
+      editBtn.classList.add("edit-btn")
+      isEditing = false
+
+      atualizarTotalComDesconto()
+
+      alert("Porcentagens atualizadas com sucesso!")
+    }
+  })
+
+  startDateInput.addEventListener("change", carregarDadosFinanceiros)
+  endDateInput.addEventListener("change", carregarDadosFinanceiros)
+
+  const chartConfig = {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: {
+        display: true,
+        labels: {
+          color: "#666",
+          font: { size: 12 },
+        },
+      },
+    },
+  }
+
+  function createRevenueChart(period, chartData) {
+    const ctx = document.getElementById("revenueChart").getContext("2d")
+    if (currentCharts.revenue) currentCharts.revenue.destroy()
+
+    currentCharts.revenue = new window.Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: chartData[period].labels,
+        datasets: [
+          {
+            label: "Faturamento (R$)",
+            data: chartData[period].revenue,
+            backgroundColor: "#dca0e5",
+            borderColor: "#5e2d79",
+            borderWidth: 1,
+            borderRadius: 4,
+          },
+        ],
+      },
+      options: {
+        ...chartConfig,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { color: "#666" },
+            grid: { color: "#eee" },
+          },
+          x: {
+            ticks: { color: "#666" },
+            grid: { color: "#eee" },
+          },
+        },
+      },
+    })
+  }
+
+  function createStatusChart(period, chartData) {
+    const ctx = document.getElementById("statusChart").getContext("2d")
+    if (currentCharts.status) currentCharts.status.destroy()
+
+    currentCharts.status = new window.Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels: chartData[period].statusLabels,
+        datasets: [
+          {
+            data: chartData[period].status,
+            backgroundColor: ["#22c55e", "#3b82f6", "#a855f7"],
+            borderColor: "#fff",
+            borderWidth: 2,
+          },
+        ],
+      },
+      options: chartConfig,
+    })
+  }
+
+  function createConvenioChart(period, chartData) {
+    const ctx = document.getElementById("convênioChart").getContext("2d")
+    if (currentCharts.convenio) currentCharts.convenio.destroy()
+
+    currentCharts.convenio = new window.Chart(ctx, {
+      type: "pie",
+      data: {
+        labels: chartData[period].convenioLabels,
+        datasets: [
+          {
+            data: chartData[period].convenio,
+            backgroundColor: ["#5e2d79", "#dca0e5", "#e7b5e8", "#f0d5f7"],
+            borderColor: "#fff",
+            borderWidth: 2,
+          },
+        ],
+      },
+      options: chartConfig,
+    })
+  }
+
+  function createTrendChart(period, chartData) {
+    const ctx = document.getElementById("trendChart").getContext("2d")
+    if (currentCharts.trend) currentCharts.trend.destroy()
+
+    currentCharts.trend = new window.Chart(ctx, {
+      type: "line",
+      data: {
+        labels: chartData[period].labels,
+        datasets: [
+          {
+            label: "Tendência",
+            data: chartData[period].trend,
+            borderColor: "#5e2d79",
+            backgroundColor: "rgba(94, 45, 121, 0.1)",
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: "#5e2d79",
+            pointBorderColor: "#fff",
+            pointBorderWidth: 2,
+            pointRadius: 5,
+          },
+        ],
+      },
+      options: {
+        ...chartConfig,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { color: "#666" },
+            grid: { color: "#eee" },
+          },
+          x: {
+            ticks: { color: "#666" },
+            grid: { color: "#eee" },
+          },
+        },
+      },
+    })
+  }
+
+  function updateAllCharts(period, chartData) {
+    createRevenueChart(period, chartData)
+    createStatusChart(period, chartData)
+    createConvenioChart(period, chartData)
+    createTrendChart(period, chartData)
+  }
+
+  document.querySelectorAll(".tab-btn").forEach((btn) => {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"))
+      this.classList.add("active")
+
+      const currentData = window.currentChartData || {}
+      updateAllCharts(this.dataset.period, currentData)
+    })
+  })
+
+  inicializarValores()
+  setTimeout(() => {
+    carregarDadosFinanceiros()
+  }, 500)
+})

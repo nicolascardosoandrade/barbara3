@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SistemaAeR - Bárbara Lana</title>
+  <link rel="stylesheet" href="css/agenda.css" />
+  <link rel="icon" href="assets/img/Logo-barbara.png" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  
+  <!-- FullCalendar atualizado para a versão 6.1.15 -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/locales-all.global.min.js"></script>
+
+  <!-- SheetJS para exportar Excel -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <!-- Socket.io client -->
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <!-- Cabeçalho -->
+  <header class="topbar">
+    <div class="logo-title">
+      <span class="menu-icon material-icons">menu</span>
+      <h2>SistemaAeR - Bárbara Lana</h2>
+    </div>
+    <div class="search-container">
+      <input type="text" placeholder="Procurar Agenda" />
+    </div>
+    <div class="actions">
+      <div class="user-dropdown">
+        <div class="user-icon" id="userToggle">B</div>
+        <div class="dropdown-menu" id="userMenu">
+          <div class="user-email">email@email.com</div>
+          <div class="dropdown-item" onclick="logout()">
+            <span class="material-icons">logout</span> Sair
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Barra Lateral -->
+    <aside class="sidebar collapsed">
+      <nav>
+        <ul>
+          <li data-tooltip="Detalhes">
+            <a href="index.html">
+              <span class="material-icons">info</span> <span>Detalhes</span>
+            </a>
+          </li>
+          <li data-tooltip="Convênios">
+            <a href="convenios.html">
+              <span class="material-icons">handshake</span> <span>Convênios</span>
+            </a>
+          </li>
+          <li data-tooltip="Filtrar Idades">
+            <a href="filtrar_idades.html">
+              <span class="material-icons">filter_alt</span> <span>Filtrar Idades</span>
+            </a>
+          </li>
+          <li data-tooltip="Pacientes">
+            <a href="pacientes.html">
+              <span class="material-icons">group</span> <span>Pacientes</span>
+            </a>
+          </li>
+          <li class="active" data-tooltip="Agenda">
+            <a href="agenda.html">
+              <span class="material-icons">calendar_today</span> <span>Agenda</span>
+            </a>
+          </li>
+          <li data-tooltip="Agendamentos">
+            <a href="agendamentos.html">
+              <span class="material-icons">event</span> <span>Agendamentos</span>
+            </a>
+          </li>
+          <li data-tooltip="Aniversariantes do Dia">
+            <a href="aniversariante_do_dia.html">
+              <span class="material-icons">cake</span> <span>Aniversariantes do Dia</span>
+            </a>
+          </li>
+          <li data-tooltip="Serviços">
+            <a href="servicos.html">
+              <span class="material-icons">home_repair_service</span> <span>Serviços</span>
+            </a>
+          </li>
+          <li data-tooltip="Financeiro">
+            <a href="financeiro.html">
+              <span class="material-icons">attach_money</span> <span>Financeiro</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-content">
+      <h1>Agenda</h1>
+      <div class="calendar-header">
+        <div class="calendar-actions">
+          <button class="icon-btn excel-btn" id="exportExcel" data-tooltip="Excel">
+            <span class="material-icons">description</span>
+          </button>
+          <button class="icon-btn add-btn" data-tooltip="Adicionar">
+            <span class="material-icons">add</span>
+          </button>
+          <button class="icon-btn filter-btn" id="filterBtn" data-tooltip="Filtrar">
+            <span class="material-icons">filter_list</span>
+          </button>
+          <button class="icon-btn today-btn" id="todayBtn" data-tooltip="Hoje">
+            <span class="material-icons">today</span>
+          </button>
+        </div>
+      </div>
+      <div class="calendar-views">
+        <button class="view-btn" data-view="timeGridDay">Dia</button>
+        <button class="view-btn" data-view="timeGridWeek">Semana</button>
+        <button class="view-btn" data-view="dayGridMonth">Mês</button>
+      </div>
+      <div id="calendar"></div>
+    </main>
+  </div>
+
+  <!-- Adicionado popup modal para exibir detalhes do agendamento -->
+  <div id="appointmentModal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close" id="closeModal">
+        <span class="material-icons">close</span>
+      </button>
+      
+      <div class="modal-header">
+        <h2 id="modalPatientName">NOME DO PACIENTE</h2>
+        <p id="modalDateTime">Data e Horário</p>
+      </div>
+
+      <div class="modal-actions">
+        <button class="action-btn attended-btn" data-action="atendido">
+          <span class="material-icons">thumb_up</span>
+          <span>Atendido</span>
+        </button>
+        <button class="action-btn cancelled-btn" data-action="cancelado">
+          <span class="material-icons">cancel</span>
+          <span>Cancelado</span>
+        </button>
+        <button class="action-btn not-unmarked-btn" data-action="nao_desmarcado">
+          <span class="material-icons">schedule</span>
+          <span>Não Desmarcado</span>
+        </button>
+        <button class="action-btn back-btn" data-action="voltar">
+          <span class="material-icons">arrow_back</span>
+          <span>Voltar</span>
+        </button>
+        <button class="action-btn weekly-btn" data-action="agenda_semanal">
+          <span class="material-icons">view_week</span>
+          <span>AGENDA SEMANAL</span>
+        </button>
+      </div>
+
+      <div class="modal-info">
+        <div class="info-row">
+          <span class="info-label">TELEFONE</span>
+          <div class="info-value-group">
+            <span class="info-value" id="modalPhone">-</span>
+            <a href="#" class="info-icon" id="callPhone">
+              <span class="material-icons">phone</span>
+            </a>
+            <a href="#" class="info-icon" id="whatsappPhone">
+              <span class="material-icons">chat</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <span class="info-label">CONVÊNIO</span>
+          <span class="info-value" id="modalConvenio">-</span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-label">CONSULTA</span>
+          <span class="info-value" id="modalConsulta">-</span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-label">MODALIDADE</span>
+          <span class="info-value" id="modalModalidade">-</span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-label">FREQUÊNCIA</span>
+          <span class="info-value frequency" id="modalFrequencia">-</span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-label">OBS.</span>
+          <textarea class="info-textarea" id="modalObs" readonly></textarea>
+        </div>
+
+        <div class="info-row">
+          <span class="info-label">VALOR</span>
+          <span class="info-value" id="modalValor">-</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/agenda.js"></script>
+</body>
+</html>
