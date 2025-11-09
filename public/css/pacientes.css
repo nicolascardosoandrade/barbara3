@@ -820,7 +820,7 @@ body {
   background-color: #d18fdb;
 }
 
-/* ==== TABELA ESTILO MODERNO (IGUAL A FILTRAR_IDADES.HTML) ==== */
+/* ==== TABELA ESTILO MODERNO (SEM ROSA) ==== */
 .patients-report {
   background: white;
   border-radius: 12px;
@@ -830,22 +830,24 @@ body {
   margin-bottom: 20px;
 }
 
+/* TÍTULO SEM FUNDO ROSA E SEM LINHA */
 .patients-report h3 {
   font-size: 18px;
   margin: 0;
   padding: 16px 20px;
   color: #4a1f5e;
-  background: linear-gradient(135deg, #e7b5e8, #dca0e5);
+  background: #ffffff;
   font-weight: 600;
 }
 
+/* CABEÇALHO DA TABELA SEM GRADIENTE ROSA */
 #relatorio-pacientes {
   width: 100%;
   border-collapse: collapse;
 }
 
 #relatorio-pacientes thead {
-  background: linear-gradient(135deg, #e7b5e8, #dca0e5);
+  background: #f8f9fa;
   color: #4a1f5e;
 }
 
