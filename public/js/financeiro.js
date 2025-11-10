@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await fetch("/api/financeiro/porcentagens", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ clinica, imposto })
+        body: JSON.stringify({ clinica, imposto }),
       })
       if (!response.ok) throw new Error("Erro ao salvar porcentagens")
       alert("Porcentagens salvas com sucesso!")
@@ -205,20 +205,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const hoje = new Date().toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" })
     const dataAtual = new Date(hoje)
 
-    const diaAgendamentos = agendamentos.filter(a => new Date(a.data_consulta).toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" }) === hoje)
+    const diaAgendamentos = agendamentos.filter(
+      (a) => new Date(a.data_consulta).toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" }) === hoje,
+    )
 
     const inicioSemana = new Date(dataAtual)
     inicioSemana.setDate(dataAtual.getDate() - dataAtual.getDay())
     const fimSemana = new Date(inicioSemana)
     fimSemana.setDate(inicioSemana.getDate() + 6)
-    const semanaAgendamentos = agendamentos.filter(a => {
+    const semanaAgendamentos = agendamentos.filter((a) => {
       const d = new Date(a.data_consulta)
       return d >= inicioSemana && d <= fimSemana
     })
 
     const inicioMes = new Date(dataAtual.getFullYear(), dataAtual.getMonth(), 1)
     const fimMes = new Date(dataAtual.getFullYear(), dataAtual.getMonth() + 1, 0)
-    const mesAgendamentos = agendamentos.filter(a => {
+    const mesAgendamentos = agendamentos.filter((a) => {
       const d = new Date(a.data_consulta)
       return d >= inicioMes && d <= fimMes
     })
@@ -240,15 +242,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const convenioValues = {}
     const trendData = {}
 
-    agendamentos.forEach(a => {
+    agendamentos.forEach((a) => {
       const valor = Number.parseFloat(a.valor) || 0
+      // Use the status from the backend (based on color)
       const status = a.status || "agendado"
 
+      // Count and sum by status
       if (statusCounts[status] !== undefined) {
         statusCounts[status]++
         statusValues[status] += valor
       }
 
+      // Count and sum by convenio
       if (!convenioCounts[a.convenio]) {
         convenioCounts[a.convenio] = 0
         convenioValues[a.convenio] = 0
@@ -256,19 +261,21 @@ document.addEventListener("DOMContentLoaded", () => {
       convenioCounts[a.convenio]++
       convenioValues[a.convenio] += valor
 
+      // Trend data by date
       const data = new Date(a.data_consulta).toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" })
       if (!trendData[data]) trendData[data] = 0
       trendData[data] += valor
     })
 
     const labels = Object.keys(trendData).sort()
-    const revenueData = labels.map(l => trendData[l])
+    const revenueData = labels.map((l) => trendData[l])
 
     return {
       revenue: revenueData.length > 0 ? revenueData : [0],
       labels: labels.length > 0 ? labels : ["Sem dados"],
-      status: Object.values(statusValues),
-      statusLabels: ["Agendado", "Atendido", "Não Desmarcado"],
+      status: [statusValues.agendado, statusValues.atendido, statusValues.nao_desmarcado],
+      statusLabels: ["Agendado (Verde)", "Atendido (Azul)", "Não Desmarcado (Lilás)"],
+      statusCounts: [statusCounts.agendado, statusCounts.atendido, statusCounts.nao_desmarcado],
       convenio: Object.values(convenioValues),
       convenioLabels: Object.keys(convenioValues),
       trend: revenueData,
@@ -301,7 +308,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 
-  sidebar.querySelectorAll("nav ul li a").forEach(item => {
+  sidebar.querySelectorAll("nav ul li a").forEach((item) => {
     item.addEventListener("click", () => {
       if (window.innerWidth < 768 && sidebar.classList.contains("active")) {
         sidebar.classList.remove("active")
@@ -310,7 +317,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   })
 
-  document.addEventListener("click", e => {
+  document.addEventListener("click", (e) => {
     if (
       window.innerWidth < 768 &&
       sidebar.classList.contains("active") &&
@@ -325,12 +332,12 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("resize", initializeSidebarState)
 
   /* ---------- USER MENU ---------- */
-  userToggle.addEventListener("click", e => {
+  userToggle.addEventListener("click", (e) => {
     e.stopPropagation()
     userMenu.style.display = userMenu.style.display === "flex" ? "none" : "flex"
   })
 
-  document.addEventListener("click", e => {
+  document.addEventListener("click", (e) => {
     if (!userMenu.contains(e.target) && e.target !== userToggle) {
       userMenu.style.display = "none"
     }
@@ -383,7 +390,6 @@ document.addEventListener("DOMContentLoaded", () => {
       impostoInput.addEventListener("input", atualizarTotalComDesconto)
 
       atualizarTotalComDesconto()
-
     } else {
       const clinicaInput = document.querySelector("#clinica-item input")
       const impostoInput = document.querySelector("#imposto-item input")
@@ -449,6 +455,22 @@ document.addEventListener("DOMContentLoaded", () => {
         display: true,
         labels: { color: "#666", font: { size: 12 } },
       },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            let label = context.dataset.label || ""
+            if (label) {
+              label += ": "
+            }
+            if (context.parsed.y !== null) {
+              label += formatMoney(context.parsed.y)
+            } else if (context.parsed !== null) {
+              label += formatMoney(context.parsed)
+            }
+            return label
+          },
+        },
+      },
     },
   }
 
@@ -460,19 +482,28 @@ document.addEventListener("DOMContentLoaded", () => {
       type: "bar",
       data: {
         labels: chartData[period].labels,
-        datasets: [{
-          label: "Faturamento (R$)",
-          data: chartData[period].revenue,
-          backgroundColor: "#dca0e5",
-          borderColor: "#5e2d79",
-          borderWidth: 1,
-          borderRadius: 4,
-        }],
+        datasets: [
+          {
+            label: "Faturamento (R$)",
+            data: chartData[period].revenue,
+            backgroundColor: "#dca0e5",
+            borderColor: "#5e2d79",
+            borderWidth: 1,
+            borderRadius: 4,
+          },
+        ],
       },
       options: {
         ...chartConfig,
         scales: {
-          y: { beginAtZero: true, ticks: { color: "#666" }, grid: { color: "#eee" } },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              color: "#666",
+              callback: (value) => "R$ " + value.toLocaleString("pt-BR", { minimumFractionDigits: 2 }),
+            },
+            grid: { color: "#eee" },
+          },
           x: { ticks: { color: "#666" }, grid: { color: "#eee" } },
         },
       },
@@ -487,14 +518,31 @@ document.addEventListener("DOMContentLoaded", () => {
       type: "doughnut",
       data: {
         labels: chartData[period].statusLabels,
-        datasets: [{
-          data: chartData[period].status,
-          backgroundColor: ["#22c55e", "#3b82f6", "#a855f7"],
-          borderColor: "#fff",
-          borderWidth: 2,
-        }],
+        datasets: [
+          {
+            data: chartData[period].status,
+            backgroundColor: ["#22c55e", "#3b82f6", "#a855f7"],
+            borderColor: "#fff",
+            borderWidth: 2,
+          },
+        ],
       },
-      options: chartConfig,
+      options: {
+        ...chartConfig,
+        plugins: {
+          ...chartConfig.plugins,
+          tooltip: {
+            callbacks: {
+              label: (context) => {
+                const label = context.label || ""
+                const value = context.parsed || 0
+                const count = chartData[period].statusCounts[context.dataIndex] || 0
+                return `${label}: ${formatMoney(value)} (${count} consultas)`
+              },
+            },
+          },
+        },
+      },
     })
   }
 
@@ -502,16 +550,29 @@ document.addEventListener("DOMContentLoaded", () => {
     const ctx = document.getElementById("convênioChart").getContext("2d")
     if (currentCharts.convenio) currentCharts.convenio.destroy()
 
+    const filteredLabels = []
+    const filteredData = []
+    const colors = ["#5e2d79", "#dca0e5", "#e7b5e8", "#f0d5f7", "#9333ea", "#c084fc", "#d8b4fe", "#e9d5ff"]
+
+    chartData[period].convenioLabels.forEach((label, index) => {
+      if (chartData[period].convenio[index] > 0) {
+        filteredLabels.push(label)
+        filteredData.push(chartData[period].convenio[index])
+      }
+    })
+
     currentCharts.convenio = new window.Chart(ctx, {
       type: "pie",
       data: {
-        labels: chartData[period].convenioLabels,
-        datasets: [{
-          data: chartData[period].convenio,
-          backgroundColor: ["#5e2d79", "#dca0e5", "#e7b5e8", "#f0d5f7"],
-          borderColor: "#fff",
-          borderWidth: 2,
-        }],
+        labels: filteredLabels.length > 0 ? filteredLabels : ["Sem dados"],
+        datasets: [
+          {
+            data: filteredData.length > 0 ? filteredData : [1],
+            backgroundColor: colors,
+            borderColor: "#fff",
+            borderWidth: 2,
+          },
+        ],
       },
       options: chartConfig,
     })
@@ -525,23 +586,32 @@ document.addEventListener("DOMContentLoaded", () => {
       type: "line",
       data: {
         labels: chartData[period].labels,
-        datasets: [{
-          label: "Tendência",
-          data: chartData[period].trend,
-          borderColor: "#5e2d79",
-          backgroundColor: "rgba(94, 45, 121, 0.1)",
-          fill: true,
-          tension: 0.4,
-          pointBackgroundColor: "#5e2d79",
-          pointBorderColor: "#fff",
-          pointBorderWidth: 2,
-          pointRadius: 5,
-        }],
+        datasets: [
+          {
+            label: "Tendência de Faturamento",
+            data: chartData[period].trend,
+            borderColor: "#5e2d79",
+            backgroundColor: "rgba(94, 45, 121, 0.1)",
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: "#5e2d79",
+            pointBorderColor: "#fff",
+            pointBorderWidth: 2,
+            pointRadius: 5,
+          },
+        ],
       },
       options: {
         ...chartConfig,
         scales: {
-          y: { beginAtZero: true, ticks: { color: "#666" }, grid: { color: "#eee" } },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              color: "#666",
+              callback: (value) => "R$ " + value.toLocaleString("pt-BR", { minimumFractionDigits: 2 }),
+            },
+            grid: { color: "#eee" },
+          },
           x: { ticks: { color: "#666" }, grid: { color: "#eee" } },
         },
       },
@@ -555,9 +625,9 @@ document.addEventListener("DOMContentLoaded", () => {
     createTrendChart(period, chartData)
   }
 
-  document.querySelectorAll(".tab-btn").forEach(btn => {
+  document.querySelectorAll(".tab-btn").forEach((btn) => {
     btn.addEventListener("click", function () {
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"))
+      document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"))
       this.classList.add("active")
       const currentData = window.currentChartData || {}
       updateAllCharts(this.dataset.period, currentData)

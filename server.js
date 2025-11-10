@@ -527,20 +527,22 @@ app.get("/api/agendamentos", async (req, res) => {
     if (!db) return res.status(500).json({ error: "Banco de dados não conectado" })
     const [rows] = await db.execute(`
       SELECT 
-        a.id,
-        DATE_FORMAT(a.data_consulta, '%d/%m/%Y') as data_consulta,
-        a.nome_paciente,
-        a.telefone,
-        TIME_FORMAT(a.inicio, '%H:%i') as inicio,
-        TIME_FORMAT(a.fim, '%H:%i') as fim,
-        a.convenio,
-        a.consulta,
-        a.modalidade,
-        a.frequencia,
-        a.observacoes,
-        a.valor
-      FROM agendamentos a
-      ORDER BY a.data_consulta DESC, a.inicio ASC
+        id,
+        DATE_FORMAT(data_consulta, '%d/%m/%Y') as data_consulta,
+        nome_paciente,
+        telefone,
+        TIME_FORMAT(inicio, '%H:%i') as inicio,
+        TIME_FORMAT(fim, '%H:%i') as fim,
+        convenio,
+        consulta,
+        modalidade,
+        frequencia,
+        observacoes,
+        valor,
+        color,
+        status_pagamento
+      FROM agendamentos 
+      ORDER BY STR_TO_DATE(data_consulta, '%Y-%m-%d') DESC, inicio ASC
     `)
     res.json(rows)
   } catch (error) {
@@ -549,6 +551,7 @@ app.get("/api/agendamentos", async (req, res) => {
   }
 })
 
+// Buscar agendamento por ID
 app.get("/api/agendamentos/:id", async (req, res) => {
   try {
     if (!db) return res.status(500).json({ error: "Banco de dados não conectado" })
@@ -556,8 +559,7 @@ app.get("/api/agendamentos/:id", async (req, res) => {
     const { id } = req.params
 
     const [rows] = await db.execute(
-      `
-      SELECT 
+      `SELECT 
         a.id,
         DATE_FORMAT(a.data_consulta, '%d/%m/%Y') as data_consulta,
         a.data_consulta as data_consulta_raw,
@@ -571,10 +573,10 @@ app.get("/api/agendamentos/:id", async (req, res) => {
         a.frequencia,
         a.observacoes,
         a.valor,
-        a.color
+        a.color,
+        a.status_pagamento
       FROM agendamentos a
-      WHERE a.id = ?
-    `,
+      WHERE a.id = ?`,
       [id],
     )
 
@@ -594,8 +596,19 @@ app.post("/api/agendamentos", async (req, res) => {
   try {
     if (!db) return res.status(500).json({ error: "Banco de dados não conectado" })
 
-    const { data_consulta, nome_paciente, telefone, inicio, fim, convenio, consulta, modalidade, frequencia, observacoes, valor } =
-      req.body
+    const {
+      data_consulta,
+      nome_paciente,
+      telefone,
+      inicio,
+      fim,
+      convenio,
+      consulta,
+      modalidade,
+      frequencia,
+      observacoes,
+      valor,
+    } = req.body
 
     if (!data_consulta || !nome_paciente || !inicio || !fim || !convenio || !consulta || !modalidade || !frequencia) {
       return res.status(400).json({ error: "Campos obrigatórios não preenchidos." })
@@ -660,8 +673,19 @@ app.put("/api/agendamentos/:id", async (req, res) => {
     if (!db) return res.status(500).json({ error: "Banco de dados não conectado" })
 
     const { id } = req.params
-    const { data_consulta, nome_paciente, telefone, inicio, fim, convenio, consulta, modalidade, frequencia, observacoes, valor } =
-      req.body
+    const {
+      data_consulta,
+      nome_paciente,
+      telefone,
+      inicio,
+      fim,
+      convenio,
+      consulta,
+      modalidade,
+      frequencia,
+      observacoes,
+      valor,
+    } = req.body
 
     if (!data_consulta || !nome_paciente || !inicio || !fim || !convenio || !consulta || !modalidade || !frequencia) {
       return res.status(400).json({ error: "Campos obrigatórios não preenchidos." })
@@ -825,8 +849,7 @@ app.get("/api/financeiro/resumo", async (req, res) => {
     }
 
     const [rows] = await db.execute(
-      `
-      SELECT 
+      `SELECT 
         id,
         data_consulta,
         nome_paciente,
@@ -838,12 +861,12 @@ app.get("/api/financeiro/resumo", async (req, res) => {
           WHEN color = 'green' THEN 'agendado'
           WHEN color = 'blue' THEN 'atendido'
           WHEN color = 'lilac' THEN 'nao_desmarcado'
-          ELSE 'unknown'
+          WHEN color = 'red' THEN 'nao_desmarcado'
+          ELSE 'agendado'
         END as status
       FROM agendamentos 
-      WHERE data_consulta BETWEEN ? AND ? AND color IN ('green', 'blue', 'lilac')
-      ORDER BY data_consulta, inicio
-    `,
+      WHERE data_consulta BETWEEN ? AND ?
+      ORDER BY data_consulta, inicio`,
       [startDate, endDate],
     )
 
@@ -852,7 +875,6 @@ app.get("/api/financeiro/resumo", async (req, res) => {
     let agendado = 0
     let atendido = 0
     let naoDesmarcado = 0
-    let totalSemDesconto = 0
 
     rows.forEach((row) => {
       const v = Number.parseFloat(row.valor) || 0
@@ -867,11 +889,12 @@ app.get("/api/financeiro/resumo", async (req, res) => {
           naoDesmarcado += v
           break
       }
-      totalSemDesconto += v
     })
 
+    const totalSemDesconto = atendido + naoDesmarcado
+
     console.log(
-      `[server] Resumo: agendado=${agendado}, atendido=${atendido}, naoDesmarcado=${naoDesmarcado}, total=${totalSemDesconto}`,
+      `[server] Resumo calculado: agendado=${agendado.toFixed(2)}, atendido=${atendido.toFixed(2)}, naoDesmarcado=${naoDesmarcado.toFixed(2)}, total=${totalSemDesconto.toFixed(2)}`,
     )
 
     res.json({
@@ -886,6 +909,106 @@ app.get("/api/financeiro/resumo", async (req, res) => {
   } catch (error) {
     console.error("Erro ao buscar resumo financeiro:", error)
     res.status(500).json({ error: "Erro ao buscar resumo financeiro" })
+  }
+})
+
+// ========================
+// FINANCEIRO
+// ========================
+
+// GET endpoint to retrieve CLÍNICA and IMPOSTOS percentages
+app.get("/api/financeiro/porcentagens", async (req, res) => {
+  try {
+    if (!db) {
+      return res.status(500).json({ error: "Banco de dados não conectado" })
+    }
+
+    // Query to get percentual_clinica and percentual_impostos from configuracoes_financeiras table
+    const [rows] = await db.execute(
+      `SELECT nome_configuracao, valor_percentual 
+       FROM configuracoes_financeiras 
+       WHERE nome_configuracao IN ('percentual_clinica', 'percentual_impostos') 
+       AND ativo = TRUE`,
+    )
+
+    let clinica = 45.0 // default value
+    let imposto = 6.0 // default value
+
+    // Map the results
+    rows.forEach((row) => {
+      if (row.nome_configuracao === "percentual_clinica") {
+        clinica = Number.parseFloat(row.valor_percentual)
+      } else if (row.nome_configuracao === "percentual_impostos") {
+        imposto = Number.parseFloat(row.valor_percentual)
+      }
+    })
+
+    console.log(`[server] Porcentagens carregadas: clinica=${clinica}%, imposto=${imposto}%`)
+
+    res.json({ clinica, imposto })
+  } catch (error) {
+    console.error("Erro ao buscar porcentagens:", error)
+    res.status(500).json({ error: "Erro ao buscar porcentagens financeiras" })
+  }
+})
+
+// POST endpoint to save CLÍNICA and IMPOSTOS percentages
+app.post("/api/financeiro/porcentagens", async (req, res) => {
+  try {
+    if (!db) {
+      return res.status(500).json({ error: "Banco de dados não conectado" })
+    }
+
+    const { clinica, imposto } = req.body
+
+    if (clinica === undefined || imposto === undefined) {
+      return res.status(400).json({
+        error: "Os campos 'clinica' e 'imposto' são obrigatórios",
+      })
+    }
+
+    const clinicaNum = Number.parseFloat(clinica)
+    const impostoNum = Number.parseFloat(imposto)
+
+    if (isNaN(clinicaNum) || clinicaNum < 0 || clinicaNum > 100) {
+      return res.status(400).json({
+        error: "Percentual de clínica deve ser um número entre 0 e 100",
+      })
+    }
+
+    if (isNaN(impostoNum) || impostoNum < 0 || impostoNum > 100) {
+      return res.status(400).json({
+        error: "Percentual de imposto deve ser um número entre 0 e 100",
+      })
+    }
+
+    // Update percentual_clinica
+    await db.execute(
+      `UPDATE configuracoes_financeiras 
+       SET valor_percentual = ? 
+       WHERE nome_configuracao = 'percentual_clinica'`,
+      [clinicaNum],
+    )
+
+    // Update percentual_impostos
+    await db.execute(
+      `UPDATE configuracoes_financeiras 
+       SET valor_percentual = ? 
+       WHERE nome_configuracao = 'percentual_impostos'`,
+      [impostoNum],
+    )
+
+    console.log(`[server] Porcentagens atualizadas: clinica=${clinicaNum}%, imposto=${impostoNum}%`)
+
+    res.json({
+      success: true,
+      message: "Porcentagens atualizadas com sucesso!",
+      clinica: clinicaNum,
+      imposto: impostoNum,
+    })
+  } catch (error) {
+    console.error("Erro ao salvar porcentagens:", error)
+    res.status(500).json({ error: "Erro ao salvar porcentagens financeiras" })
   }
 })
 
