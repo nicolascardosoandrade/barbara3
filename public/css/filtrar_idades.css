@@ -5,14 +5,16 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   height: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #f4f4f4;
-  color: #333;
 }
 
 body {
+  font-family: "Segoe UI", sans-serif;
+  /* Adicionado gradiente suave no fundo */
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  color: #333;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -25,12 +27,13 @@ body {
   overflow: hidden;
 }
 
-/* ==== TOPBAR (ORIGINAL) ==== */
+/* ==== TOPBAR ==== */
 .topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #e7b5e8;
+  /* Gradiente roxo/lilás no header */
+  background: linear-gradient(135deg, #e1bee7 0%, #ce93d8 100%);
   padding: 10px 20px;
   color: #333;
   width: 100%;
@@ -39,25 +42,36 @@ body {
   left: 0;
   z-index: 1000;
   height: 60px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  /* Sombra mais suave e colorida */
+  box-shadow: 0 2px 10px rgba(94, 45, 121, 0.15);
 }
 
 .logo-title {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .logo-title h2 {
-  font-size: 16px;
-  font-weight: normal;
-  color: #333;
+  font-size: 17px;
+  /* Cor roxa no título */
+  font-weight: 600;
+  color: #5e2d79;
 }
 
+/* Menu icon com animação de rotação */
 .menu-icon {
-  font-size: 22px;
+  font-size: 24px;
   cursor: pointer;
-  color: #333;
+  color: #5e2d79;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 5px;
+  border-radius: 6px;
+}
+
+.menu-icon:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
 }
 
 .search-container {
@@ -68,11 +82,20 @@ body {
 
 .search-container input {
   width: 100%;
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  /* Borda transparente com transição */
+  border: 2px solid transparent;
   outline: none;
   background: white;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+/* Efeito focus com borda roxa */
+.search-container input:focus {
+  border-color: #ba68c8;
+  box-shadow: 0 0 0 3px rgba(186, 104, 200, 0.15);
 }
 
 .actions {
@@ -85,31 +108,53 @@ body {
   position: relative;
 }
 
+/* User icon com gradiente e hover animado */
 .user-icon {
-  background-color: #5e2d79;
+  background: linear-gradient(135deg, #7b3f9e 0%, #5e2d79 100%);
   color: white;
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   cursor: pointer;
   user-select: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(94, 45, 121, 0.3);
 }
 
+.user-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(94, 45, 121, 0.4);
+}
+
+/* Dropdown animado com slide */
 .dropdown-menu {
   position: absolute;
-  top: 40px;
+  top: 45px;
   right: 0;
-  background-color: white;
-  border-radius: 6px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   display: none;
   flex-direction: column;
-  min-width: 200px;
+  min-width: 220px;
   z-index: 1001;
+  overflow: hidden;
+  animation: dropdownSlide 0.3s ease-out;
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .dropdown-menu.show {
@@ -117,38 +162,49 @@ body {
 }
 
 .dropdown-menu .user-email {
-  padding: 10px;
+  padding: 15px;
   font-size: 14px;
-  font-weight: bold;
-  border-bottom: 1px solid #eee;
-  color: #333;
+  font-weight: 600;
+  border-bottom: 1px solid #f0f0f0;
+  color: #5e2d79;
+  background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);
 }
 
 .dropdown-item {
-  padding: 10px;
+  padding: 12px 15px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 14px;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
+  color: #333;
 }
 
 .dropdown-item:hover {
-  background-color: #f0f0f0;
+  background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+  color: #5e2d79;
 }
 
-/* ==== SIDEBAR (100% ORIGINAL + RESPONSIVA) ==== */
+.dropdown-item .material-icons {
+  font-size: 20px;
+}
+
+/* ==== SIDEBAR ==== */
 .sidebar {
-  background-color: #efcef3;
+  /* Gradiente suave na sidebar */
+  background: linear-gradient(180deg, #f3e5f5 0%, #e1bee7 100%);
   color: #333;
   display: flex;
   flex-direction: column;
   min-height: calc(100vh - 60px);
-  transition: all 0.3s ease;
+  /* Transições super suaves com cubic-bezier */
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s
+    cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-x: hidden;
   flex-shrink: 0;
   position: relative;
+  box-shadow: 2px 0 8px rgba(94, 45, 121, 0.1);
 }
 
 .sidebar:not(.collapsed):not(.mobile-hidden) {
@@ -156,10 +212,11 @@ body {
   padding: 20px 10px;
 }
 
+/* Sidebar colapsada com largura de 70px */
 .sidebar.collapsed {
-  width: 60px;
+  width: 70px;
   padding: 20px 0;
-  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  box-shadow: 2px 0 5px rgba(94, 45, 121, 0.15);
 }
 
 .sidebar nav ul {
@@ -175,94 +232,205 @@ body {
 .sidebar nav ul li a {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px;
+  gap: 12px;
+  padding: 12px 10px;
   cursor: pointer;
   font-size: 15px;
-  border-radius: 6px;
-  transition: background 0.2s;
+  border-radius: 8px;
+  /* Transição suave para todos os efeitos */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
   color: #333;
   text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efeito de hover animado com barra deslizante */
+.sidebar nav ul li a::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+
+.sidebar nav ul li a:hover::before {
+  left: 0;
 }
 
 .sidebar nav ul li a .material-icons {
   font-size: 22px;
-  color: #333;
+  color: #5e2d79;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar nav ul li a span:not(.material-icons) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Ícone cresce ao passar o mouse */
+.sidebar nav ul li a:hover .material-icons {
+  transform: scale(1.1);
+  color: #7b3f9e;
 }
 
 .sidebar nav ul li a:hover {
-  background-color: #f0f0f0;
+  background-color: rgba(255, 255, 255, 0.5);
+  transform: translateX(5px);
+  box-shadow: 0 2px 8px rgba(94, 45, 121, 0.15);
 }
 
+/* Gradiente no item ativo */
 .sidebar nav ul li.active a {
-  background-color: #dca0e5;
-  font-weight: bold;
+  background: linear-gradient(135deg, #ce93d8 0%, #ba68c8 100%);
+  font-weight: 600;
+  box-shadow: 0 3px 10px rgba(94, 45, 121, 0.25);
+  transform: translateX(3px);
 }
 
 .sidebar nav ul li.active a .material-icons {
-  color: #333;
+  color: #fff;
+}
+
+.sidebar nav ul li.active a span:not(.material-icons) {
+  color: #fff;
 }
 
 /* Colapsado */
 .sidebar.collapsed nav ul li a span:not(:first-child) {
-  display: none;
+  opacity: 0;
+  width: 0;
+  transition: opacity 0.2s ease, width 0.2s ease;
 }
 
 .sidebar.collapsed nav ul li a {
   justify-content: center;
-  padding: 12px 0;
+  padding: 14px 0;
+  width: 100%;
   gap: 0;
 }
 
 .sidebar.collapsed nav ul li.active a {
-  background-color: #dca0e5;
+  background: linear-gradient(135deg, #ce93d8 0%, #ba68c8 100%);
   border-radius: 0;
 }
 
-.sidebar.collapsed nav ul li:hover::after {
+/* Tooltip estilizado e animado */
+.sidebar.collapsed nav ul li::after {
   content: attr(data-tooltip);
+  position: absolute;
+  left: 80px;
+  top: 50%;
+  transform: translateY(-50%) translateX(-10px);
+  background: linear-gradient(135deg, #5e2d79 0%, #7b3f9e 100%);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Seta do tooltip */
+.sidebar.collapsed nav ul li::before {
+  content: "";
   position: absolute;
   left: 70px;
   top: 50%;
   transform: translateY(-50%);
-  background-color: #444;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 6px 8px 6px 0;
+  border-color: transparent #5e2d79 transparent transparent;
   z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar.collapsed nav ul li:hover::after {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+.sidebar.collapsed nav ul li:hover::before {
+  opacity: 1;
 }
 
 /* ==== MAIN CONTENT ==== */
 .main-content {
   flex: 1;
-  padding: 20px;
+  padding: 25px;
   overflow-y: auto;
   min-height: calc(100vh - 60px);
-  background: #f8f5fa;
+  background: transparent;
+  transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .main-content h1 {
-  font-size: 24px;
+  font-size: 28px;
   color: #5e2d79;
-  margin-bottom: 20px;
-  font-weight: bold;
+  margin-bottom: 25px;
+  font-weight: 700;
+  /* Animação de entrada */
+  animation: fadeInDown 0.6s ease-out;
 }
 
-/* ==== FILTRO DE IDADE (NOVO E LINDO) ==== */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==== FILTRO DE IDADE ==== */
 .filter-box {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
   align-items: end;
-  background: white;
+  /* Gradiente suave e sombra colorida */
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(94, 45, 121, 0.1);
+  box-shadow: 0 4px 20px rgba(94, 45, 121, 0.1);
   margin-bottom: 25px;
-  border: 1px solid #efcef3;
+  border: 1px solid rgba(225, 190, 231, 0.3);
+  /* Animação de entrada */
+  animation: fadeInUp 0.6s ease-out;
+  transition: box-shadow 0.3s ease;
+}
+
+.filter-box:hover {
+  box-shadow: 0 6px 25px rgba(94, 45, 121, 0.15);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .input-group {
@@ -280,55 +448,80 @@ body {
 
 .input-group input {
   padding: 11px 14px;
-  border: 2px solid #dca0e5;
+  border: 2px solid #e1bee7;
   border-radius: 8px;
   font-size: 16px;
   background: #fdfbff;
-  transition: all 0.3s;
+  /* Transição suave para border e shadow */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .input-group input:focus {
   outline: none;
-  border-color: #5e2d79;
+  border-color: #ba68c8;
   background: white;
-  box-shadow: 0 0 0 4px rgba(94, 45, 121, 0.15);
+  box-shadow: 0 0 0 4px rgba(186, 104, 200, 0.15);
 }
 
+/* Botão filtrar com gradiente e animação */
 .btn-filter {
   padding: 11px 28px;
-  background: #5e2d79;
+  background: linear-gradient(135deg, #ba68c8 0%, #ab47bc 100%);
   color: white;
   border: none;
   border-radius: 8px;
   font-weight: 600;
   font-size: 15px;
   cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: 0 3px 10px rgba(94, 45, 121, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 3px 10px rgba(171, 71, 188, 0.3);
 }
 
 .btn-filter:hover {
-  background: #4a1f5e;
+  background: linear-gradient(135deg, #ab47bc 0%, #9c27b0 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(94, 45, 121, 0.4);
+  box-shadow: 0 6px 15px rgba(171, 71, 188, 0.4);
 }
+
+.btn-filter:active {
+  transform: translateY(0);
+}
+
+/* Added age-report container styling identical to patients-report */
+.age-report {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(94, 45, 121, 0.1);
+  animation: fadeInUp 0.8s ease-out;
+  transition: box-shadow 0.3s ease;
+  overflow: hidden;
+}
+
+.age-report:hover {
+  box-shadow: 0 6px 25px rgba(94, 45, 121, 0.15);
+}
+
+.age-report h3 {
+  font-size: 18px;
+  margin: 0 0 15px 0;
+  padding: 0;
+  color: #5e2d79;
+  font-weight: 600;
+}
+/* </CHANGE> */
 
 /* ==== TABELA ==== */
-.table-container {
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-  border: 1px solid #eee;
-}
-
 #ageFilterTable {
   width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
+/* Cabeçalho da tabela com gradiente */
 #ageFilterTable thead {
-  background: linear-gradient(135deg, #e7b5e8, #dca0e5);
-  color: #4a1f5e;
+  background: linear-gradient(135deg, #ce93d8 0%, #ba68c8 100%);
+  color: white;
 }
 
 #ageFilterTable thead th {
@@ -336,6 +529,7 @@ body {
   font-weight: 600;
   text-align: center;
   font-size: 15px;
+  color: white;
 }
 
 #ageFilterTable tbody td {
@@ -343,35 +537,55 @@ body {
   text-align: center;
   border-bottom: 1px solid #f0e6f6;
   font-size: 14.5px;
+  /* Transição suave para hover */
+  transition: background-color 0.2s ease;
+}
+
+/* Hover na linha com fundo suave */
+#ageFilterTable tbody tr {
+  transition: all 0.2s ease;
 }
 
 #ageFilterTable tbody tr:hover {
-  background-color: #fdf8ff;
+  background-color: rgba(243, 229, 245, 0.4);
+  transform: scale(1.005);
 }
 
-/* Status */
+/* Status com fundo colorido e arredondamento */
 td span[style*="2e7d32"] {
-  background: #e8f5e9;
-  padding: 4px 10px;
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  padding: 5px 12px;
   border-radius: 20px;
   font-size: 13px;
   font-weight: bold;
+  display: inline-block;
+  box-shadow: 0 2px 6px rgba(46, 125, 50, 0.2);
 }
 
 td span[style*="c62828"] {
-  background: #ffebee;
-  padding: 4px 10px;
+  background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+  padding: 5px 12px;
   border-radius: 20px;
   font-size: 13px;
   font-weight: bold;
+  display: inline-block;
+  box-shadow: 0 2px 6px rgba(198, 40, 40, 0.2);
 }
 
-/* ==== RESPONSIVIDADE PERFEITA ==== */
+/* ==== RESPONSIVIDADE ==== */
 @media (max-width: 768px) {
-  .logo-title h2 { display: none; }
-  .search-container { margin: 0 10px; max-width: 200px; }
-  .topbar { padding: 10px 15px; }
+  .logo-title h2 {
+    display: none;
+  }
+  .search-container {
+    margin: 0 10px;
+    max-width: 200px;
+  }
+  .topbar {
+    padding: 10px 15px;
+  }
 
+  /* Sidebar desliza suavemente em mobile */
   .sidebar {
     position: fixed;
     top: 60px;
@@ -382,36 +596,181 @@ td span[style*="c62828"] {
     box-shadow: none;
     z-index: 999;
     padding: 0;
-    transition: transform 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s
+      cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .sidebar.active {
     transform: translateX(0);
     padding: 20px 10px;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+    box-shadow: 4px 0 20px rgba(94, 45, 121, 0.3);
   }
 
-  body.no-scroll { overflow: hidden; }
+  body.no-scroll {
+    overflow: hidden;
+  }
 
   .main-content {
     padding: 15px;
     margin-left: 0 !important;
   }
 
-  .main-content h1 { font-size: 20px; }
+  .main-content h1 {
+    font-size: 22px;
+    margin-bottom: 15px;
+  }
 
   .filter-box {
     flex-direction: column;
     align-items: stretch;
+    padding: 15px;
   }
 
-  .input-group { min-width: auto; }
-  .btn-filter { width: 100%; }
+  .input-group {
+    min-width: auto;
+  }
+  .btn-filter {
+    width: 100%;
+    padding: 14px;
+  }
 
-  .table-container { overflow-x: auto; }
+  .age-report {
+    padding: 15px;
+  }
+
+  .age-report h3 {
+    font-size: 16px;
+  }
+
+  /* Implementing horizontal scroll for mobile like pacientes.html */
+  /* Hiding length and filter controls, but keeping pagination */
+  .dataTables_wrapper .dataTables_length,
+  .dataTables_wrapper .dataTables_filter {
+    display: none !important;
+  }
+
+  /* Showing pagination controls on mobile */
+  .dataTables_wrapper .dataTables_info,
+  .dataTables_wrapper .dataTables_paginate {
+    display: block !important;
+    text-align: center;
+    margin-top: 15px;
+  }
+
+  .dataTables_wrapper .dataTables_paginate {
+    padding: 10px 0;
+  }
+
+  .dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 8px 12px;
+    margin: 0 4px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+    color: #5e2d79 !important;
+    border: 1px solid #e1bee7;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: linear-gradient(135deg, #ba68c8 0%, #ab47bc 100%);
+    color: white !important;
+    border-color: #ba68c8;
+  }
+
+  .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: linear-gradient(135deg, #ba68c8 0%, #ab47bc 100%);
+    color: white !important;
+    border-color: #ba68c8;
+  }
+
+  .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Container with smooth horizontal scroll */
+  .age-report {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Table maintains minimum width to force horizontal scroll */
+  #ageFilterTable {
+    min-width: 600px;
+    display: table;
+  }
+
+  /* Maintaining normal table structure with purple header */
+  #ageFilterTable thead {
+    display: table-header-group;
+  }
+
+  #ageFilterTable thead tr {
+    display: table-row;
+  }
+
+  #ageFilterTable thead th {
+    display: table-cell;
+    background: linear-gradient(135deg, #ce93d8 0%, #ba68c8 100%);
+    color: white;
+    font-weight: 600;
+    padding: 12px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  #ageFilterTable tbody {
+    display: table-row-group;
+  }
+
+  #ageFilterTable tbody tr {
+    display: table-row;
+    background-color: white;
+    border-bottom: 1px solid #f0e6f6;
+  }
+
+  #ageFilterTable tbody tr:hover {
+    background-color: rgba(243, 229, 245, 0.4);
+  }
+
+  #ageFilterTable tbody td {
+    display: table-cell;
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #f0e6f6;
+  }
+  /* </CHANGE> */
+
+  /* Remove tooltips em mobile */
+  .sidebar nav ul li:hover::after,
+  .sidebar nav ul li:hover::before {
+    content: none;
+    opacity: 0;
+  }
 }
 
 @media (max-width: 480px) {
-  .search-container { max-width: 120px; }
-  .main-content h1 { font-size: 18px; }
+  .search-container {
+    max-width: 120px;
+  }
+  .main-content h1 {
+    font-size: 20px;
+  }
+
+  .age-report {
+    padding: 12px;
+  }
+
+  .age-report h3 {
+    font-size: 15px;
+  }
+
+  /* Minimum width adjustment for very small screens */
+  #ageFilterTable {
+    min-width: 550px;
+  }
+  /* </CHANGE> */
 }

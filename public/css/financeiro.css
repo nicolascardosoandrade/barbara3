@@ -14,7 +14,8 @@ body {
   font-family: "Segoe UI", sans-serif;
   display: flex;
   flex-direction: column;
-  background-color: #f4f4f4;
+  /* Adicionado gradiente suave no fundo */
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   min-height: 100vh;
 }
 
@@ -24,21 +25,26 @@ body {
   width: 100%;
   margin-top: 0;
   min-height: 0;
-  overflow: hidden; /* Garante que o conteúdo não vaze enquanto a sidebar se move */
+  overflow: hidden;
 }
 
 /* ==== SIDEBAR GERAL ==== */
 .sidebar {
-  background-color: #efcef3;
+  /* Gradiente suave na sidebar */
+  background: linear-gradient(180deg, #f3e5f5 0%, #e1bee7 100%);
   color: #333;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   min-height: calc(100vh - 60px);
-  transition: width 0.3s ease, padding 0.3s ease, transform 0.3s ease; /* Adicionado transform para mobile */
+  /* Transições super suaves com cubic-bezier */
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s
+    cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-x: hidden;
-  flex-shrink: 0; /* Impede que a sidebar diminua mais do que o necessário */
-  position: relative; /* Para z-index e posicionamento em mobile */
+  flex-shrink: 0;
+  position: relative;
+  /* Sombra suave */
+  box-shadow: 2px 0 8px rgba(94, 45, 121, 0.1);
 }
 
 /* ==== SIDEBAR PADRÃO (DESKTOP EXPANDIDA) ==== */
@@ -49,9 +55,9 @@ body {
 
 /* ==== SIDEBAR COLAPSADA (DESKTOP) ==== */
 .sidebar.collapsed {
-  width: 60px;
+  width: 70px;
   padding: 20px 0;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 2px 0 5px rgba(94, 45, 121, 0.15);
 }
 
 .sidebar nav ul {
@@ -68,240 +74,457 @@ body {
 .sidebar nav ul li a {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px;
+  gap: 12px;
+  padding: 12px 10px;
   cursor: pointer;
   font-size: 15px;
-  border-radius: 6px;
-  transition: background-color 0.2s ease-in-out;
+  border-radius: 8px;
+  /* Transição suave para todos os efeitos */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
   color: #333;
   text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efeito de hover animado */
+.sidebar nav ul li a::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+
+.sidebar nav ul li a:hover::before {
+  left: 0;
 }
 
 .sidebar nav ul li a .material-icons {
   font-size: 22px;
-  color: #333;
+  /* Cor roxa nos ícones */
+  color: #5e2d79;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar nav ul li a span:not(.material-icons) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Ícone cresce ao passar o mouse */
+.sidebar nav ul li a:hover .material-icons {
+  transform: scale(1.1);
+  color: #7b3f9e;
 }
 
 .sidebar nav ul li a:hover {
-  background-color: #f0f0f0;
+  background-color: rgba(255, 255, 255, 0.5);
+  transform: translateX(5px);
+  box-shadow: 0 2px 8px rgba(94, 45, 121, 0.15);
 }
 
 .sidebar nav ul li.active a {
-  background-color: #dca0e5;
-  font-weight: bold;
+  /* Gradiente no item ativo */
+  background: linear-gradient(135deg, #ce93d8 0%, #ba68c8 100%);
+  font-weight: 600;
+  box-shadow: 0 3px 10px rgba(94, 45, 121, 0.25);
+  transform: translateX(3px);
 }
 
 .sidebar nav ul li.active a .material-icons {
-  color: #333;
+  color: #fff;
+}
+
+.sidebar nav ul li.active a span:not(.material-icons) {
+  color: #fff;
 }
 
 /* Esconder texto quando colapsado */
 .sidebar.collapsed nav ul li a span:not(:first-child) {
-  display: none;
+  opacity: 0;
+  width: 0;
+  transition: opacity 0.2s ease, width 0.2s ease;
 }
 
 /* Ícones centralizados quando colapsado */
 .sidebar.collapsed nav ul li a {
   justify-content: center;
-  padding: 12px 0;
+  padding: 14px 0;
   width: 100%;
   gap: 0;
 }
 
-/* Para o item ativo quando a sidebar está colapsada */
 .sidebar.collapsed nav ul li.active a {
-  background-color: #dca0e5;
-  font-weight: bold;
+  background: linear-gradient(135deg, #ce93d8 0%, #ba68c8 100%);
+  font-weight: 600;
   border-radius: 0;
 }
 
-/* Tooltip visível ao passar o mouse */
-.sidebar.collapsed nav ul li:hover::after {
+/* Tooltip estilizado e animado */
+.sidebar.collapsed nav ul li::after {
   content: attr(data-tooltip);
+  position: absolute;
+  left: 80px;
+  top: 50%;
+  transform: translateY(-50%) translateX(-10px);
+  background: linear-gradient(135deg, #5e2d79 0%, #7b3f9e 100%);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Seta do tooltip */
+.sidebar.collapsed nav ul li::before {
+  content: "";
   position: absolute;
   left: 70px;
   top: 50%;
   transform: translateY(-50%);
-  background-color: #444;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  white-space: nowrap;
-  font-size: 12px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 6px 8px 6px 0;
+  border-color: transparent #5e2d79 transparent transparent;
   z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar.collapsed nav ul li:hover::after {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+.sidebar.collapsed nav ul li:hover::before {
+  opacity: 1;
 }
 
 /* ==== MAIN CONTENT ==== */
 .main-content {
   flex: 1;
-  padding: 20px;
+  padding: 25px;
   overflow-y: auto;
   min-height: calc(100vh - 60px);
-  transition: margin-left 0.3s ease;
+  transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
 }
 
 .main-content h1 {
-  font-size: 24px;
+  font-size: 28px;
   color: #5e2d79;
-  margin-bottom: 20px;
-  font-weight: bold;
+  margin-bottom: 25px;
+  font-weight: 700;
+  /* Animação de entrada */
+  animation: fadeInDown 0.6s ease-out;
 }
 
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Card de resumo com animação e sombra */
 .financial-summary {
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
-  margin-bottom: 20px;
-  background-color: #fff;
-  padding: 15px;
-  border-radius: 6px;
+  margin-bottom: 25px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(94, 45, 121, 0.1);
+  animation: fadeInUp 0.6s ease-out;
+  transition: box-shadow 0.3s ease;
 }
 
+.financial-summary:hover {
+  box-shadow: 0 6px 25px rgba(94, 45, 121, 0.15);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Items com hover animado */
 .summary-item {
   display: flex;
   flex-direction: column;
   width: 120px;
+  padding: 10px;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Aumentando largura para itens com inputs de data */
+.summary-item:has(input[type="date"]) {
+  width: 180px;
+  gap: 6px;
+}
+
+.summary-item:hover {
+  background: rgba(94, 45, 121, 0.05);
+  transform: translateY(-2px);
 }
 
 .summary-item label {
   font-size: 12px;
   color: #666;
+  font-weight: 500;
+  margin-bottom: 5px;
 }
 
 .summary-item span {
-  font-size: 14px;
-  font-weight: bold;
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .summary-item.total span {
   color: #5e2d79;
+  font-size: 16px;
 }
 
 .summary-item input {
-  padding: 5px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 6px 8px;
+  border: 2px solid #e1bee7;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+/* Adicionando largura específica para inputs de data */
+.summary-item input[type="date"] {
+  min-width: 160px;
+  width: 160px;
+  padding: 8px 10px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.summary-item input:focus {
+  outline: none;
+  border-color: #ba68c8;
+  box-shadow: 0 0 0 3px rgba(186, 104, 200, 0.1);
 }
 
 .percent-input {
-  width: 50px;
+  width: 60px;
   text-align: center;
-  padding: 2px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 4px;
+  border: 2px solid #e1bee7;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
+.percent-input:focus {
+  outline: none;
+  border-color: #ba68c8;
+  box-shadow: 0 0 0 3px rgba(186, 104, 200, 0.1);
+}
+
+/* Botões estilizados com gradiente e animação */
 .edit-btn {
-  background: none;
-  color: #3498db;
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  color: white;
   border: none;
-  padding: 0;
-  text-decoration: underline;
+  padding: 10px 20px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
   font-family: inherit;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
 }
 
 .edit-btn:hover {
-  color: #2980b9;
-  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+  background: linear-gradient(135deg, #2980b9 0%, #21618c 100%);
+}
+
+.edit-btn:active {
+  transform: translateY(0);
 }
 
 .save-btn {
-  background: none;
-  color: #27ae60;
+  background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+  color: white;
   border: none;
-  padding: 0;
-  text-decoration: underline;
+  padding: 10px 20px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
   font-family: inherit;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
 }
 
 .save-btn:hover {
-  color: #229954;
-  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
+  background: linear-gradient(135deg, #229954 0%, #1e8449 100%);
+}
+
+.save-btn:active {
+  transform: translateY(0);
 }
 
 .financial-report {
   background-color: #fff;
-  padding: 15px;
-  border-radius: 6px;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(94, 45, 121, 0.1);
 }
 
 .financial-report h3 {
   font-size: 18px;
-  margin-bottom: 10px;
-  color: #333;
+  margin-bottom: 15px;
+  color: #5e2d79;
+  font-weight: 600;
 }
 
 table {
   width: 100%;
-  border-collapse: remove;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 table th,
 table td {
-  padding: 10px;
+  padding: 12px;
   text-align: left;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
 }
 
 table th {
-  background-color: #e7b5e8;
-  color: #333;
+  background: linear-gradient(135deg, #e1bee7 0%, #ce93d8 100%);
+  color: #5e2d79;
+  font-weight: 600;
 }
 
-/* SEÇÃO DE GRÁFICOS */
+table tbody tr {
+  transition: all 0.2s ease;
+}
+
+table tbody tr:hover {
+  background-color: rgba(94, 45, 121, 0.03);
+  transform: scale(1.01);
+}
+
+/* SEÇÃO DE GRÁFICOS melhorada */
 .charts-section {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 6px;
-  margin-top: 20px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 25px;
+  border-radius: 12px;
+  margin-top: 25px;
+  box-shadow: 0 4px 20px rgba(94, 45, 121, 0.1);
+  animation: fadeInUp 0.8s ease-out;
+  transition: box-shadow 0.3s ease;
+}
+
+.charts-section:hover {
+  box-shadow: 0 6px 25px rgba(94, 45, 121, 0.15);
 }
 
 .charts-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
   gap: 15px;
 }
 
 .charts-header h3 {
-  font-size: 18px;
-  color: #333;
+  font-size: 20px;
+  color: #5e2d79;
   margin: 0;
+  font-weight: 700;
 }
 
 .charts-tabs {
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 
+/* Tabs com animação de hover */
 .tab-btn {
-  padding: 8px 16px;
-  border: 1px solid #ddd;
-  background-color: #f9f9f9;
+  padding: 10px 18px;
+  border: 2px solid transparent;
+  background-color: #f8f9fa;
   color: #666;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.tab-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.tab-btn:hover::before {
+  left: 100%;
 }
 
 .tab-btn:hover {
-  background-color: #f0f0f0;
-  border-color: #ccc;
+  background-color: #e9ecef;
+  border-color: #ce93d8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(94, 45, 121, 0.15);
 }
 
 .tab-btn.active {
-  background-color: #dca0e5;
+  background: linear-gradient(135deg, #ba68c8 0%, #ab47bc 100%);
   color: #fff;
-  border-color: #5e2d79;
+  border-color: #ab47bc;
+  box-shadow: 0 4px 12px rgba(171, 71, 188, 0.3);
+}
+
+.tab-btn.active:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(171, 71, 188, 0.4);
 }
 
 .charts-grid {
@@ -310,18 +533,52 @@ table th {
   gap: 20px;
 }
 
+/* Cards de gráficos com animação escalonada */
 .chart-card {
-  background-color: #fafafa;
-  padding: 15px;
-  border-radius: 6px;
-  border: 1px solid #eee;
+  background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #f0f0f0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: scaleIn 0.5s ease-out;
+  animation-fill-mode: both;
+}
+
+.chart-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.chart-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.chart-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.chart-card:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.chart-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(94, 45, 121, 0.15);
+  border-color: #e1bee7;
 }
 
 .chart-card h4 {
-  font-size: 14px;
-  color: #333;
+  font-size: 15px;
+  color: #5e2d79;
   margin: 0 0 15px 0;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .chart-container {
@@ -339,7 +596,7 @@ table th {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #e7b5e8;
+  background: linear-gradient(135deg, #e1bee7 0%, #ce93d8 100%);
   padding: 10px 20px;
   color: #333;
   width: 100%;
@@ -348,24 +605,34 @@ table th {
   left: 0;
   z-index: 1000;
   height: 60px;
+  box-shadow: 0 2px 10px rgba(94, 45, 121, 0.15);
 }
 
 .logo-title {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .logo-title h2 {
-  font-size: 16px;
-  font-weight: normal;
-  color: #333;
+  font-size: 17px;
+  font-weight: 600;
+  color: #5e2d79;
 }
 
+/* Menu icon com animação de rotação */
 .menu-icon {
-  font-size: 22px;
+  font-size: 24px;
   cursor: pointer;
-  color: #333;
+  color: #5e2d79;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 5px;
+  border-radius: 6px;
+}
+
+.menu-icon:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
 }
 
 .search-container {
@@ -376,10 +643,17 @@ table th {
 
 .search-container input {
   width: 100%;
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 2px solid transparent;
   outline: none;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.search-container input:focus {
+  border-color: #ba68c8;
+  box-shadow: 0 0 0 3px rgba(186, 104, 200, 0.15);
 }
 
 .actions {
@@ -393,57 +667,85 @@ table th {
   position: relative;
 }
 
+/* User icon com hover animado */
 .user-icon {
-  background-color: #5e2d79;
+  background: linear-gradient(135deg, #7b3f9e 0%, #5e2d79 100%);
   color: white;
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   cursor: pointer;
   user-select: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(94, 45, 121, 0.3);
 }
 
+.user-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(94, 45, 121, 0.4);
+}
+
+/* Dropdown animado */
 .dropdown-menu {
   position: absolute;
-  top: 40px;
+  top: 45px;
   right: 0;
-  background-color: white;
-  border-radius: 6px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   display: none;
   flex-direction: column;
-  min-width: 200px;
+  min-width: 220px;
   z-index: 1001;
+  overflow: hidden;
+  animation: dropdownSlide 0.3s ease-out;
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .dropdown-menu .user-email {
-  padding: 10px;
+  padding: 15px;
   font-size: 14px;
-  font-weight: bold;
-  border-bottom: 1px solid #eee;
-  color: #333;
+  font-weight: 600;
+  border-bottom: 1px solid #f0f0f0;
+  color: #5e2d79;
+  background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);
 }
 
 .dropdown-item {
-  padding: 10px;
+  padding: 12px 15px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 14px;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
+  color: #333;
 }
 
 .dropdown-item:hover {
-  background-color: #f0f0f0;
+  background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+  color: #5e2d79;
+}
+
+.dropdown-item .material-icons {
+  font-size: 20px;
 }
 
 /* ==== RESPONSIVIDADE ==== */
-/* RESPONSIVIDADE PARA GRÁFICOS */
 @media (max-width: 1024px) {
   .charts-grid {
     grid-template-columns: 1fr;
@@ -464,59 +766,57 @@ table th {
   }
 
   .main-content h1 {
-    font-size: 20px;
+    font-size: 22px;
     margin-bottom: 15px;
   }
 
-  /* Em mobile, a sidebar começa completamente oculta fora da tela */
+  /* Sidebar desliza suavemente em mobile */
   .sidebar {
-    position: fixed; /* Fixa a sidebar na viewport */
-    top: 60px; /* Abaixo do header */
+    position: fixed;
+    top: 60px;
     left: 0;
-    width: 280px; /* Largura total quando visível */
-    height: calc(100vh - 60px); /* Ocupa o resto da altura da viewport */
-    transform: translateX(-100%); /* Esconde a sidebar completamente para a esquerda */
-    box-shadow: none; /* Remove a sombra por padrão */
+    width: 280px;
+    height: calc(100vh - 60px);
+    transform: translateX(-100%);
+    box-shadow: none;
     z-index: 999;
-    padding: 0; /* Remove padding inicial */
-    transition: transform 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease; /* Transições suaves */
+    padding: 0;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s
+      cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Quando a sidebar está ativa (expandida) em mobile */
   .sidebar.active {
-    transform: translateX(0); /* Faz a sidebar deslizar para a direita, tornando-a visível */
-    padding: 20px 10px; /* Adiciona padding quando ativa */
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3); /* Adiciona sombra quando visível */
+    transform: translateX(0);
+    padding: 20px 10px;
+    box-shadow: 4px 0 20px rgba(94, 45, 121, 0.3);
   }
 
-  /* Impede que o scroll do body em mobile afete a página principal quando a sidebar está aberta */
   body.no-scroll {
     overflow: hidden;
   }
 
-  /* Ajusta o main-content, mas ele não será empurrado. A sidebar flutua sobre ele. */
   .main-content {
     width: 100%;
-    padding: 10px;
-    margin-left: 0 !important; /* Reseta qualquer margin-left que possa ter vindo do desktop */
+    padding: 15px;
+    margin-left: 0 !important;
   }
 
-  /* Garante que o menu icon apareça visível no topo da tela */
   .topbar .menu-icon {
     display: block;
     margin-right: 10px;
   }
 
-  /* Não há necessidade de tooltip para a sidebar em mobile, pois ela se expande */
-  .sidebar nav ul li:hover::after {
+  .sidebar nav ul li:hover::after,
+  .sidebar nav ul li:hover::before {
     content: none;
+    opacity: 0;
   }
 
   .financial-summary {
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
-    padding: 12px;
+    padding: 15px;
   }
 
   .summary-item {
@@ -524,8 +824,8 @@ table th {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid #eee;
+    padding: 10px;
+    border-bottom: 1px solid #f0f0f0;
   }
 
   .summary-item:last-of-type {
@@ -535,13 +835,13 @@ table th {
   .summary-item label {
     font-size: 13px;
     color: #333;
-    font-weight: 500;
+    font-weight: 600;
     flex: 1;
   }
 
   .summary-item span {
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 700;
     text-align: right;
     flex-shrink: 0;
   }
@@ -552,47 +852,29 @@ table th {
   }
 
   .summary-item input {
-    padding: 6px 8px;
+    padding: 8px 10px;
     font-size: 14px;
     flex: 1;
     max-width: 140px;
     text-align: right;
   }
 
+  .summary-item input[type="date"] {
+    max-width: 100%; /* Override desktop specific width for mobile */
+    min-width: unset;
+    width: auto;
+    text-align: left; /* Adjust text alignment for mobile display */
+  }
+
   .edit-btn,
   .save-btn {
     width: 100%;
-    padding: 12px;
-    margin-top: 8px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    padding: 14px;
+    margin-top: 10px;
+    border-radius: 8px;
     font-size: 16px;
-    font-weight: 500;
-    text-decoration: none;
+    font-weight: 600;
     text-align: center;
-    transition: background-color 0.2s ease;
-  }
-
-  .edit-btn {
-    background-color: transparent;
-    color: #3498db;
-    border-color: #3498db;
-  }
-
-  .edit-btn:hover {
-    background-color: #3498db;
-    color: white;
-  }
-
-  .save-btn {
-    background-color: transparent;
-    color: #27ae60;
-    border-color: #27ae60;
-  }
-
-  .save-btn:hover {
-    background-color: #27ae60;
-    color: white;
   }
 
   table,
@@ -611,14 +893,14 @@ table th {
   }
 
   tr {
-    border: 1px solid #ccc;
-    margin-bottom: 10px;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 12px;
     display: flex;
     flex-wrap: wrap;
-    padding: 10px;
+    padding: 12px;
     background-color: #fff;
-    border-radius: 6px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   }
 
   td {
@@ -640,46 +922,47 @@ table th {
     font-weight: bold;
     text-align: left;
     display: block;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
+    color: #5e2d79;
   }
 
   .charts-section {
-    padding: 15px;
-    margin-top: 15px;
+    padding: 18px;
+    margin-top: 18px;
   }
 
   .charts-header {
     flex-direction: column;
     align-items: flex-start;
-    margin-bottom: 15px;
+    margin-bottom: 18px;
   }
 
   .charts-header h3 {
-    font-size: 16px;
+    font-size: 18px;
   }
 
   .charts-tabs {
     width: 100%;
-    gap: 5px;
+    gap: 8px;
   }
 
   .tab-btn {
     flex: 1;
-    padding: 6px 8px;
-    font-size: 12px;
+    padding: 8px 10px;
+    font-size: 13px;
   }
 
   .charts-grid {
     grid-template-columns: 1fr;
-    gap: 15px;
+    gap: 18px;
   }
 
   .chart-card {
-    padding: 12px;
+    padding: 15px;
   }
 
   .chart-card h4 {
-    font-size: 13px;
+    font-size: 14px;
     margin-bottom: 12px;
   }
 
@@ -690,31 +973,31 @@ table th {
 
 @media (max-width: 480px) {
   .search-container {
-    max-width: 150px;
+    max-width: 140px;
     margin: 0 5px;
   }
   .search-container input {
-    padding: 6px 8px;
-    font-size: 12px;
+    padding: 8px 10px;
+    font-size: 13px;
   }
   .actions {
-    gap: 10px;
+    gap: 8px;
   }
   .topbar {
     padding: 10px;
   }
 
   .main-content h1 {
-    font-size: 18px;
+    font-size: 20px;
   }
 
   .financial-summary {
-    padding: 10px;
+    padding: 12px;
     gap: 10px;
   }
 
   .summary-item {
-    padding: 6px 0;
+    padding: 8px;
   }
 
   .summary-item label {
@@ -726,17 +1009,17 @@ table th {
   }
 
   .summary-item.total span {
-    font-size: 16px;
+    font-size: 17px;
   }
 
   .summary-item input {
-    padding: 4px 6px;
+    padding: 6px 8px;
     font-size: 13px;
   }
 
   .edit-btn,
   .save-btn {
-    padding: 10px;
+    padding: 12px;
     font-size: 15px;
   }
 
@@ -745,24 +1028,24 @@ table th {
   }
 
   td:before {
-    margin-bottom: 1px;
+    margin-bottom: 2px;
   }
 
   .charts-section {
-    padding: 12px;
-    margin-top: 12px;
+    padding: 15px;
+    margin-top: 15px;
   }
 
   .charts-header h3 {
-    font-size: 15px;
+    font-size: 16px;
   }
 
   .tab-btn {
-    padding: 5px 6px;
-    font-size: 11px;
+    padding: 7px 8px;
+    font-size: 12px;
   }
 
   .chart-container {
-    height: 200px;
+    height: 220px;
   }
 }

@@ -143,26 +143,28 @@
         </div>
       </div>
 
-      <!-- Tabela de agendamentos (COLUNA TELEFONE REMOVIDA) -->
-      <table id="appointmentsTable" class="display">
-        <thead>
-          <tr>
-            <th>Data</th>
-            <th>Paciente</th>
-            <!-- TELEFONE REMOVIDO -->
-            <th>Início</th>
-            <th>Fim</th>
-            <th>Convênio</th>
-            <th>Consulta</th>
-            <th>Frequência</th>
-            <th>Valor</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <!-- Relatório de Agendamentos -->
+      <div class="patients-report">
+        <h3>RELATÓRIO DE AGENDAMENTOS</h3>
+        <table id="appointmentsTable">
+          <thead>
+            <tr>
+              <th>DATA</th>
+              <th>PACIENTE</th>
+              <th>INÍCIO</th>
+              <th>FIM</th>
+              <th>CONVÊNIO</th>
+              <th>CONSULTA</th>
+              <th>FREQUÊNCIA</th>
+              <th>VALOR</th>
+              <th>AÇÕES</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
 
-      <!-- Modal para adicionar/editar agendamento (mantido igual) -->
+      <!-- Modal para adicionar/editar agendamento -->
       <div id="modal" class="modal">
         <div class="modal-content">
           <div class="modal-header">
@@ -272,54 +274,54 @@
         </div>
       </div>
 
-      <!-- Modal de Detalhes do Agendamento (telefone continua aqui) -->
+      <!-- Modal de Detalhes do Agendamento -->
       <div id="modalDetalhes" class="modal">
         <div class="modal-content modal-detalhes">
           <div class="modal-header">
             <h2>DETALHES DO AGENDAMENTO</h2>
             <span class="close-modal" id="closeDetalhes">×</span>
           </div>
-          <div class="detalhes-content">
+          <div class="modal-body-detalhes">
             <div class="detalhes-section">
               <h3>Informações da Consulta</h3>
               <div class="detalhes-grid">
-                <div class="detalhes-item">
+                <div class="detalhe-item">
                   <label>Data da Consulta:</label>
                   <span id="detalheData">-</span>
                 </div>
-                <div class="detalhes-item">
+                <div class="detalhe-item">
                   <label>Nome do Paciente:</label>
                   <span id="detalheNome">-</span>
                 </div>
-                <div class="detalhes-item">
+                <div class="detalhe-item">
                   <label>Telefone:</label>
                   <span id="detalheTelefone">-</span>
                 </div>
-                <div class="detalhes-item">
+                <div class="detalhe-item">
                   <label>Horário de Início:</label>
                   <span id="detalheInicio">-</span>
                 </div>
-                <div class="detalhes-item">
+                <div class="detalhe-item">
                   <label>Horário de Fim:</label>
                   <span id="detalheFim">-</span>
                 </div>
-                <div class="detalhes-item">
+                <div class="detalhe-item">
                   <label>Convênio:</label>
                   <span id="detalheConvenio">-</span>
                 </div>
-                <div class="detalhes-item">
+                <div class="detalhe-item">
                   <label>Tipo de Consulta:</label>
                   <span id="detalheConsulta">-</span>
                 </div>
-                <div class="detalhes-item">
+                <div class="detalhe-item">
                   <label>Modalidade:</label>
                   <span id="detalheModalidade">-</span>
                 </div>
-                <div class="detalhes-item">
+                <div class="detalhe-item">
                   <label>Frequência:</label>
                   <span id="detalheFrequencia">-</span>
                 </div>
-                <div class="detalhes-item">
+                <div class="detalhe-item">
                   <label>Valor da Consulta:</label>
                   <span id="detalheValor">R$ 0,00</span>
                 </div>

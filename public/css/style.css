@@ -5,15 +5,17 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
 body {
-  font-family: 'Segoe UI', sans-serif;
+  font-family: "Segoe UI", sans-serif;
   display: flex;
   flex-direction: column;
-  background-color: #f4f4f4;
+  /* Adicionado gradiente suave no fundo */
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   min-height: 100vh;
 }
 
@@ -23,21 +25,26 @@ body {
   width: 100%;
   margin-top: 0;
   min-height: 0;
-  overflow: hidden; /* Garante que o conteúdo não vaze enquanto a sidebar se move */
+  overflow: hidden;
 }
 
 /* ==== SIDEBAR GERAL ==== */
 .sidebar {
-  background-color: #efcef3;
+  /* Gradiente suave na sidebar */
+  background: linear-gradient(180deg, #f3e5f5 0%, #e1bee7 100%);
   color: #333;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   min-height: calc(100vh - 60px);
-  transition: width 0.3s ease, padding 0.3s ease, transform 0.3s ease; /* Adicionado transform para mobile */
+  /* Transições super suaves com cubic-bezier */
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s
+    cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-x: hidden;
-  flex-shrink: 0; /* Impede que a sidebar diminua mais do que o necessário */
-  position: relative; /* Para z-index e posicionamento em mobile */
+  flex-shrink: 0;
+  position: relative;
+  /* Sombra suave */
+  box-shadow: 2px 0 8px rgba(94, 45, 121, 0.1);
 }
 
 /* ==== SIDEBAR PADRÃO (DESKTOP EXPANDIDA) ==== */
@@ -48,9 +55,9 @@ body {
 
 /* ==== SIDEBAR COLAPSADA (DESKTOP) ==== */
 .sidebar.collapsed {
-  width: 60px;
+  width: 70px;
   padding: 20px 0;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 2px 0 5px rgba(94, 45, 121, 0.15);
 }
 
 .sidebar nav ul {
@@ -67,145 +74,286 @@ body {
 .sidebar nav ul li a {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px;
+  gap: 12px;
+  padding: 12px 10px;
   cursor: pointer;
   font-size: 15px;
-  border-radius: 6px;
-  transition: background-color 0.2s ease-in-out;
+  border-radius: 8px;
+  /* Transição suave para todos os efeitos */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
   color: #333;
   text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efeito de hover animado */
+.sidebar nav ul li a::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+
+.sidebar nav ul li a:hover::before {
+  left: 0;
 }
 
 .sidebar nav ul li a .material-icons {
   font-size: 22px;
-  color: #333;
+  /* Cor roxa nos ícones */
+  color: #5e2d79;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar nav ul li a span:not(.material-icons) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Ícone cresce ao passar o mouse */
+.sidebar nav ul li a:hover .material-icons {
+  transform: scale(1.1);
+  color: #7b3f9e;
 }
 
 .sidebar nav ul li a:hover {
-  background-color: #f0f0f0;
+  background-color: rgba(255, 255, 255, 0.5);
+  transform: translateX(5px);
+  box-shadow: 0 2px 8px rgba(94, 45, 121, 0.15);
 }
 
 .sidebar nav ul li.active a {
-  background-color: #dca0e5;
-  font-weight: bold;
+  /* Gradiente no item ativo */
+  background: linear-gradient(135deg, #ce93d8 0%, #ba68c8 100%);
+  font-weight: 600;
+  box-shadow: 0 3px 10px rgba(94, 45, 121, 0.25);
+  transform: translateX(3px);
 }
 
 .sidebar nav ul li.active a .material-icons {
-  color: #333;
+  color: #fff;
+}
+
+.sidebar nav ul li.active a span:not(.material-icons) {
+  color: #fff;
 }
 
 /* Esconder texto quando colapsado */
 .sidebar.collapsed nav ul li a span:not(:first-child) {
-  display: none;
+  opacity: 0;
+  width: 0;
+  transition: opacity 0.2s ease, width 0.2s ease;
 }
 
 /* Ícones centralizados quando colapsado */
 .sidebar.collapsed nav ul li a {
   justify-content: center;
-  padding: 12px 0;
+  padding: 14px 0;
   width: 100%;
   gap: 0;
 }
 
-/* Para o item ativo quando a sidebar está colapsada */
 .sidebar.collapsed nav ul li.active a {
-  background-color: #dca0e5;
-  font-weight: bold;
+  background: linear-gradient(135deg, #ce93d8 0%, #ba68c8 100%);
+  font-weight: 600;
   border-radius: 0;
 }
 
-/* Tooltip visível ao passar o mouse */
-.sidebar.collapsed nav ul li:hover::after {
+/* Tooltip estilizado e animado */
+.sidebar.collapsed nav ul li::after {
   content: attr(data-tooltip);
+  position: absolute;
+  left: 80px;
+  top: 50%;
+  transform: translateY(-50%) translateX(-10px);
+  background: linear-gradient(135deg, #5e2d79 0%, #7b3f9e 100%);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Seta do tooltip */
+.sidebar.collapsed nav ul li::before {
+  content: "";
   position: absolute;
   left: 70px;
   top: 50%;
   transform: translateY(-50%);
-  background-color: #444;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  white-space: nowrap;
-  font-size: 12px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 6px 8px 6px 0;
+  border-color: transparent #5e2d79 transparent transparent;
   z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar.collapsed nav ul li:hover::after {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+.sidebar.collapsed nav ul li:hover::before {
+  opacity: 1;
 }
 
 /* ==== MAIN CONTENT ==== */
 .main-content {
   flex: 1;
-  padding: 20px;
+  padding: 25px;
   overflow-y: auto;
   min-height: calc(100vh - 60px);
-  transition: margin-left 0.3s ease;
-  background-image: url('assets/img/bg.jpg'); /* Substitua pelo caminho da sua foto de fundo */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  position: relative;
+  transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
 }
 
-.main-content::before {
-  content: '';
+/* Seção de boas-vindas estilizada */
+.welcome-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  animation: fadeInDown 0.6s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.welcome-section h1 {
+  font-size: 32px;
+  color: #5e2d79;
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.welcome-subtitle {
+  text-align: center;
+  color: #666;
+  font-size: 16px;
+  margin-bottom: 40px;
+}
+
+/* Grid de cards de navegação */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Cards de navegação estilizados */
+.nav-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 30px 25px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(94, 45, 121, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-card::before {
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.4); /* Overlay semi-transparente para melhorar legibilidade do texto */
-  z-index: 1;
+  height: 4px;
+  background: linear-gradient(90deg, #ba68c8 0%, #ab47bc 100%);
+  transform: scaleX(0);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.main-content h1 {
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: #333;
-  position: relative;
-  z-index: 2;
+.nav-card:hover::before {
+  transform: scaleX(1);
 }
 
-.main-content p {
-  font-size: 16px;
-  margin-bottom: 10px;
-  color: #333;
-  position: relative;
-  z-index: 2;
+.nav-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 25px rgba(94, 45, 121, 0.2);
 }
 
-.main-content ul {
-  list-style-type: disc;
-  margin-left: 20px;
-  margin-bottom: 10px;
-  position: relative;
-  z-index: 2;
-}
-
-.main-content li {
-  font-size: 14px;
-  color: #333;
-  position: relative;
-  z-index: 2;
-}
-
-/* Estilos para o container de boas-vindas */
-.welcome-container {
+.card-icon {
+  width: 70px;
+  height: 70px;
+  background: linear-gradient(135deg, #ce93d8 0%, #ba68c8 100%);
+  border-radius: 50%;
   display: flex;
-  justify-content: center;
   align-items: center;
-  height: 100%;
-  min-height: calc(100vh - 60px);
-  text-align: center;
-  position: relative;
-  z-index: 2;
+  justify-content: center;
+  margin-bottom: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(186, 104, 200, 0.3);
 }
 
-.welcome-container h1 {
-  font-size: 3rem;
-  color: white;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-  margin: 0;
-  font-weight: bold;
+.nav-card:hover .card-icon {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 6px 20px rgba(186, 104, 200, 0.4);
+}
+
+.card-icon .material-icons {
+  font-size: 36px;
+  color: #fff;
+}
+
+.nav-card h3 {
+  font-size: 18px;
+  color: #5e2d79;
+  margin-bottom: 10px;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.nav-card:hover h3 {
+  color: #7b3f9e;
+}
+
+.nav-card p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
 }
 
 /* ==== HEADER ==== */
@@ -213,7 +361,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #e7b5e8;
+  /* Gradiente no header */
+  background: linear-gradient(135deg, #e1bee7 0%, #ce93d8 100%);
   padding: 10px 20px;
   color: #333;
   width: 100%;
@@ -222,24 +371,34 @@ body {
   left: 0;
   z-index: 1000;
   height: 60px;
+  box-shadow: 0 2px 10px rgba(94, 45, 121, 0.15);
 }
 
 .logo-title {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .logo-title h2 {
-  font-size: 16px;
-  font-weight: normal;
-  color: #333;
+  font-size: 17px;
+  font-weight: 600;
+  color: #5e2d79;
 }
 
+/* Menu icon com animação de rotação */
 .menu-icon {
-  font-size: 22px;
+  font-size: 24px;
   cursor: pointer;
-  color: #333;
+  color: #5e2d79;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 5px;
+  border-radius: 6px;
+}
+
+.menu-icon:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
 }
 
 .search-container {
@@ -250,10 +409,17 @@ body {
 
 .search-container input {
   width: 100%;
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 2px solid transparent;
   outline: none;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.search-container input:focus {
+  border-color: #ba68c8;
+  box-shadow: 0 0 0 3px rgba(186, 104, 200, 0.15);
 }
 
 .actions {
@@ -267,135 +433,92 @@ body {
   position: relative;
 }
 
+/* User icon com hover animado */
 .user-icon {
-  background-color: #5e2d79;
+  background: linear-gradient(135deg, #7b3f9e 0%, #5e2d79 100%);
   color: white;
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   cursor: pointer;
   user-select: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(94, 45, 121, 0.3);
 }
 
+.user-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(94, 45, 121, 0.4);
+}
+
+/* Dropdown animado */
 .dropdown-menu {
   position: absolute;
-  top: 40px;
+  top: 45px;
   right: 0;
-  background-color: white;
-  border-radius: 6px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   display: none;
   flex-direction: column;
-  min-width: 200px;
+  min-width: 220px;
   z-index: 1001;
+  overflow: hidden;
+  animation: dropdownSlide 0.3s ease-out;
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .dropdown-menu .user-email {
-  padding: 10px;
+  padding: 15px;
   font-size: 14px;
-  font-weight: bold;
-  border-bottom: 1px solid #eee;
-  color: #333;
+  font-weight: 600;
+  border-bottom: 1px solid #f0f0f0;
+  color: #5e2d79;
+  background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);
 }
 
 .dropdown-item {
-  padding: 10px;
+  padding: 12px 15px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 14px;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
+  color: #333;
 }
 
 .dropdown-item:hover {
-  background-color: #f0f0f0;
-}
-
-/* ==== ESTILOS ESPECÍFICOS DO FINANCEIRO (UNIFICADOS DE FINANCEIRO.CSS) ==== */
-.financial-summary {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-bottom: 20px;
-  background-color: #fff;
-  padding: 15px;
-  border-radius: 6px;
-}
-
-.summary-item {
-  display: flex;
-  flex-direction: column;
-  width: 120px;
-}
-
-.summary-item label {
-  font-size: 12px;
-  color: #666;
-}
-
-.summary-item span {
-  font-size: 14px;
-  font-weight: bold;
-}
-
-.summary-item.total span {
+  background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
   color: #5e2d79;
 }
 
-.summary-item input {
-  padding: 5px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.delete-btn {
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.delete-btn:hover {
-  background-color: #c0392b;
-}
-
-.financial-report {
-  background-color: #fff;
-  padding: 15px;
-  border-radius: 6px;
-}
-
-.financial-report h3 {
-  font-size: 18px;
-  margin-bottom: 10px;
-  color: #333;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-table th, table td {
-  padding: 10px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-table th {
-  background-color: #e7b5e8;
-  color: #333;
+.dropdown-item .material-icons {
+  font-size: 20px;
 }
 
 /* ==== RESPONSIVIDADE ==== */
+@media (max-width: 1024px) {
+  .cards-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+  }
+}
+
 @media (max-width: 768px) {
   .logo-title h2 {
     display: none;
@@ -409,124 +532,134 @@ table th {
     padding: 10px 15px;
   }
 
-  /* Em mobile, a sidebar começa completamente oculta fora da tela */
+  .welcome-section h1 {
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+
+  .welcome-subtitle {
+    font-size: 14px;
+    margin-bottom: 30px;
+  }
+
+  /* Sidebar desliza suavemente em mobile */
   .sidebar {
-    position: fixed; /* Fixa a sidebar na viewport */
-    top: 60px; /* Abaixo do header */
+    position: fixed;
+    top: 60px;
     left: 0;
-    width: 280px; /* Largura total quando visível */
-    height: calc(100vh - 60px); /* Ocupa o resto da altura da viewport */
-    transform: translateX(-100%); /* Esconde a sidebar completamente para a esquerda */
-    box-shadow: none; /* Remove a sombra por padrão */
+    width: 280px;
+    height: calc(100vh - 60px);
+    transform: translateX(-100%);
+    box-shadow: none;
     z-index: 999;
-    padding: 0; /* Remove padding inicial */
-    transition: transform 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease; /* Transições suaves */
+    padding: 0;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s
+      cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Quando a sidebar está ativa (expandida) em mobile */
   .sidebar.active {
-    transform: translateX(0); /* Faz a sidebar deslizar para a direita, tornando-a visível */
-    padding: 20px 10px; /* Adiciona padding quando ativa */
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3); /* Adiciona sombra quando visível */
+    transform: translateX(0);
+    padding: 20px 10px;
+    box-shadow: 4px 0 20px rgba(94, 45, 121, 0.3);
   }
 
-  /* Impede que o scroll do body em mobile afete a página principal quando a sidebar está aberta */
   body.no-scroll {
     overflow: hidden;
   }
 
-  /* Ajusta o main-content, mas ele não será empurrado. A sidebar flutua sobre ele. */
   .main-content {
     width: 100%;
-    padding: 10px;
-    margin-left: 0 !important; /* Reseta qualquer margin-left que possa ter vindo do desktop */
+    padding: 15px;
+    margin-left: 0 !important;
   }
 
-  /* Garante que o menu icon apareça visível no topo da tela */
   .topbar .menu-icon {
     display: block;
     margin-right: 10px;
   }
 
-  /* Não há necessidade de tooltip para a sidebar em mobile, pois ela se expande */
-  .sidebar nav ul li:hover::after {
+  .sidebar nav ul li:hover::after,
+  .sidebar nav ul li:hover::before {
     content: none;
+    opacity: 0;
   }
 
-  /* Estilos específicos do financeiro para mobile */
-  .financial-summary {
-    flex-direction: column;
-    align-items: flex-start;
+  .cards-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
   }
 
-  .summary-item {
-    width: 100%;
-    margin-bottom: 10px;
+  .nav-card {
+    padding: 25px 20px;
   }
 
-  table, thead, tbody, th, td, tr {
-    display: block;
+  .card-icon {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 15px;
   }
 
-  thead tr {
-    position: absolute;
-    top: -9999px;
-    left: -9999px;
+  .card-icon .material-icons {
+    font-size: 32px;
   }
 
-  tr {
-    border: 1px solid #ccc;
-    margin-bottom: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    padding: 10px;
-    background-color: #fff;
-    border-radius: 6px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  .nav-card h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
   }
 
-  td {
-    border: none;
-    position: relative;
-    padding-left: 50%;
-    text-align: right;
-    width: 100%;
-  }
-
-  td:before {
-    position: absolute;
-    left: 6px;
-    width: 45%;
-    padding-right: 10px;
-    white-space: nowrap;
-    content: attr(data-label);
-    font-weight: bold;
-    text-align: left;
-  }
-
-  /* Ajuste para o welcome-container em mobile */
-  .welcome-container h1 {
-    font-size: 2rem;
+  .nav-card p {
+    font-size: 13px;
   }
 }
 
 @media (max-width: 480px) {
   .search-container {
-    max-width: 150px;
+    max-width: 140px;
     margin: 0 5px;
   }
+
   .search-container input {
-    padding: 6px 8px;
-    font-size: 12px;
+    padding: 8px 10px;
+    font-size: 13px;
   }
+
   .actions {
-    gap: 10px;
+    gap: 8px;
   }
+
   .topbar {
     padding: 10px;
   }
 
-  .welcome-container h1 {
-    font-size: 1.5rem;
+  .welcome-section h1 {
+    font-size: 20px;
+  }
+
+  .welcome-subtitle {
+    font-size: 13px;
+    margin-bottom: 25px;
+  }
+
+  .nav-card {
+    padding: 20px 15px;
+  }
+
+  .card-icon {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 12px;
+  }
+
+  .card-icon .material-icons {
+    font-size: 28px;
+  }
+
+  .nav-card h3 {
+    font-size: 15px;
+  }
+
+  .nav-card p {
+    font-size: 12px;
   }
 }

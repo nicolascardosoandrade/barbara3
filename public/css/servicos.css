@@ -5,15 +5,16 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
 body {
-  font-family: 'Segoe UI', sans-serif;
+  font-family: "Segoe UI", sans-serif;
   display: flex;
   flex-direction: column;
-  background-color: #f4f4f4;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   min-height: 100vh;
 }
 
@@ -28,29 +29,29 @@ body {
 
 /* ==== SIDEBAR GERAL ==== */
 .sidebar {
-  background-color: #efcef3;
+  background: linear-gradient(180deg, #f3e5f5 0%, #e1bee7 100%);
   color: #333;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   min-height: calc(100vh - 60px);
-  transition: width 0.3s ease, padding 0.3s ease, transform 0.3s ease;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s
+    cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-x: hidden;
   flex-shrink: 0;
   position: relative;
+  box-shadow: 2px 0 8px rgba(94, 45, 121, 0.1);
 }
 
-/* ==== SIDEBAR PADRÃO (DESKTOP EXPANDIDA) ==== */
 .sidebar:not(.collapsed):not(.mobile-hidden) {
   width: 250px;
   padding: 20px 10px;
 }
 
-/* ==== SIDEBAR COLAPSADA (DESKTOP) ==== */
 .sidebar.collapsed {
-  width: 60px;
+  width: 70px;
   padding: 20px 0;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 2px 0 5px rgba(94, 45, 121, 0.15);
 }
 
 .sidebar nav ul {
@@ -67,69 +68,136 @@ body {
 .sidebar nav ul li a {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px;
+  gap: 12px;
+  padding: 12px 10px;
   cursor: pointer;
   font-size: 15px;
-  border-radius: 6px;
-  transition: background-color 0.2s ease-in-out;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
   color: #333;
   text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar nav ul li a::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+
+.sidebar nav ul li a:hover::before {
+  left: 0;
 }
 
 .sidebar nav ul li a .material-icons {
   font-size: 22px;
-  color: #333;
+  color: #5e2d79;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar nav ul li a span:not(.material-icons) {
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar nav ul li a:hover .material-icons {
+  transform: scale(1.1);
+  color: #7b3f9e;
 }
 
 .sidebar nav ul li a:hover {
-  background-color: #f0f0f0;
+  background-color: rgba(255, 255, 255, 0.5);
+  transform: translateX(5px);
+  box-shadow: 0 2px 8px rgba(94, 45, 121, 0.15);
 }
 
 .sidebar nav ul li.active a {
-  background-color: #dca0e5;
-  font-weight: bold;
+  background: linear-gradient(135deg, #ce93d8 0%, #ba68c8 100%);
+  font-weight: 600;
+  box-shadow: 0 3px 10px rgba(94, 45, 121, 0.25);
+  transform: translateX(3px);
 }
 
 .sidebar nav ul li.active a .material-icons {
-  color: #333;
+  color: #fff;
 }
 
-/* Esconder texto quando colapsado */
+.sidebar nav ul li.active a span:not(.material-icons) {
+  color: #fff;
+}
+
 .sidebar.collapsed nav ul li a span:not(:first-child) {
-  display: none;
+  opacity: 0;
+  width: 0;
+  transition: opacity 0.2s ease, width 0.2s ease;
 }
 
-/* Ícones centralizados quando colapsado */
 .sidebar.collapsed nav ul li a {
   justify-content: center;
-  padding: 12px 0;
+  padding: 14px 0;
   width: 100%;
   gap: 0;
 }
 
-/* Para o item ativo quando a sidebar está colapsada */
 .sidebar.collapsed nav ul li.active a {
-  background-color: #dca0e5;
-  font-weight: bold;
+  background: linear-gradient(135deg, #ce93d8 0%, #ba68c8 100%);
+  font-weight: 600;
   border-radius: 0;
 }
 
-/* Tooltip visível ao passar o mouse */
-.sidebar.collapsed nav ul li:hover::after {
+.sidebar.collapsed nav ul li::after {
   content: attr(data-tooltip);
+  position: absolute;
+  left: 80px;
+  top: 50%;
+  transform: translateY(-50%) translateX(-10px);
+  background: linear-gradient(135deg, #5e2d79 0%, #7b3f9e 100%);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar.collapsed nav ul li::before {
+  content: "";
   position: absolute;
   left: 70px;
   top: 50%;
   transform: translateY(-50%);
-  background-color: #444;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  white-space: nowrap;
-  font-size: 12px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 6px 8px 6px 0;
+  border-color: transparent #5e2d79 transparent transparent;
   z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar.collapsed nav ul li:hover::after {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+.sidebar.collapsed nav ul li:hover::before {
+  opacity: 1;
 }
 
 /* ==== HEADER ==== */
@@ -137,7 +205,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #e7b5e8;
+  background: linear-gradient(135deg, #e1bee7 0%, #ce93d8 100%);
   padding: 10px 20px;
   color: #333;
   width: 100%;
@@ -146,24 +214,33 @@ body {
   left: 0;
   z-index: 1000;
   height: 60px;
+  box-shadow: 0 2px 10px rgba(94, 45, 121, 0.15);
 }
 
 .logo-title {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .logo-title h2 {
-  font-size: 16px;
-  font-weight: normal;
-  color: #333;
+  font-size: 17px;
+  font-weight: 600;
+  color: #5e2d79;
 }
 
 .menu-icon {
-  font-size: 22px;
+  font-size: 24px;
   cursor: pointer;
-  color: #333;
+  color: #5e2d79;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 5px;
+  border-radius: 6px;
+}
+
+.menu-icon:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
 }
 
 .search-container {
@@ -174,10 +251,17 @@ body {
 
 .search-container input {
   width: 100%;
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 2px solid transparent;
   outline: none;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.search-container input:focus {
+  border-color: #ba68c8;
+  box-shadow: 0 0 0 3px rgba(186, 104, 200, 0.15);
 }
 
 .actions {
@@ -192,96 +276,172 @@ body {
 }
 
 .user-icon {
-  background-color: #5e2d79;
+  background: linear-gradient(135deg, #7b3f9e 0%, #5e2d79 100%);
   color: white;
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   cursor: pointer;
   user-select: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(94, 45, 121, 0.3);
+}
+
+.user-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(94, 45, 121, 0.4);
 }
 
 .dropdown-menu {
   position: absolute;
-  top: 40px;
+  top: 45px;
   right: 0;
-  background-color: white;
-  border-radius: 6px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   display: none;
   flex-direction: column;
-  min-width: 200px;
+  min-width: 220px;
   z-index: 1001;
+  overflow: hidden;
+  animation: dropdownSlide 0.3s ease-out;
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .dropdown-menu .user-email {
-  padding: 10px;
+  padding: 15px;
   font-size: 14px;
-  font-weight: bold;
-  border-bottom: 1px solid #eee;
-  color: #333;
+  font-weight: 600;
+  border-bottom: 1px solid #f0f0f0;
+  color: #5e2d79;
+  background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);
 }
 
 .dropdown-item {
-  padding: 10px;
+  padding: 12px 15px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 14px;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
+  color: #333;
 }
 
 .dropdown-item:hover {
-  background-color: #f0f0f0;
+  background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+  color: #5e2d79;
+}
+
+.dropdown-item .material-icons {
+  font-size: 20px;
 }
 
 /* ==== MAIN CONTENT ==== */
 .main-content {
   flex: 1;
-  padding: 20px;
+  padding: 25px;
   overflow-y: auto;
   min-height: calc(100vh - 60px);
-  transition: margin-left 0.3s ease;
+  transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
 }
 
 .main-content h1 {
-  font-size: 24px;
+  font-size: 28px;
   color: #5e2d79;
-  margin-bottom: 20px;
-  font-weight: bold;
+  margin-bottom: 25px;
+  font-weight: 700;
+  animation: fadeInDown 0.6s ease-out;
 }
 
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Novo container services-report igual ao patients-report */
 .services-report {
-  background-color: #fff;
-  padding: 15px;
-  border-radius: 6px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(94, 45, 121, 0.1);
+  animation: fadeInUp 0.6s ease-out;
+  transition: box-shadow 0.3s ease;
+  overflow: hidden;
+}
+
+.services-report:hover {
+  box-shadow: 0 6px 25px rgba(94, 45, 121, 0.15);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .services-report h3 {
   font-size: 18px;
-  margin-bottom: 10px;
-  color: #333;
+  margin: 0 0 15px 0;
+  padding: 0;
+  color: #5e2d79;
+  font-weight: 600;
 }
+/* </CHANGE> */
 
 table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
-table th, table td {
-  padding: 10px;
+table th,
+table td {
+  padding: 12px;
   text-align: left;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
 }
 
 table th {
-  background-color: #e7b5e8;
-  color: #333;
+  background: linear-gradient(135deg, #ce93d8 0%, #ba68c8 100%);
+  color: white;
+  font-weight: 600;
+}
+
+table tbody tr {
+  transition: all 0.2s ease;
+}
+
+table tbody tr:hover {
+  background-color: rgba(94, 45, 121, 0.03);
+  transform: scale(1.01);
 }
 
 /* ==== ACTION BUTTONS ==== */
@@ -295,19 +455,26 @@ table th {
   display: flex;
   align-items: center;
   gap: 6px;
-  background-color: #e7b5e8;
-  color: #333;
+  background: linear-gradient(135deg, #ba68c8 0%, #ab47bc 100%);
+  color: #fff;
   border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: 10px 18px;
+  border-radius: 8px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(186, 104, 200, 0.3);
 }
 
 .btn-adicionar:hover {
-  background-color: #dca0e5;
+  background: linear-gradient(135deg, #ab47bc 0%, #9c27b0 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(186, 104, 200, 0.4);
+}
+
+.btn-adicionar:active {
+  transform: translateY(0);
 }
 
 .btn-adicionar .material-icons {
@@ -318,28 +485,36 @@ table th {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: transparent;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  width: 36px;
-  height: 36px;
+  background-color: #fff;
+  border: 2px solid #e1bee7;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(94, 45, 121, 0.1);
 }
 
 .btn-icon:hover {
-  background-color: #f0f0f0;
-  border-color: #999;
+  background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+  border-color: #ba68c8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(94, 45, 121, 0.2);
 }
 
 .btn-icon .material-icons {
   font-size: 20px;
-  color: #333;
+  color: #5e2d79;
 }
 
 .btn-icon.active {
-  background-color: #e7b5e8;
-  border-color: #dca0e5;
+  background: linear-gradient(135deg, #ba68c8 0%, #ab47bc 100%);
+  border-color: #ab47bc;
+  box-shadow: 0 3px 10px rgba(171, 71, 188, 0.3);
+}
+
+.btn-icon.active .material-icons {
+  color: #fff;
 }
 
 /* ==== RESPONSIVIDADE ==== */
@@ -366,13 +541,14 @@ table th {
     box-shadow: none;
     z-index: 999;
     padding: 0;
-    transition: transform 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s
+      cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .sidebar.active {
     transform: translateX(0);
     padding: 20px 10px;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 4px 0 20px rgba(94, 45, 121, 0.3);
   }
 
   body.no-scroll {
@@ -381,12 +557,12 @@ table th {
 
   .main-content {
     width: 100%;
-    padding: 10px;
+    padding: 15px;
     margin-left: 0 !important;
   }
 
   .main-content h1 {
-    font-size: 20px;
+    font-size: 22px;
     margin-bottom: 15px;
   }
 
@@ -395,8 +571,10 @@ table th {
     margin-right: 10px;
   }
 
-  .sidebar nav ul li:hover::after {
+  .sidebar nav ul li:hover::after,
+  .sidebar nav ul li:hover::before {
     content: none;
+    opacity: 0;
   }
 
   .action-buttons {
@@ -404,72 +582,131 @@ table th {
     width: 100%;
   }
 
+  /* Implementando scroll horizontal igual ao pacientes */
   .services-report {
-    padding: 0;
+    padding: 15px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .services-report h3 {
     font-size: 16px;
-    padding: 0 10px 10px 10px;
   }
 
-  table, thead, tbody, th, td, tr {
-    display: block;
+  /* Ocultando controles de comprimento e filtro, mas mantendo paginação */
+  .dataTables_wrapper .dataTables_length,
+  .dataTables_wrapper .dataTables_filter {
+    display: none !important;
   }
 
-  thead tr {
-    position: absolute;
-    top: -9999px;
-    left: -9999px;
+  /* Mostrando controles de paginação em mobile */
+  .dataTables_wrapper .dataTables_info,
+  .dataTables_wrapper .dataTables_paginate {
+    display: block !important;
+    text-align: center;
+    margin-top: 15px;
   }
 
-  tr {
-    border: 1px solid #ccc;
-    margin: 0 10px 10px 10px;
-    display: flex;
-    flex-wrap: wrap;
-    padding: 10px;
-    background-color: #fff;
+  .dataTables_wrapper .dataTables_paginate {
+    padding: 10px 0;
+  }
+
+  .dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 8px 12px;
+    margin: 0 4px;
     border-radius: 6px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+    color: #5e2d79 !important;
+    border: 1px solid #e1bee7;
+    font-weight: 500;
+    transition: all 0.3s ease;
   }
 
-  td {
-    border: none;
-    position: relative;
-    padding: 8px 0;
+  .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: linear-gradient(135deg, #ba68c8 0%, #ab47bc 100%);
+    color: white !important;
+    border-color: #ba68c8;
+  }
+
+  .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: linear-gradient(135deg, #ba68c8 0%, #ab47bc 100%);
+    color: white !important;
+    border-color: #ba68c8;
+  }
+
+  .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Tabela mantém largura mínima para forçar scroll horizontal */
+  #tabela-servicos {
+    min-width: 700px;
+    display: table;
+  }
+
+  /* Mantendo estrutura de tabela normal com header roxo */
+  table thead {
+    display: table-header-group;
+  }
+
+  table thead tr {
+    display: table-row;
+  }
+
+  table thead th {
+    display: table-cell;
+    background: linear-gradient(135deg, #ce93d8 0%, #ba68c8 100%);
+    color: white;
+    font-weight: 600;
+    padding: 12px;
     text-align: left;
-    width: 100%;
-    padding-left: 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
   }
 
+  table tbody {
+    display: table-row-group;
+  }
+
+  table tbody tr {
+    display: table-row;
+    background-color: white;
+    border-bottom: 1px solid #f0e6f6;
+  }
+
+  table tbody tr:hover {
+    background-color: rgba(243, 229, 245, 0.4);
+  }
+
+  table tbody td {
+    display: table-cell;
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #f0e6f6;
+  }
+
+  /* Remove data-labels para tabela scrollável */
   td:before {
-    position: static;
-    left: auto;
-    width: auto;
-    padding-right: 0;
-    white-space: normal;
-    content: attr(data-label) ':';
-    font-weight: bold;
-    text-align: left;
-    display: block;
-    margin-bottom: 2px;
+    display: none;
   }
+  /* </CHANGE> */
 }
 
 @media (max-width: 480px) {
   .search-container {
-    max-width: 150px;
+    max-width: 140px;
     margin: 0 5px;
   }
 
   .search-container input {
-    padding: 6px 8px;
-    font-size: 12px;
+    padding: 8px 10px;
+    font-size: 13px;
   }
 
   .actions {
-    gap: 10px;
+    gap: 8px;
   }
 
   .topbar {
@@ -477,29 +714,35 @@ table th {
   }
 
   .main-content h1 {
-    font-size: 18px;
+    font-size: 20px;
     margin-bottom: 10px;
   }
 
   .services-report {
-    padding: 0;
+    padding: 12px;
   }
 
   .services-report h3 {
     font-size: 15px;
-    padding: 0 10px 10px 10px;
   }
 
-  tr {
-    margin: 0 10px 8px 10px;
-    padding: 8px;
+  /* Ajuste de largura mínima para telas muito pequenas */
+  #tabela-servicos {
+    min-width: 600px;
+  }
+  /* </CHANGE> */
+
+  .btn-adicionar {
+    padding: 8px 14px;
+    font-size: 13px;
   }
 
-  td {
-    padding: 6px 0;
+  .btn-icon {
+    width: 36px;
+    height: 36px;
   }
 
-  td:before {
-    margin-bottom: 1px;
+  .btn-icon .material-icons {
+    font-size: 18px;
   }
 }
