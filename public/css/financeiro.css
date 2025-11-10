@@ -14,7 +14,6 @@ body {
   font-family: "Segoe UI", sans-serif;
   display: flex;
   flex-direction: column;
-  /* Adicionado gradiente suave no fundo */
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   min-height: 100vh;
 }
@@ -30,20 +29,17 @@ body {
 
 /* ==== SIDEBAR GERAL ==== */
 .sidebar {
-  /* Gradiente suave na sidebar */
   background: linear-gradient(180deg, #f3e5f5 0%, #e1bee7 100%);
   color: #333;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   min-height: calc(100vh - 60px);
-  /* Transições super suaves com cubic-bezier */
   transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s
     cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-x: hidden;
   flex-shrink: 0;
   position: relative;
-  /* Sombra suave */
   box-shadow: 2px 0 8px rgba(94, 45, 121, 0.1);
 }
 
@@ -79,7 +75,6 @@ body {
   cursor: pointer;
   font-size: 15px;
   border-radius: 8px;
-  /* Transição suave para todos os efeitos */
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
   color: #333;
@@ -88,7 +83,6 @@ body {
   overflow: hidden;
 }
 
-/* Efeito de hover animado */
 .sidebar nav ul li a::before {
   content: "";
   position: absolute;
@@ -107,7 +101,6 @@ body {
 
 .sidebar nav ul li a .material-icons {
   font-size: 22px;
-  /* Cor roxa nos ícones */
   color: #5e2d79;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s ease;
   position: relative;
@@ -119,7 +112,6 @@ body {
   z-index: 1;
 }
 
-/* Ícone cresce ao passar o mouse */
 .sidebar nav ul li a:hover .material-icons {
   transform: scale(1.1);
   color: #7b3f9e;
@@ -132,7 +124,6 @@ body {
 }
 
 .sidebar nav ul li.active a {
-  /* Gradiente no item ativo */
   background: linear-gradient(135deg, #ce93d8 0%, #ba68c8 100%);
   font-weight: 600;
   box-shadow: 0 3px 10px rgba(94, 45, 121, 0.25);
@@ -189,7 +180,6 @@ body {
   transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Seta do tooltip */
 .sidebar.collapsed nav ul li::before {
   content: "";
   position: absolute;
@@ -230,7 +220,6 @@ body {
   color: #5e2d79;
   margin-bottom: 25px;
   font-weight: 700;
-  /* Animação de entrada */
   animation: fadeInDown 0.6s ease-out;
 }
 
@@ -245,7 +234,6 @@ body {
   }
 }
 
-/* Card de resumo com animação e sombra */
 .financial-summary {
   display: flex;
   flex-wrap: wrap;
@@ -274,7 +262,6 @@ body {
   }
 }
 
-/* Items com hover animado */
 .summary-item {
   display: flex;
   flex-direction: column;
@@ -284,7 +271,6 @@ body {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Aumentando largura para itens com inputs de data */
 .summary-item:has(input[type="date"]) {
   width: 180px;
   gap: 6px;
@@ -320,7 +306,6 @@ body {
   font-size: 14px;
 }
 
-/* Adicionando largura específica para inputs de data */
 .summary-item input[type="date"] {
   min-width: 160px;
   width: 160px;
@@ -351,7 +336,6 @@ body {
   box-shadow: 0 0 0 3px rgba(186, 104, 200, 0.1);
 }
 
-/* Botões estilizados com gradiente e animação */
 .edit-btn {
   background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
   color: white;
@@ -443,7 +427,6 @@ table tbody tr:hover {
   transform: scale(1.01);
 }
 
-/* SEÇÃO DE GRÁFICOS melhorada */
 .charts-section {
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
   padding: 25px;
@@ -478,7 +461,6 @@ table tbody tr:hover {
   gap: 10px;
 }
 
-/* Tabs com animação de hover */
 .tab-btn {
   padding: 10px 18px;
   border: 2px solid transparent;
@@ -533,7 +515,6 @@ table tbody tr:hover {
   gap: 20px;
 }
 
-/* Cards de gráficos com animação escalonada */
 .chart-card {
   background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);
   padding: 20px;
@@ -620,7 +601,6 @@ table tbody tr:hover {
   color: #5e2d79;
 }
 
-/* Menu icon com animação de rotação */
 .menu-icon {
   font-size: 24px;
   cursor: pointer;
@@ -662,12 +642,10 @@ table tbody tr:hover {
   gap: 15px;
 }
 
-/* === DROPDOWN DE USUÁRIO === */
 .user-dropdown {
   position: relative;
 }
 
-/* User icon com hover animado */
 .user-icon {
   background: linear-gradient(135deg, #7b3f9e 0%, #5e2d79 100%);
   color: white;
@@ -689,7 +667,6 @@ table tbody tr:hover {
   box-shadow: 0 4px 12px rgba(94, 45, 121, 0.4);
 }
 
-/* Dropdown animado */
 .dropdown-menu {
   position: absolute;
   top: 45px;
@@ -770,7 +747,6 @@ table tbody tr:hover {
     margin-bottom: 15px;
   }
 
-  /* Sidebar desliza suavemente em mobile */
   .sidebar {
     position: fixed;
     top: 60px;
@@ -860,10 +836,10 @@ table tbody tr:hover {
   }
 
   .summary-item input[type="date"] {
-    max-width: 100%; /* Override desktop specific width for mobile */
+    max-width: 100%;
     min-width: unset;
     width: auto;
-    text-align: left; /* Adjust text alignment for mobile display */
+    text-align: left;
   }
 
   .edit-btn,
