@@ -106,6 +106,10 @@
           <button class="btn-icon" id="btnSelecionar" title="Selecionar">
             <span class="material-icons">check_box_outline_blank</span>
           </button>
+          <button class="btn-excluir-selecionados" id="btnExcluirSelecionados" style="display: none;">
+            <span class="material-icons">delete</span>
+            EXCLUIR
+          </button>
         </div>
       </div>
 
@@ -152,6 +156,9 @@
         <table id="conveniosTable">
           <thead>
             <tr>
+              <th class="checkbox-column" style="display: none;">
+                <input type="checkbox" id="selectAll" title="Selecionar Todos">
+              </th>
               <th>NOME DO CONVÊNIO</th>
               <th>CONSULTA</th>
               <th>DURAÇÃO</th>

@@ -385,6 +385,37 @@ table td .material-icons:hover {
   color: #fff;
 }
 
+/* ==== BOTÃO EXCLUIR SELECIONADOS (em massa) ==== */
+.btn-excluir-selecionados {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+  color: #fff;
+  border: none;
+  padding: 11px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 3px 10px rgba(229, 57, 53, 0.35);
+}
+
+.btn-excluir-selecionados:hover {
+  background: linear-gradient(135deg, #c62828 0%, #b71c1c 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(229, 57, 53, 0.45);
+}
+
+.btn-excluir-selecionados:active {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(229, 57, 53, 0.35);
+}
+
+.btn-excluir-selecionados .material-icons {
+  font-size: 20px;
+}
 /* ==== HEADER (TOPBAR) ==== */
 .topbar {
   display: flex;

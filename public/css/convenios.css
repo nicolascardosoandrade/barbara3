@@ -14,7 +14,6 @@ body {
   font-family: "Segoe UI", sans-serif;
   display: flex;
   flex-direction: column;
-  /* Adicionado gradiente suave no fundo */
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   min-height: 100vh;
 }
@@ -30,30 +29,25 @@ body {
 
 /* ==== SIDEBAR GERAL ==== */
 .sidebar {
-  /* Gradiente suave roxo/lilás na sidebar */
   background: linear-gradient(180deg, #f3e5f5 0%, #e1bee7 100%);
   color: #333;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   min-height: calc(100vh - 60px);
-  /* Transições super suaves com cubic-bezier */
   transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s
     cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-x: hidden;
   flex-shrink: 0;
   position: relative;
-  /* Sombra suave */
   box-shadow: 2px 0 8px rgba(94, 45, 121, 0.1);
 }
 
-/* ==== SIDEBAR PADRÃO (DESKTOP EXPANDIDA) ==== */
 .sidebar:not(.collapsed):not(.mobile-hidden) {
   width: 250px;
   padding: 20px 10px;
 }
 
-/* ==== SIDEBAR COLAPSADA (DESKTOP) ==== */
 .sidebar.collapsed {
   width: 70px;
   padding: 20px 0;
@@ -79,7 +73,6 @@ body {
   cursor: pointer;
   font-size: 15px;
   border-radius: 8px;
-  /* Transição suave para todos os efeitos */
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
   color: #333;
@@ -88,7 +81,6 @@ body {
   overflow: hidden;
 }
 
-/* Efeito de hover animado */
 .sidebar nav ul li a::before {
   content: "";
   position: absolute;
@@ -107,7 +99,6 @@ body {
 
 .sidebar nav ul li a .material-icons {
   font-size: 22px;
-  /* Cor roxa nos ícones */
   color: #5e2d79;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s ease;
   position: relative;
@@ -119,7 +110,6 @@ body {
   z-index: 1;
 }
 
-/* Ícone cresce ao passar o mouse */
 .sidebar nav ul li a:hover .material-icons {
   transform: scale(1.1);
   color: #7b3f9e;
@@ -132,7 +122,6 @@ body {
 }
 
 .sidebar nav ul li.active a {
-  /* Gradiente no item ativo */
   background: linear-gradient(135deg, #ce93d8 0%, #ba68c8 100%);
   font-weight: 600;
   box-shadow: 0 3px 10px rgba(94, 45, 121, 0.25);
@@ -147,14 +136,12 @@ body {
   color: #fff;
 }
 
-/* Esconder texto quando colapsado */
 .sidebar.collapsed nav ul li a span:not(:first-child) {
   opacity: 0;
   width: 0;
   transition: opacity 0.2s ease, width 0.2s ease;
 }
 
-/* Ícones centralizados quando colapsado */
 .sidebar.collapsed nav ul li a {
   justify-content: center;
   padding: 14px 0;
@@ -168,7 +155,6 @@ body {
   border-radius: 0;
 }
 
-/* Tooltip estilizado e animado com seta */
 .sidebar.collapsed nav ul li::after {
   content: attr(data-tooltip);
   position: absolute;
@@ -189,7 +175,6 @@ body {
   transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Seta do tooltip */
 .sidebar.collapsed nav ul li::before {
   content: "";
   position: absolute;
@@ -230,11 +215,9 @@ body {
   color: #5e2d79;
   margin-bottom: 25px;
   font-weight: 700;
-  /* Animação de entrada */
   animation: fadeInDown 0.6s ease-out;
 }
 
-/* Animações keyframes */
 @keyframes fadeInDown {
   from {
     opacity: 0;
@@ -272,7 +255,6 @@ body {
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
   padding: 20px;
   border-radius: 12px;
-  /* Sombra suave e animação */
   box-shadow: 0 4px 20px rgba(94, 45, 121, 0.1);
   animation: fadeInUp 0.6s ease-out;
   transition: box-shadow 0.3s ease;
@@ -304,13 +286,31 @@ table td {
 }
 
 table th {
-  /* Gradiente no header da tabela */
   background: linear-gradient(135deg, #e1bee7 0%, #ce93d8 100%);
   color: #5e2d79;
   font-weight: 600;
 }
 
-/* Efeito hover nas linhas da tabela */
+/* Estilo para coluna de checkbox */
+.checkbox-column {
+  width: 50px;
+  text-align: center;
+}
+
+.checkbox-column input[type="checkbox"] {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  accent-color: #ba68c8;
+}
+
+.row-checkbox {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  accent-color: #ba68c8;
+}
+
 table tbody tr {
   transition: all 0.2s ease;
 }
@@ -341,7 +341,6 @@ table td .material-icons:hover {
   display: flex;
   align-items: center;
   gap: 6px;
-  /* Gradiente e animação no botão */
   background: linear-gradient(135deg, #ba68c8 0%, #ab47bc 100%);
   color: #fff;
   border: none;
@@ -366,6 +365,39 @@ table td .material-icons:hover {
 
 .btn-adicionar .material-icons {
   font-size: 18px;
+}
+
+/* Botão de excluir selecionados */
+.btn-excluir-selecionados {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  /* Melhorar estilo visual do botão de excluir */
+  background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+  color: #fff;
+  border: none;
+  padding: 11px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 3px 10px rgba(229, 57, 53, 0.35);
+}
+
+.btn-excluir-selecionados:hover {
+  background: linear-gradient(135deg, #c62828 0%, #b71c1c 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(229, 57, 53, 0.45);
+}
+
+.btn-excluir-selecionados:active {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(229, 57, 53, 0.35);
+}
+
+.btn-excluir-selecionados .material-icons {
+  font-size: 20px;
 }
 
 .btn-icon {
@@ -453,16 +485,18 @@ table td .material-icons:hover {
   color: #5e2d79;
 }
 
-.close-filter {
+.filter-close {
   font-size: 24px;
   cursor: pointer;
   color: #666;
   transition: all 0.3s ease;
   padding: 4px;
   border-radius: 6px;
+  background: none;
+  border: none;
 }
 
-.close-filter:hover {
+.filter-close:hover {
   color: #5e2d79;
   background: rgba(94, 45, 121, 0.1);
   transform: rotate(90deg);
@@ -558,7 +592,6 @@ table td .material-icons:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* Gradiente no header */
   background: linear-gradient(135deg, #e1bee7 0%, #ce93d8 100%);
   padding: 10px 20px;
   color: #333;
@@ -583,7 +616,6 @@ table td .material-icons:hover {
   color: #5e2d79;
 }
 
-/* Menu icon com animação de rotação */
 .menu-icon {
   font-size: 24px;
   cursor: pointer;
@@ -625,12 +657,10 @@ table td .material-icons:hover {
   gap: 15px;
 }
 
-/* === DROPDOWN DE USUÁRIO === */
 .user-dropdown {
   position: relative;
 }
 
-/* User icon com hover animado */
 .user-icon {
   background: linear-gradient(135deg, #7b3f9e 0%, #5e2d79 100%);
   color: white;
@@ -652,7 +682,6 @@ table td .material-icons:hover {
   box-shadow: 0 4px 12px rgba(94, 45, 121, 0.4);
 }
 
-/* Dropdown animado */
 .dropdown-menu {
   position: absolute;
   top: 45px;
@@ -706,236 +735,6 @@ table td .material-icons:hover {
 
 .dropdown-item .material-icons {
   font-size: 20px;
-}
-
-/* ==== RESPONSIVIDADE ==== */
-@media (max-width: 768px) {
-  .logo-title h2 {
-    display: none;
-  }
-
-  .search-container {
-    margin: 0 10px;
-  }
-
-  .topbar {
-    padding: 10px 15px;
-  }
-
-  /* Sidebar desliza suavemente em mobile */
-  .sidebar {
-    position: fixed;
-    top: 60px;
-    left: 0;
-    width: 280px;
-    height: calc(100vh - 60px);
-    transform: translateX(-100%);
-    box-shadow: none;
-    z-index: 999;
-    padding: 0;
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s
-      cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .sidebar.active {
-    transform: translateX(0);
-    padding: 20px 10px;
-    box-shadow: 4px 0 20px rgba(94, 45, 121, 0.3);
-  }
-
-  body.no-scroll {
-    overflow: hidden;
-  }
-
-  .main-content {
-    width: 100%;
-    padding: 15px;
-    margin-left: 0 !important;
-  }
-
-  .main-content h1 {
-    font-size: 22px;
-    margin-bottom: 15px;
-  }
-
-  .topbar .menu-icon {
-    display: block;
-    margin-right: 10px;
-  }
-
-  .sidebar nav ul li:hover::after,
-  .sidebar nav ul li:hover::before {
-    content: none;
-    opacity: 0;
-  }
-
-  .action-buttons {
-    justify-content: flex-end;
-    width: 100%;
-  }
-
-  .convenios-report {
-    padding: 15px;
-  }
-
-  .convenios-report h3 {
-    font-size: 16px;
-  }
-
-  .filter-body {
-    grid-template-columns: 1fr;
-    padding: 0;
-  }
-
-  .filter-footer {
-    flex-direction: column;
-    padding: 12px 0;
-  }
-
-  .btn-limpar-filtros,
-  .btn-aplicar-filtros {
-    width: 100%;
-  }
-
-  /* Adicionando layout responsivo de cartão deslizante para a tabela */
-  /* Mantendo apenas os controles de comprimento e filtro ocultos, mas mostrando paginação */
-  .dataTables_wrapper .dataTables_length,
-  .dataTables_wrapper .dataTables_filter {
-    display: none !important;
-  }
-
-  /* Mostrando os controles de paginação em mobile */
-  .dataTables_wrapper .dataTables_info,
-  .dataTables_wrapper .dataTables_paginate {
-    display: block !important;
-    text-align: center;
-    margin-top: 15px;
-  }
-
-  .dataTables_wrapper .dataTables_paginate {
-    padding: 10px 0;
-  }
-
-  .dataTables_wrapper .dataTables_paginate .paginate_button {
-    padding: 8px 12px;
-    margin: 0 4px;
-    border-radius: 6px;
-    background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
-    color: #5e2d79 !important;
-    border: 1px solid #e1bee7;
-    font-weight: 500;
-    transition: all 0.3s ease;
-  }
-
-  .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-    background: linear-gradient(135deg, #ba68c8 0%, #ab47bc 100%);
-    color: white !important;
-    border-color: #ba68c8;
-  }
-
-  .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-    background: linear-gradient(135deg, #ba68c8 0%, #ab47bc 100%);
-    color: white !important;
-    border-color: #ba68c8;
-  }
-
-  .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  /* Container com scroll horizontal */
-  .convenios-report {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* Tabela mantém largura mínima para scroll horizontal */
-  #conveniosTable {
-    min-width: 600px;
-    display: table;
-  }
-
-  /* Estilo de cartão com background roxo no header */
-  table thead {
-    display: table-header-group;
-  }
-
-  table thead tr {
-    display: table-row;
-  }
-
-  table thead th {
-    display: table-cell;
-    background: linear-gradient(135deg, #ce93d8 0%, #ba68c8 100%);
-    color: white;
-    font-weight: 600;
-    padding: 12px;
-    text-align: left;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-
-  table tbody {
-    display: table-row-group;
-  }
-
-  table tbody tr {
-    display: table-row;
-    background-color: white;
-    border-bottom: 1px solid #f0e6f6;
-  }
-
-  table tbody tr:hover {
-    background-color: rgba(243, 229, 245, 0.4);
-  }
-
-  table tbody td {
-    display: table-cell;
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #f0e6f6;
-  }
-
-  /* Remove os data-labels em mobile já que a tabela é scrollável */
-  td:before {
-    display: none;
-  }
-}
-
-@media (max-width: 480px) {
-  .search-container {
-    max-width: 140px;
-    margin: 0 5px;
-  }
-  .search-container input {
-    padding: 8px 10px;
-    font-size: 13px;
-  }
-  .actions {
-    gap: 8px;
-  }
-  .topbar {
-    padding: 10px;
-  }
-
-  .main-content h1 {
-    font-size: 20px;
-  }
-
-  .convenios-report {
-    padding: 12px;
-  }
-
-  .convenios-report h3 {
-    font-size: 15px;
-  }
-
-  /* Mantém o layout de tabela scrollável em telas menores */
-  #conveniosTable {
-    min-width: 500px;
-  }
 }
 
 /* ==== MODAL DE CONVÊNIO ==== */
@@ -1122,45 +921,6 @@ table td .material-icons:hover {
 .btn-cancelar:active,
 .btn-salvar:active {
   transform: scale(0.98);
-}
-
-@media (max-width: 768px) {
-  .modal-container {
-    width: 95%;
-    max-height: 85vh;
-  }
-
-  .modal-header,
-  .modal-body,
-  .modal-footer {
-    padding: 16px;
-  }
-
-  .modal-header h2 {
-    font-size: 18px;
-  }
-
-  .form-section {
-    gap: 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .modal-container {
-    width: 100%;
-    height: 100%;
-    max-height: 100vh;
-    border-radius: 0;
-  }
-
-  .modal-footer {
-    flex-direction: column;
-  }
-
-  .btn-cancelar,
-  .btn-salvar {
-    width: 100%;
-  }
 }
 
 /* ==== MODAL DE DETALHES ==== */
@@ -1354,14 +1114,154 @@ table td .material-icons:hover {
   transform: translateY(-2px);
 }
 
-@media (max-width: 992px) {
-  .modal-detalhes {
-    width: 96%;
-    max-width: 96%;
-  }
-}
-
+/* ==== RESPONSIVIDADE ==== */
 @media (max-width: 768px) {
+  /* Ocultar controles do DataTables em dispositivos móveis */
+  .dataTables_length,
+  .dataTables_filter {
+    display: none !important;
+  }
+  .logo-title h2 {
+    display: none;
+  }
+
+  .search-container {
+    margin: 0 10px;
+  }
+
+  .topbar {
+    padding: 10px 15px;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 280px;
+    height: calc(100vh - 60px);
+    transform: translateX(-100%);
+    box-shadow: none;
+    z-index: 999;
+    padding: 0;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s
+      cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+    padding: 20px 10px;
+    box-shadow: 4px 0 20px rgba(94, 45, 121, 0.3);
+  }
+
+  body.no-scroll {
+    overflow: hidden;
+  }
+
+  .main-content {
+    width: 100%;
+    padding: 15px;
+    margin-left: 0 !important;
+  }
+
+  .main-content h1 {
+    font-size: 22px;
+    margin-bottom: 15px;
+  }
+
+  .topbar .menu-icon {
+    display: block;
+    margin-right: 10px;
+  }
+
+  .sidebar nav ul li:hover::after,
+  .sidebar nav ul li:hover::before {
+    content: none;
+    opacity: 0;
+  }
+
+  .action-buttons {
+    justify-content: flex-end;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .convenios-report {
+    padding: 15px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .convenios-report h3 {
+    font-size: 16px;
+  }
+
+  #conveniosTable {
+    min-width: 600px;
+    display: table;
+  }
+
+  table thead {
+    display: table-header-group;
+  }
+
+  table thead tr {
+    display: table-row;
+  }
+
+  table thead th {
+    display: table-cell;
+    background: linear-gradient(135deg, #ce93d8 0%, #ba68c8 100%);
+    color: white;
+    font-weight: 600;
+    padding: 12px;
+    text-align: left;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  table tbody {
+    display: table-row-group;
+  }
+
+  table tbody tr {
+    display: table-row;
+    background-color: white;
+    border-bottom: 1px solid #f0e6f6;
+  }
+
+  table tbody tr:hover {
+    background-color: rgba(243, 229, 245, 0.4);
+  }
+
+  table tbody td {
+    display: table-cell;
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #f0e6f6;
+  }
+
+  
+
+  .modal-container {
+    width: 95%;
+    max-height: 85vh;
+  }
+
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding: 16px;
+  }
+
+  .modal-header h2 {
+    font-size: 18px;
+  }
+
+  .form-section {
+    gap: 16px;
+  }
+
   .modal-detalhes {
     width: 95%;
     max-height: 85vh;
@@ -1378,6 +1278,56 @@ table td .material-icons:hover {
 }
 
 @media (max-width: 480px) {
+  .search-container {
+    max-width: 140px;
+    margin: 0 5px;
+  }
+
+  .search-container input {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  .actions {
+    gap: 8px;
+  }
+
+  .topbar {
+    padding: 10px;
+  }
+
+  .main-content h1 {
+    font-size: 20px;
+  }
+
+  .convenios-report {
+    padding: 12px;
+  }
+
+  .convenios-report h3 {
+    font-size: 15px;
+  }
+
+  #conveniosTable {
+    min-width: 500px;
+  }
+
+  .modal-container {
+    width: 100%;
+    height: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+  }
+
+  .btn-cancelar,
+  .btn-salvar {
+    width: 100%;
+  }
+
   .modal-detalhes .detalhes-grid {
     grid-template-columns: 1fr;
   }

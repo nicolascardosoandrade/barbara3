@@ -88,10 +88,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // Função para mapear gênero do frontend para o backend
   function mapearGenero(genero) {
     const mapa = {
-      "Masculino": "M",
-      "Feminino": "F",
-      "Outro": "O",
-      "Prefiro não dizer": "N"
+      Masculino: "M",
+      Feminino: "F",
+      Outro: "O",
+      "Prefiro não dizer": "N",
     }
     return mapa[genero] || null
   }
@@ -99,20 +99,20 @@ document.addEventListener("DOMContentLoaded", () => {
   // Função para mapear gênero do backend para o <select>
   function mapearGeneroParaSelect(generoBackend) {
     const mapa = {
-      "M": "Masculino",
-      "F": "Feminino",
-      "O": "Outro",
-      "N": "Prefiro não dizer"
+      M: "Masculino",
+      F: "Feminino",
+      O: "Outro",
+      N: "Prefiro não dizer",
     }
     return mapa[generoBackend] || ""
   }
 
   // === FORMATAÇÃO EM TEMPO REAL DO TELEFONE ===
   function formatarTelefoneEmTempoReal(input) {
-    let value = input.value.replace(/\D/g, '')
+    let value = input.value.replace(/\D/g, "")
     if (value.length > 11) value = value.slice(0, 11)
 
-    let formatado = ''
+    let formatado = ""
 
     if (value.length >= 11) {
       formatado = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7, 11)}`
@@ -252,31 +252,31 @@ document.addEventListener("DOMContentLoaded", () => {
   })
 
   btnExcluirPaciente.addEventListener("click", async () => {
-    if (!pacienteAtual) return;
+    if (!pacienteAtual) return
 
     if (confirm("Tem certeza que deseja excluir este paciente?")) {
       try {
         const response = await fetch(`/api/pacientes/${pacienteAtual.id}`, {
           method: "DELETE",
-        });
+        })
 
-        const result = await response.json();
+        const result = await response.json()
 
         if (result.success) {
-          alert(result.message);
-          modalDetalhes.classList.remove("show");
-          document.body.style.overflow = "auto";
-          pacienteAtual = null;
-          await carregarPacientes();
+          alert(result.message)
+          modalDetalhes.classList.remove("show")
+          document.body.style.overflow = "auto"
+          pacienteAtual = null
+          await carregarPacientes()
         } else {
-          alert("Erro: " + result.error);
+          alert("Erro: " + result.error)
         }
       } catch (error) {
-        console.error("Erro ao excluir paciente:", error);
-        alert("Erro ao conectar com o servidor.");
+        console.error("Erro ao excluir paciente:", error)
+        alert("Erro ao conectar com o servidor.")
       }
     }
-  });
+  })
 
   nomeCompletoInput.addEventListener("input", (e) => {
     e.target.value = e.target.value.toUpperCase()
@@ -485,13 +485,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const tabela = window.$("#relatorio-pacientes").DataTable()
 
     window.$.fn.dataTable.ext.search.push((settings, data, dataIndex) => {
-      const nome = data[0] || ""
-      const convenio = data[3] || ""
-      const situacao = data[4] || ""
+      const nome = data[1] || "" // Coluna ajustada para considerar checkbox
+      const convenio = data[4] || ""
+      const situacao = data[5] || ""
 
       const nomeMatch = !filterNome || nome.toUpperCase().includes(filterNome)
       const convenioMatch = !filterConvenio || convenio === filterConvenio
-      const situacaoMatch = !filterSituacao || situacao === filterSituacao
+      const situacaoMatch = !filterSituacao || situacao.includes(filterSituacao)
 
       return nomeMatch && convenioMatch && situacaoMatch
     })
@@ -505,17 +505,86 @@ document.addEventListener("DOMContentLoaded", () => {
   })
 
   const btnSelecionar = document.getElementById("btnSelecionar")
+  const btnExcluirSelecionados = document.getElementById("btnExcluirSelecionados")
+  const selectAllCheckbox = document.getElementById("selectAll")
   let selectMode = false
+
   btnSelecionar.addEventListener("click", () => {
     selectMode = !selectMode
     btnSelecionar.classList.toggle("active")
     const icon = btnSelecionar.querySelector(".material-icons")
     icon.textContent = selectMode ? "check_box" : "check_box_outline_blank"
 
+    // Mostrar/ocultar coluna de checkbox
+    const checkboxColumn = document.querySelectorAll(".checkbox-column")
+    const tabela = window.jQuery("#relatorio-pacientes").DataTable()
+
     if (selectMode) {
-      alert("Modo de seleção ativado. Funcionalidade será implementada.")
+      // Ativar modo de seleção
+      checkboxColumn.forEach((col) => (col.style.display = "table-cell"))
+      btnAdicionar.style.display = "none"
+      btnFiltrar.style.display = "none"
+      btnExcluirSelecionados.style.display = "flex"
+
+      // Redesenhar tabela para mostrar checkboxes
+      tabela.draw()
     } else {
-      alert("Modo de seleção desativado.")
+      // Desativar modo de seleção
+      checkboxColumn.forEach((col) => (col.style.display = "none"))
+      btnAdicionar.style.display = "flex"
+      btnFiltrar.style.display = "flex"
+      btnExcluirSelecionados.style.display = "none"
+
+      // Desmarcar todos os checkboxes
+      selectAllCheckbox.checked = false
+      document.querySelectorAll(".row-checkbox").forEach((cb) => (cb.checked = false))
+
+      // Redesenhar tabela para ocultar checkboxes
+      tabela.draw()
+    }
+  })
+
+  // Selecionar todos os checkboxes
+  selectAllCheckbox.addEventListener("change", (e) => {
+    const checkboxes = document.querySelectorAll(".row-checkbox")
+    checkboxes.forEach((checkbox) => {
+      checkbox.checked = e.target.checked
+    })
+  })
+
+  // Botão de excluir selecionados
+  btnExcluirSelecionados.addEventListener("click", async () => {
+    const checkboxesMarcados = document.querySelectorAll(".row-checkbox:checked")
+
+    if (checkboxesMarcados.length === 0) {
+      alert("Nenhum paciente selecionado!")
+      return
+    }
+
+    const ids = Array.from(checkboxesMarcados).map((cb) => cb.dataset.id)
+
+    if (!confirm(`Tem certeza que deseja excluir ${ids.length} paciente(s) selecionado(s)?`)) {
+      return
+    }
+
+    try {
+      // Excluir todos os pacientes selecionados
+      const promises = ids.map((id) => fetch(`/api/pacientes/${id}`, { method: "DELETE" }).then((res) => res.json()))
+
+      const results = await Promise.all(promises)
+
+      const sucessos = results.filter((r) => r.success).length
+      const falhas = results.filter((r) => !r.success).length
+
+      if (sucessos > 0) {
+        alert(`${sucessos} paciente(s) excluído(s) com sucesso!${falhas > 0 ? ` ${falhas} falharam.` : ""}`)
+        await carregarPacientes()
+      } else {
+        alert("Erro ao excluir pacientes.")
+      }
+    } catch (error) {
+      console.error("Erro ao excluir pacientes:", error)
+      alert("Erro ao conectar com o servidor.")
     }
   })
 
@@ -535,6 +604,13 @@ document.addEventListener("DOMContentLoaded", () => {
       paging: true,
       searching: true,
       info: true,
+      columnDefs: [
+        {
+          targets: 0,
+          orderable: false,
+          className: "checkbox-column",
+        },
+      ],
       language: {
         emptyTable: "Nenhum paciente encontrado",
         loadingRecords: "Carregando...",
@@ -555,7 +631,7 @@ document.addEventListener("DOMContentLoaded", () => {
           .$(row)
           .find("td")
           .each(function (index) {
-            const labels = ["PACIENTE", "IDADE", "CPF", "CONVÊNIO", "SITUAÇÃO", "AÇÕES"]
+            const labels = ["", "PACIENTE", "IDADE", "CPF", "CONVÊNIO", "SITUAÇÃO", "AÇÕES"]
             window.$(this).attr("data-label", labels[index])
           })
       },
@@ -613,11 +689,15 @@ document.addEventListener("DOMContentLoaded", () => {
       tabela.clear()
 
       pacientes.forEach((p) => {
-        const statusHtml = p.situacao === 'Ativo'
-          ? '<span style="color:#2e7d32; font-weight:bold;">Ativo</span>'
-          : '<span style="color:#c62828; font-weight:bold;">Inativo</span>';
+        const checkboxHtml = `<input type="checkbox" class="row-checkbox" data-id="${p.id}">`
+
+        const statusHtml =
+          p.situacao === "Ativo"
+            ? '<span style="color:#2e7d32; font-weight:bold;">Ativo</span>'
+            : '<span style="color:#c62828; font-weight:bold;">Inativo</span>'
 
         tabela.row.add([
+          checkboxHtml,
           p.nome_completo.toUpperCase(),
           calcularIdade(p.data_nascimento),
           p.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4"),
@@ -630,6 +710,11 @@ document.addEventListener("DOMContentLoaded", () => {
       })
 
       tabela.draw()
+
+      const checkboxColumn = document.querySelectorAll(".checkbox-column")
+      if (!selectMode) {
+        checkboxColumn.forEach((col) => (col.style.display = "none"))
+      }
     } catch (error) {
       console.error("Erro ao carregar pacientes:", error)
     }

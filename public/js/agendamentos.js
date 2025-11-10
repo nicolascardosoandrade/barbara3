@@ -74,8 +74,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // -------------------------------------------------
   // Exportar Excel
   // -------------------------------------------------
-  const btnExport = document.getElementById("btnExport")
   const XLSX = window.XLSX
+  const btnExport = document.getElementById("btnExport")
   btnExport.addEventListener("click", () => {
     const wb = XLSX.utils.book_new()
     const ws = XLSX.utils.table_to_sheet(document.getElementById("appointmentsTable"))
@@ -123,7 +123,9 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("filterNome").value = ""
     document.getElementById("filterConvenio").value = ""
     document.getElementById("filterData").value = ""
-    $("#appointmentsTable").DataTable().search("").columns().search("").draw()
+    const $ = window.jQuery // Declare the jQuery variable
+    const tabela = $("#appointmentsTable").DataTable()
+    tabela.search("").columns().search("").draw()
   })
 
   btnAplicarFiltros.addEventListener("click", () => {
@@ -131,15 +133,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const filterConvenio = document.getElementById("filterConvenio").value
     const filterData = document.getElementById("filterData").value
 
+    // Declare variável jQuery antes de usar
+    const $ = window.jQuery
     const tabela = $("#appointmentsTable").DataTable()
 
-    $.fn.dataTable.ext.search.pop() // Remove filtro anterior
+    $.fn.dataTable.ext.search.pop()
     $.fn.dataTable.ext.search.push((settings, data) => {
-      // ÍNDICES ATUALIZADOS (sem Telefone):
-      // 0: Data, 1: Paciente, 2: Início, 3: Fim, 4: Convênio, 5: Consulta, 6: Frequência, 7: Valor
-      const nome = (data[1] || "").toUpperCase()
-      const convenio = data[4] || ""
-      const dataConsulta = data[0] || ""
+      // ÍNDICES ATUALIZADOS COM CHECKBOX:
+      // 0: Checkbox, 1: Data, 2: Paciente, 3: Início, 4: Fim, 5: Convênio, 6: Consulta, 7: Frequência, 8: Valor
+      const nome = (data[2] || "").toUpperCase()
+      const convenio = data[5] || ""
+      const dataConsulta = data[1] || ""
 
       const nomeOk = !filterNome || nome.includes(filterNome)
       const convenioOk = !filterConvenio || convenio === filterConvenio
@@ -152,9 +156,98 @@ document.addEventListener("DOMContentLoaded", () => {
   })
 
   // -------------------------------------------------
-  // Tabela (SEM COLUNA TELEFONE)
   // -------------------------------------------------
-  const tabela = $("#appointmentsTable").DataTable({
+  const btnSelecionar = document.getElementById("btnSelecionar")
+  const btnExcluirSelecionados = document.getElementById("btnExcluirSelecionados")
+  const selectAllCheckbox = document.getElementById("selectAll")
+  const btnAdicionar = document.getElementById("btnAdicionar")
+  let selectMode = false
+
+  btnSelecionar.addEventListener("click", () => {
+    selectMode = !selectMode
+    btnSelecionar.classList.toggle("active")
+    const icon = btnSelecionar.querySelector(".material-icons")
+    icon.textContent = selectMode ? "check_box" : "check_box_outline_blank"
+
+    // Mostrar/ocultar coluna de checkbox
+    const checkboxColumn = document.querySelectorAll(".checkbox-column")
+    const tabela = window.jQuery("#appointmentsTable").DataTable()
+
+    if (selectMode) {
+      // Ativar modo de seleção
+      checkboxColumn.forEach((col) => (col.style.display = "table-cell"))
+      btnAdicionar.style.display = "none"
+      btnFiltrar.style.display = "none"
+      btnExport.style.display = "none"
+      btnExcluirSelecionados.style.display = "flex"
+
+      // Redesenhar tabela para mostrar checkboxes
+      tabela.draw()
+    } else {
+      // Desativar modo de seleção
+      checkboxColumn.forEach((col) => (col.style.display = "none"))
+      btnAdicionar.style.display = "flex"
+      btnFiltrar.style.display = "flex"
+      btnExport.style.display = "flex"
+      btnExcluirSelecionados.style.display = "none"
+
+      // Desmarcar todos os checkboxes
+      selectAllCheckbox.checked = false
+      document.querySelectorAll(".row-checkbox").forEach((cb) => (cb.checked = false))
+
+      // Redesenhar tabela para ocultar checkboxes
+      tabela.draw()
+    }
+  })
+
+  // Selecionar todos os checkboxes
+  selectAllCheckbox.addEventListener("change", (e) => {
+    const checkboxes = document.querySelectorAll(".row-checkbox")
+    checkboxes.forEach((checkbox) => {
+      checkbox.checked = e.target.checked
+    })
+  })
+
+  // Botão de excluir selecionados
+  btnExcluirSelecionados.addEventListener("click", async () => {
+    const checkboxesMarcados = document.querySelectorAll(".row-checkbox:checked")
+
+    if (checkboxesMarcados.length === 0) {
+      alert("Nenhum agendamento selecionado!")
+      return
+    }
+
+    const ids = Array.from(checkboxesMarcados).map((cb) => cb.dataset.id)
+
+    if (!confirm(`Tem certeza que deseja excluir ${ids.length} agendamento(s) selecionado(s)?`)) {
+      return
+    }
+
+    try {
+      // Excluir todos os agendamentos selecionados
+      const promises = ids.map((id) => fetch(`/api/agendamentos/${id}`, { method: "DELETE" }).then((res) => res.json()))
+
+      const results = await Promise.all(promises)
+
+      const sucessos = results.filter((r) => r.success || r.message).length
+      const falhas = results.filter((r) => !r.success && !r.message).length
+
+      if (sucessos > 0) {
+        alert(`${sucessos} agendamento(s) excluído(s) com sucesso!${falhas > 0 ? ` ${falhas} falharam.` : ""}`)
+        await carregarAgendamentos()
+      } else {
+        alert("Erro ao excluir agendamentos.")
+      }
+    } catch (error) {
+      console.error("Erro ao excluir agendamentos:", error)
+      alert("Erro ao conectar com o servidor.")
+    }
+  })
+
+  // -------------------------------------------------
+  // Tabela com coluna de checkbox
+  // -------------------------------------------------
+  const tabela = window.jQuery("#appointmentsTable").DataTable({
     language: {
       url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json",
     },
@@ -163,10 +256,11 @@ document.addEventListener("DOMContentLoaded", () => {
     searching: true,
     info: true,
     lengthChange: true,
-    order: [[0, "desc"]],
+    order: [[1, "desc"]], // Ordenar por data (índice 1 agora, por causa do checkbox)
     columnDefs: [
-      { orderable: false, targets: -1 },
+      { orderable: false, targets: [0, -1] }, // Checkbox e ações não ordenáveis
       { className: "dt-center", targets: "_all" },
+      { targets: 0, className: "checkbox-column" },
     ],
   })
 
@@ -174,28 +268,32 @@ document.addEventListener("DOMContentLoaded", () => {
     tabela.search(e.target.value).draw()
   })
 
+  let todosOsAgendamentos = []
+
   async function carregarAgendamentos() {
     try {
       const response = await fetch("/api/agendamentos")
       if (!response.ok) throw new Error("Erro ao carregar agendamentos")
       const agendamentos = await response.json()
 
+      todosOsAgendamentos = agendamentos
+
       tabela.clear()
       agendamentos.forEach((ag) => {
-        const valorFormatado = ag.valor
-          ? `R$ ${parseFloat(ag.valor).toFixed(2).replace(".", ",")}`
-          : "R$ 0,00"
+        const valorFormatado = ag.valor ? `R$ ${Number.parseFloat(ag.valor).toFixed(2).replace(".", ",")}` : "R$ 0,00"
+
+        const checkboxHtml = `<input type="checkbox" class="row-checkbox" data-id="${ag.id}">`
 
         const actions = `
-          <button class="btn-ver-mais" data-agendamento='${JSON.stringify(ag)}'>
+          <button class="btn-ver-mais" onclick="verMaisAgendamento(${ag.id})">
             <span class="material-icons">visibility</span>
           </button>
         `
 
         tabela.row.add([
+          checkboxHtml,
           ag.data_consulta,
           ag.nome_paciente,
-          // TELEFONE REMOVIDO
           ag.inicio,
           ag.fim,
           ag.convenio,
@@ -206,6 +304,12 @@ document.addEventListener("DOMContentLoaded", () => {
         ])
       })
       tabela.draw()
+
+      // Reforçar visibilidade da coluna de checkbox baseado no modo
+      const checkboxColumn = document.querySelectorAll(".checkbox-column")
+      if (!selectMode) {
+        checkboxColumn.forEach((col) => (col.style.display = "none"))
+      }
     } catch (err) {
       console.error(err)
       alert("Erro ao carregar agendamentos")
@@ -218,7 +322,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // Modal Adicionar/Editar
   // -------------------------------------------------
   const modal = document.getElementById("modal")
-  const btnAdicionar = document.getElementById("btnAdicionar")
   const closeModal = document.getElementById("closeModal")
   const btnCancelar = document.getElementById("btnCancelar")
   const form = document.getElementById("appointmentForm")
@@ -232,7 +335,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const response = await fetch("/api/pacientes")
       const pacientes = await response.json()
-      window.pacientes = pacientes; // Armazenar globalmente para lookup rápido
+      window.pacientes = pacientes
       const select = document.getElementById("nomePaciente")
       select.innerHTML = '<option value="">Procurar paciente...</option>'
       pacientes.forEach((p) => {
@@ -272,46 +375,43 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await fetch(`/api/convenios/nome/${convenioNome}`)
       const convenio = await response.json()
       const valor = convenio.valor || 0
-      document.getElementById("valorConsulta").value = `R$ ${parseFloat(valor).toFixed(2).replace(".", ",")}`
+      document.getElementById("valorConsulta").value = `R$ ${Number.parseFloat(valor).toFixed(2).replace(".", ",")}`
     } catch (err) {
       document.getElementById("valorConsulta").value = "R$ 0,00"
     }
   }
 
-  // Função para preencher telefone e convênio ao selecionar paciente
   function preencherDadosPaciente(nome) {
     if (nome && window.pacientes) {
-      const paciente = window.pacientes.find(p => p.nome_completo === nome);
+      const paciente = window.pacientes.find((p) => p.nome_completo === nome)
       if (paciente) {
-        document.getElementById("telefone").value = paciente.telefone || "";
-        const convenioSelect = document.getElementById("convenio");
-        let found = false;
+        document.getElementById("telefone").value = paciente.telefone || ""
+        const convenioSelect = document.getElementById("convenio")
+        let found = false
         for (let i = 0; i < convenioSelect.options.length; i++) {
           if (convenioSelect.options[i].value === paciente.convenio) {
-            convenioSelect.selectedIndex = i;
-            found = true;
-            break;
+            convenioSelect.selectedIndex = i
+            found = true
+            break
           }
         }
         if (!found && paciente.convenio) {
-          const opt = document.createElement("option");
-          opt.value = paciente.convenio;
-          opt.textContent = paciente.convenio;
-          opt.selected = true;
-          convenioSelect.appendChild(opt);
+          const opt = document.createElement("option")
+          opt.value = paciente.convenio
+          opt.textContent = paciente.convenio
+          opt.selected = true
+          convenioSelect.appendChild(opt)
         }
-        // Atualizar valor do convênio
-        atualizarValorConvenio(paciente.convenio);
+        atualizarValorConvenio(paciente.convenio)
       }
     }
   }
 
-  // Event listener para mudança no select de paciente
   document.addEventListener("change", (e) => {
     if (e.target.id === "nomePaciente") {
-      preencherDadosPaciente(e.target.value);
+      preencherDadosPaciente(e.target.value)
     }
-  });
+  })
 
   btnAdicionar.addEventListener("click", async () => {
     isEditMode = false
@@ -338,7 +438,6 @@ document.addEventListener("DOMContentLoaded", () => {
     atualizarValorConvenio(e.target.value)
   })
 
-  // Máscara de telefone
   document.getElementById("telefone").addEventListener("input", (e) => {
     let v = e.target.value.replace(/\D/g, "")
     if (v.length > 11) v = v.slice(0, 11)
@@ -363,21 +462,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let agendamentoAtual = null
 
-  document.getElementById("appointmentsTable").addEventListener("click", async (e) => {
-    const btn = e.target.closest(".btn-ver-mais")
-    if (btn) {
-      const agendamentoData = JSON.parse(btn.getAttribute("data-agendamento"))
-      try {
-        const response = await fetch(`/api/agendamentos/${agendamentoData.id}`)
-        if (!response.ok) throw new Error("Erro ao buscar detalhes.")
-        agendamentoAtual = await response.json()
-        mostrarDetalhes(agendamentoAtual)
-      } catch (error) {
-        console.error("Erro ao carregar detalhes:", error)
-        alert("Não foi possível carregar os detalhes.")
-      }
+  window.verMaisAgendamento = (agendamentoId) => {
+    const agendamento = todosOsAgendamentos.find((a) => a.id === agendamentoId)
+    if (!agendamento) {
+      alert("Agendamento não encontrado!")
+      return
     }
-  })
+
+    agendamentoAtual = agendamento
+    mostrarDetalhes(agendamento)
+  }
 
   function mostrarDetalhes(ag) {
     document.getElementById("detalheData").textContent = ag.data_consulta || "-"
@@ -387,19 +481,17 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("detalheFim").textContent = ag.fim || "-"
     document.getElementById("detalheConvenio").textContent = ag.convenio || "-"
     document.getElementById("detalheConsulta").textContent = ag.consulta || "-"
-    const detalheModalidadeSpan = document.getElementById("detalheModalidade");
-    detalheModalidadeSpan.textContent = ag.modalidade || "Presencial";
+    const detalheModalidadeSpan = document.getElementById("detalheModalidade")
+    detalheModalidadeSpan.textContent = ag.modalidade || "Presencial"
     if (ag.modalidade === "Online") {
-      detalheModalidadeSpan.style.color = "#ff9800"; // Laranja de destaque
+      detalheModalidadeSpan.style.color = "#ff9800"
     } else {
-      detalheModalidadeSpan.style.color = ""; // Reset para cor padrão
+      detalheModalidadeSpan.style.color = ""
     }
     document.getElementById("detalheFrequencia").textContent = ag.frequencia || "-"
     document.getElementById("detalheObservacoes").textContent = ag.observacoes || "Nenhuma observação."
 
-    const valorFormatado = ag.valor
-      ? `R$ ${parseFloat(ag.valor).toFixed(2).replace(".", ",")}`
-      : "R$ 0,00"
+    const valorFormatado = ag.valor ? `R$ ${Number.parseFloat(ag.valor).toFixed(2).replace(".", ",")}` : "R$ 0,00"
     document.getElementById("detalheValor").textContent = valorFormatado
 
     modalDetalhes.classList.add("show")
@@ -452,10 +544,8 @@ document.addEventListener("DOMContentLoaded", () => {
       nomePacienteSelect.appendChild(opt)
     }
 
-    // Preencher dados do paciente (telefone e convênio) e disparar change para auto-fill
-    preencherDadosPaciente(agendamentoAtual.nome_paciente);
-    // Sobrescrever telefone se houver no agendamento (caso editado previamente)
-    document.getElementById("telefone").value = agendamentoAtual.telefone || "";
+    preencherDadosPaciente(agendamentoAtual.nome_paciente)
+    document.getElementById("telefone").value = agendamentoAtual.telefone || ""
 
     const convenioSelect = document.getElementById("convenio")
     let convenioFound = false
@@ -475,24 +565,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     document.getElementById("consulta").value = agendamentoAtual.consulta || ""
-    const modalidadeSelect = document.getElementById("modalidade");
-    let modalidadeFound = false;
+    const modalidadeSelect = document.getElementById("modalidade")
+    let modalidadeFound = false
     for (let i = 0; i < modalidadeSelect.options.length; i++) {
       if (modalidadeSelect.options[i].value === agendamentoAtual.modalidade) {
-        modalidadeSelect.selectedIndex = i;
-        modalidadeFound = true;
-        break;
+        modalidadeSelect.selectedIndex = i
+        modalidadeFound = true
+        break
       }
     }
     if (!modalidadeFound) {
-      modalidadeSelect.value = "Presencial"; // Default se não encontrado
+      modalidadeSelect.value = "Presencial"
     }
     document.getElementById("frequencia").value = agendamentoAtual.frequencia || ""
     document.getElementById("observacoes").value = agendamentoAtual.observacoes || ""
 
-    // Preencher o valor do agendamento atual
     const valorFormatado = agendamentoAtual.valor
-      ? `R$ ${parseFloat(agendamentoAtual.valor).toFixed(2).replace(".", ",")}`
+      ? `R$ ${Number.parseFloat(agendamentoAtual.valor).toFixed(2).replace(".", ",")}`
       : "R$ 0,00"
     document.getElementById("valorConsulta").value = valorFormatado
 
@@ -507,15 +596,14 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault()
 
     const formData = new FormData(form)
-    // Parsear o valor da consulta de forma robusta para formato brasileiro
-    const valorInput = formData.get("valorConsulta") || "";
-    let valorConsulta = null;
-    const clean = valorInput.replace(/[^\d,]/g, ''); // Manter apenas dígitos e vírgula
+    const valorInput = formData.get("valorConsulta") || ""
+    let valorConsulta = null
+    const clean = valorInput.replace(/[^\d,]/g, "")
     if (clean) {
-      const withDot = clean.replace(',', '.');
-      const num = parseFloat(withDot);
+      const withDot = clean.replace(",", ".")
+      const num = Number.parseFloat(withDot)
       if (!isNaN(num)) {
-        valorConsulta = num;
+        valorConsulta = num
       }
     }
 
@@ -530,7 +618,7 @@ document.addEventListener("DOMContentLoaded", () => {
       modalidade: formData.get("modalidade"),
       frequencia: formData.get("frequencia"),
       observacoes: formData.get("observacoes"),
-      valor: valorConsulta
+      valor: valorConsulta,
     }
 
     try {
@@ -587,7 +675,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // -------------------------------------------------
   // Socket.io: Atualização em tempo real
   // -------------------------------------------------
-  const socket = io()
+  // Declare variável io antes de usar
+  const socket = window.io()
   socket.on("agendamento-updated", () => {
     carregarAgendamentos()
   })

@@ -89,7 +89,6 @@ document.addEventListener("DOMContentLoaded", () => {
     modal.classList.add("active")
     document.body.style.overflow = "hidden"
     formConvenio.reset()
-    // Restaurar comportamento padrão do formulário para cadastro
     formConvenio.onsubmit = submitCadastro
   })
 
@@ -97,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
     modal.classList.remove("active")
     document.body.style.overflow = ""
     formConvenio.reset()
-    formConvenio.onsubmit = submitCadastro // Resetar para cadastro ao fechar
+    formConvenio.onsubmit = submitCadastro
   }
 
   closeModal.addEventListener("click", fecharModal)
@@ -141,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          nomeConvenio: dados.nomeConvenio.toUpperCase(), // Garantir maiúsculas
+          nomeConvenio: dados.nomeConvenio.toUpperCase(),
           consulta: dados.consulta,
           duracao: dados.duracao,
           valor: dados.valor.replace("R$", "").replace(/\./g, "").replace(",", ".").trim(),
@@ -201,9 +200,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const tabela = window.jQuery("#conveniosTable").DataTable()
 
     window.jQuery.fn.dataTable.ext.search.push((settings, data, dataIndex) => {
-      const nome = data[0] || "" // Coluna "NOME DO CONVÊNIO"
-      const status = data[1] || "" // Coluna "STATUS" (assumindo que será adicionada)
-      const tipo = data[2] || "" // Coluna "TIPO" (assumindo que será adicionada)
+      const nome = data[1] || "" // Coluna ajustada para considerar checkbox
+      const status = data[2] || ""
+      const tipo = data[3] || ""
 
       const nomeMatch = !nomeFilter || nome.toUpperCase().includes(nomeFilter)
       const statusMatch = !statusFilter || status === statusFilter
@@ -220,19 +219,87 @@ document.addEventListener("DOMContentLoaded", () => {
     btnFiltrar.classList.remove("active")
   })
 
-  // Botão Selecionar
   const btnSelecionar = document.getElementById("btnSelecionar")
+  const btnExcluirSelecionados = document.getElementById("btnExcluirSelecionados")
+  const selectAllCheckbox = document.getElementById("selectAll")
   let selectMode = false
+
   btnSelecionar.addEventListener("click", () => {
     selectMode = !selectMode
     btnSelecionar.classList.toggle("active")
     const icon = btnSelecionar.querySelector(".material-icons")
     icon.textContent = selectMode ? "check_box" : "check_box_outline_blank"
 
+    // Mostrar/ocultar coluna de checkbox
+    const checkboxColumn = document.querySelectorAll(".checkbox-column")
+    const tabela = window.jQuery("#conveniosTable").DataTable()
+
     if (selectMode) {
-      alert("Modo de seleção ativado. Funcionalidade será implementada.")
+      // Ativar modo de seleção
+      checkboxColumn.forEach((col) => (col.style.display = "table-cell"))
+      btnAdicionar.style.display = "none"
+      btnFiltrar.style.display = "none"
+      btnExcluirSelecionados.style.display = "flex"
+
+      // Redesenhar tabela para mostrar checkboxes
+      tabela.draw()
     } else {
-      alert("Modo de seleção desativado.")
+      // Desativar modo de seleção
+      checkboxColumn.forEach((col) => (col.style.display = "none"))
+      btnAdicionar.style.display = "flex"
+      btnFiltrar.style.display = "flex"
+      btnExcluirSelecionados.style.display = "none"
+
+      // Desmarcar todos os checkboxes
+      selectAllCheckbox.checked = false
+      document.querySelectorAll(".row-checkbox").forEach((cb) => (cb.checked = false))
+
+      // Redesenhar tabela para ocultar checkboxes
+      tabela.draw()
+    }
+  })
+
+  // Selecionar todos os checkboxes
+  selectAllCheckbox.addEventListener("change", (e) => {
+    const checkboxes = document.querySelectorAll(".row-checkbox")
+    checkboxes.forEach((checkbox) => {
+      checkbox.checked = e.target.checked
+    })
+  })
+
+  // Botão de excluir selecionados
+  btnExcluirSelecionados.addEventListener("click", async () => {
+    const checkboxesMarcados = document.querySelectorAll(".row-checkbox:checked")
+
+    if (checkboxesMarcados.length === 0) {
+      alert("Nenhum convênio selecionado!")
+      return
+    }
+
+    const ids = Array.from(checkboxesMarcados).map((cb) => cb.dataset.id)
+
+    if (!confirm(`Tem certeza que deseja excluir ${ids.length} convênio(s) selecionado(s)?`)) {
+      return
+    }
+
+    try {
+      // Excluir todos os convênios selecionados
+      const promises = ids.map((id) => fetch(`/api/convenios/${id}`, { method: "DELETE" }).then((res) => res.json()))
+
+      const results = await Promise.all(promises)
+
+      const sucessos = results.filter((r) => r.success).length
+      const falhas = results.filter((r) => !r.success).length
+
+      if (sucessos > 0) {
+        alert(`${sucessos} convênio(s) excluído(s) com sucesso!${falhas > 0 ? ` ${falhas} falharam.` : ""}`)
+        await carregarConvenios()
+      } else {
+        alert("Erro ao excluir convênios.")
+      }
+    } catch (error) {
+      console.error("Erro ao excluir convênios:", error)
+      alert("Erro ao conectar com o servidor.")
     }
   })
 
@@ -274,7 +341,6 @@ document.addEventListener("DOMContentLoaded", () => {
     modalDetalhes.classList.remove("active")
     document.body.style.overflow = ""
 
-    // Preencher o formulário com os dados do convênio
     document.getElementById("nomeConvenio").value = convenioAtual.nome_convenio.toUpperCase()
     document.getElementById("consulta").value = convenioAtual.consulta
     document.getElementById("duracao").value = convenioAtual.duracao
@@ -356,8 +422,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const tabela = window.jQuery("#conveniosTable").DataTable()
       tabela.clear()
+
       convenios.forEach((c) => {
+        const checkboxHtml = `<input type="checkbox" class="row-checkbox" data-id="${c.id}">`
+
         tabela.row.add([
+          checkboxHtml,
           c.nome_convenio.toUpperCase(),
           c.consulta,
           c.duracao,
@@ -368,7 +438,14 @@ document.addEventListener("DOMContentLoaded", () => {
           </button>`,
         ])
       })
+
       tabela.draw()
+
+      // Reforçar visibilidade da coluna de checkbox baseado no modo
+      const checkboxColumn = document.querySelectorAll(".checkbox-column")
+      if (!selectMode) {
+        checkboxColumn.forEach((col) => (col.style.display = "none"))
+      }
     } catch (error) {
       console.error("Erro ao carregar convênios:", error)
       alert("Erro ao carregar dados do servidor.")
@@ -384,7 +461,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     convenioAtual = convenio
 
-    // Preencher os dados no modal de detalhes
     document.getElementById("detalheNome").textContent = convenio.nome_convenio
     document.getElementById("detalheConsulta").textContent = convenio.consulta
     document.getElementById("detalheDuracao").textContent = convenio.duracao
@@ -403,6 +479,13 @@ document.addEventListener("DOMContentLoaded", () => {
       paging: true,
       searching: true,
       info: true,
+      columnDefs: [
+        {
+          targets: 0,
+          orderable: false,
+          className: "checkbox-column",
+        },
+      ],
       language: {
         emptyTable: "Nenhum convênio encontrado",
         loadingRecords: "Carregando...",
@@ -424,7 +507,7 @@ document.addEventListener("DOMContentLoaded", () => {
           .$(row)
           .find("td")
           .each(function (index) {
-            const labels = ["NOME DO CONVÊNIO", "CONSULTA", "DURAÇÃO", "VALOR", "PAGAMENTO (DIAS)", "AÇÕES"]
+            const labels = ["", "NOME DO CONVÊNIO", "CONSULTA", "DURAÇÃO", "VALOR", "PAGAMENTO (DIAS)", "AÇÕES"]
             window.$(this).attr("data-label", labels[index])
           })
       },
@@ -434,62 +517,5 @@ document.addEventListener("DOMContentLoaded", () => {
     carregarConvenios()
   } else {
     console.warn("jQuery ou DataTables não carregados corretamente.")
-  }
-
-  // Edit convênio function (MANTÉM A COMPATIBILIDADE ANTERIOR)
-  window.editConvenio = async (id, icon) => {
-    try {
-      const response = await fetch(`/api/convenios`)
-      const convenios = await response.json()
-      const convenio = convenios.find((c) => c.id === id)
-
-      if (convenio) {
-        document.getElementById("nomeConvenio").value = convenio.nome_convenio.toUpperCase()
-        document.getElementById("consulta").value = convenio.consulta
-        document.getElementById("duracao").value = convenio.duracao
-        document.getElementById("valor").value = `R$ ${Number.parseFloat(convenio.valor).toFixed(2).replace(".", ",")}`
-        document.getElementById("pagamento").value = convenio.pagamento
-
-        modal.classList.add("active")
-        document.body.style.overflow = "hidden"
-
-        formConvenio.onsubmit = async (e) => {
-          e.preventDefault()
-          const formData = new FormData(formConvenio)
-          const dados = Object.fromEntries(formData)
-
-          try {
-            const response = await fetch(`/api/convenios/${id}`, {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                nomeConvenio: dados.nomeConvenio.toUpperCase(),
-                consulta: dados.consulta,
-                duracao: dados.duracao,
-                valor: dados.valor.replace("R$", "").replace(/\./g, "").replace(",", ".").trim(),
-                pagamento: Number.parseInt(dados.pagamento, 10),
-              }),
-            })
-
-            const result = await response.json()
-            if (result.success) {
-              alert(result.message)
-              carregarConvenios()
-              fecharModal()
-            } else {
-              alert("Erro: " + result.error)
-            }
-          } catch (error) {
-            console.error("Erro ao editar convênio:", error)
-            alert("Erro ao conectar com o servidor.")
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Erro ao carregar dados do convênio:", error)
-      alert("Erro ao carregar dados do convênio.")
-    }
   }
 })
