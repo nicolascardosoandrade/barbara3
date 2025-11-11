@@ -108,13 +108,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const agora = new Date()
     const opcoes = { timeZone: "America/Sao_Paulo" }
 
-    // Primeiro dia do mês
     const primeiroDia = new Date(agora.getFullYear(), agora.getMonth(), 1)
-    const primeiroDiaStr = primeiroDia.toLocaleDateString("en-CA", opcoes) // YYYY-MM-DD
+    const primeiroDiaStr = primeiroDia.toLocaleDateString("en-CA", opcoes)
 
-    // Último dia do mês
     const ultimoDia = new Date(agora.getFullYear(), agora.getMonth() + 1, 0)
-    const ultimoDiaStr = ultimoDia.toLocaleDateString("en-CA", opcoes) // YYYY-MM-DD
+    const ultimoDiaStr = ultimoDia.toLocaleDateString("en-CA", opcoes)
 
     startDateInput.value = primeiroDiaStr
     endDateInput.value = ultimoDiaStr
@@ -123,7 +121,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function inicializarValores() {
-    // Define datas do mês atual (fuso horário de Brasília)
     definirDatasDoMes()
 
     const agendadoSpan = document.querySelector(".summary-item:nth-child(3) span")
@@ -141,7 +138,6 @@ document.addEventListener("DOMContentLoaded", () => {
     totalComDescontoSpan.textContent = formatMoney(0)
     receberValueSpan.textContent = formatMoney(0)
 
-    // Carrega porcentagens salvas
     carregarPorcentagens()
   }
 
@@ -244,16 +240,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     agendamentos.forEach((a) => {
       const valor = Number.parseFloat(a.valor) || 0
-      // Use the status from the backend (based on color)
       const status = a.status || "agendado"
 
-      // Count and sum by status
       if (statusCounts[status] !== undefined) {
         statusCounts[status]++
         statusValues[status] += valor
       }
 
-      // Count and sum by convenio
       if (!convenioCounts[a.convenio]) {
         convenioCounts[a.convenio] = 0
         convenioValues[a.convenio] = 0
@@ -261,7 +254,6 @@ document.addEventListener("DOMContentLoaded", () => {
       convenioCounts[a.convenio]++
       convenioValues[a.convenio] += valor
 
-      // Trend data by date
       const data = new Date(a.data_consulta).toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" })
       if (!trendData[data]) trendData[data] = 0
       trendData[data] += valor
@@ -282,21 +274,25 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /* ---------- SIDEBAR ---------- */
+  /* ---------- SIDEBAR - 100% IGUAL À SERVIÇOS.HTML ---------- */
   function initializeSidebarState() {
     if (window.innerWidth >= 768) {
+      // Desktop: colapsada (ícones apenas), mas visível
       sidebar.classList.add("collapsed")
       sidebar.classList.remove("active")
       document.body.classList.remove("no-scroll")
     } else {
+      // Mobile: começa TOTALMENTE OCULTA
       sidebar.classList.remove("collapsed")
       sidebar.classList.remove("active")
       document.body.classList.remove("no-scroll")
     }
   }
 
+  // Inicializa ao carregar
   initializeSidebarState()
 
+  // Toggle do menu
   menuIcon.addEventListener("click", () => {
     if (window.innerWidth < 768) {
       sidebar.classList.toggle("active")
@@ -308,6 +304,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 
+  // Fecha ao clicar em link (mobile)
   sidebar.querySelectorAll("nav ul li a").forEach((item) => {
     item.addEventListener("click", () => {
       if (window.innerWidth < 768 && sidebar.classList.contains("active")) {
@@ -317,6 +314,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   })
 
+  // Fecha ao clicar fora (mobile)
   document.addEventListener("click", (e) => {
     if (
       window.innerWidth < 768 &&
@@ -329,6 +327,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 
+  // Reaplica estado ao redimensionar
   window.addEventListener("resize", initializeSidebarState)
 
   /* ---------- USER MENU ---------- */
@@ -347,11 +346,11 @@ document.addEventListener("DOMContentLoaded", () => {
     alert("Você saiu com sucesso!")
   }
 
-  /* ---------- EDIÇÃO DE % COM PERSISTÊNCIA ---------- */
+  /* ---------- EDIÇÃO DE % ---------- */
   editBtn.addEventListener("click", async () => {
     if (!isEditing) {
-      const currentClinica = Number.parseFloat(clinicaSpan.textContent.replace("%", "").trim())
-      const currentImposto = Number.parseFloat(impostoSpan.textContent.replace("%", "").trim())
+      const currentClinica = Number.parseFloat(clinicaSpan.textContent.replace("%", "").trim()) || 0
+      const currentImposto = Number.parseFloat(impostoSpan.textContent.replace("%", "").trim()) || 0
 
       const clinicaInput = document.createElement("input")
       clinicaInput.type = "number"
@@ -425,7 +424,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 
-  /* ---------- FILTRO DE DATAS (AGORA RESPEITA O MÊS ATUAL) ---------- */
+  /* ---------- FILTRO DE DATAS ---------- */
   startDateInput.addEventListener("change", () => {
     const start = new Date(startDateInput.value)
     const end = new Date(endDateInput.value)
@@ -446,28 +445,19 @@ document.addEventListener("DOMContentLoaded", () => {
     carregarDadosFinanceiros()
   })
 
-  /* ---------- CHART CONFIG ---------- */
+  /* ---------- CHARTS ---------- */
   const chartConfig = {
     responsive: true,
     maintainAspectRatio: true,
     plugins: {
-      legend: {
-        display: true,
-        labels: { color: "#666", font: { size: 12 } },
-      },
+      legend: { display: true, labels: { color: "#666", font: { size: 12 } } },
       tooltip: {
         callbacks: {
           label: (context) => {
             let label = context.dataset.label || ""
-            if (label) {
-              label += ": "
-            }
-            if (context.parsed.y !== null) {
-              label += formatMoney(context.parsed.y)
-            } else if (context.parsed !== null) {
-              label += formatMoney(context.parsed)
-            }
-            return label
+            if (label) label += ": "
+            const value = context.parsed.y ?? context.parsed
+            return label + formatMoney(value)
           },
         },
       },
@@ -477,56 +467,19 @@ document.addEventListener("DOMContentLoaded", () => {
   function createRevenueChart(period, chartData) {
     const ctx = document.getElementById("revenueChart").getContext("2d")
     if (currentCharts.revenue) currentCharts.revenue.destroy()
-
     currentCharts.revenue = new window.Chart(ctx, {
       type: "bar",
-      data: {
-        labels: chartData[period].labels,
-        datasets: [
-          {
-            label: "Faturamento (R$)",
-            data: chartData[period].revenue,
-            backgroundColor: "#dca0e5",
-            borderColor: "#5e2d79",
-            borderWidth: 1,
-            borderRadius: 4,
-          },
-        ],
-      },
-      options: {
-        ...chartConfig,
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              color: "#666",
-              callback: (value) => "R$ " + value.toLocaleString("pt-BR", { minimumFractionDigits: 2 }),
-            },
-            grid: { color: "#eee" },
-          },
-          x: { ticks: { color: "#666" }, grid: { color: "#eee" } },
-        },
-      },
+      data: { labels: chartData[period].labels, datasets: [{ label: "Faturamento (R$)", data: chartData[period].revenue, backgroundColor: "#dca0e5", borderColor: "#5e2d79", borderWidth: 1, borderRadius: 4 }] },
+      options: { ...chartConfig, scales: { y: { beginAtZero: true, ticks: { color: "#666", callback: (v) => "R$ " + v.toLocaleString("pt-BR", { minimumFractionDigits: 2 }) }, grid: { color: "#eee" } }, x: { ticks: { color: "#666" }, grid: { color: "#eee" } } } },
     })
   }
 
   function createStatusChart(period, chartData) {
     const ctx = document.getElementById("statusChart").getContext("2d")
     if (currentCharts.status) currentCharts.status.destroy()
-
     currentCharts.status = new window.Chart(ctx, {
       type: "doughnut",
-      data: {
-        labels: chartData[period].statusLabels,
-        datasets: [
-          {
-            data: chartData[period].status,
-            backgroundColor: ["#22c55e", "#3b82f6", "#a855f7"],
-            borderColor: "#fff",
-            borderWidth: 2,
-          },
-        ],
-      },
+      data: { labels: chartData[period].statusLabels, datasets: [{ data: chartData[period].status, backgroundColor: ["#22c55e", "#3b82f6", "#a855f7"], borderColor: "#fff", borderWidth: 2 }] },
       options: {
         ...chartConfig,
         plugins: {
@@ -554,26 +507,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const filteredData = []
     const colors = ["#5e2d79", "#dca0e5", "#e7b5e8", "#f0d5f7", "#9333ea", "#c084fc", "#d8b4fe", "#e9d5ff"]
 
-    chartData[period].convenioLabels.forEach((label, index) => {
-      if (chartData[period].convenio[index] > 0) {
+    chartData[period].convenioLabels.forEach((label, i) => {
+      if (chartData[period].convenio[i] > 0) {
         filteredLabels.push(label)
-        filteredData.push(chartData[period].convenio[index])
+        filteredData.push(chartData[period].convenio[i])
       }
     })
 
     currentCharts.convenio = new window.Chart(ctx, {
       type: "pie",
-      data: {
-        labels: filteredLabels.length > 0 ? filteredLabels : ["Sem dados"],
-        datasets: [
-          {
-            data: filteredData.length > 0 ? filteredData : [1],
-            backgroundColor: colors,
-            borderColor: "#fff",
-            borderWidth: 2,
-          },
-        ],
-      },
+      data: { labels: filteredLabels.length > 0 ? filteredLabels : ["Sem dados"], datasets: [{ data: filteredData.length > 0 ? filteredData : [1], backgroundColor: colors, borderColor: "#fff", borderWidth: 2 }] },
       options: chartConfig,
     })
   }
@@ -581,40 +524,10 @@ document.addEventListener("DOMContentLoaded", () => {
   function createTrendChart(period, chartData) {
     const ctx = document.getElementById("trendChart").getContext("2d")
     if (currentCharts.trend) currentCharts.trend.destroy()
-
     currentCharts.trend = new window.Chart(ctx, {
       type: "line",
-      data: {
-        labels: chartData[period].labels,
-        datasets: [
-          {
-            label: "Tendência de Faturamento",
-            data: chartData[period].trend,
-            borderColor: "#5e2d79",
-            backgroundColor: "rgba(94, 45, 121, 0.1)",
-            fill: true,
-            tension: 0.4,
-            pointBackgroundColor: "#5e2d79",
-            pointBorderColor: "#fff",
-            pointBorderWidth: 2,
-            pointRadius: 5,
-          },
-        ],
-      },
-      options: {
-        ...chartConfig,
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              color: "#666",
-              callback: (value) => "R$ " + value.toLocaleString("pt-BR", { minimumFractionDigits: 2 }),
-            },
-            grid: { color: "#eee" },
-          },
-          x: { ticks: { color: "#666" }, grid: { color: "#eee" } },
-        },
-      },
+      data: { labels: chartData[period].labels, datasets: [{ label: "Tendência de Faturamento", data: chartData[period].trend, borderColor: "#5e2d79", backgroundColor: "rgba(94, 45, 121, 0.1)", fill: true, tension: 0.4, pointBackgroundColor: "#5e2d79", pointBorderColor: "#fff", pointBorderWidth: 2, pointRadius: 5 }] },
+      options: { ...chartConfig, scales: { y: { beginAtZero: true, ticks: { color: "#666", callback: (v) => "R$ " + v.toLocaleString("pt-BR", { minimumFractionDigits: 2 }) }, grid: { color: "#eee" } }, x: { ticks: { color: "#666" }, grid: { color: "#eee" } } } },
     })
   }
 
@@ -629,14 +542,11 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", function () {
       document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"))
       this.classList.add("active")
-      const currentData = window.currentChartData || {}
-      updateAllCharts(this.dataset.period, currentData)
+      updateAllCharts(this.dataset.period, window.currentChartData || {})
     })
   })
 
   /* ---------- INICIALIZAÇÃO ---------- */
   inicializarValores()
-  setTimeout(() => {
-    carregarDadosFinanceiros()
-  }, 500)
+  setTimeout(carregarDadosFinanceiros, 500)
 })
