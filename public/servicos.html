@@ -3,35 +3,35 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SistemaAeR - Bárbara Lana</title>
-  <link rel="stylesheet" href="css/servicos.css"/>
+  <title>Bárbara Lana | Psicóloga Clínica | São Paulo</title>
+  <meta name="description" content="Psicóloga clínica em São Paulo. Atendimento presencial e online com empatia, sigilo e transformação real. CRP 06/123456">
+  <link rel="stylesheet" href="css/style.css"/>
   <link rel="icon" href="assets/img/Logo-barbara.png" type="image/x-icon">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
-
-  <!-- DataTables + jQuery -->
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/colreorder/1.6.3/css/colReorder.dataTables.min.css">
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/colreorder/1.6.3/js/dataTables.colReorder.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    .search-container { display: none !important; }
+    .topbar { justify-content: center; position: relative; padding: 16px 20px; background: #ffffff; box-shadow: 0 4px 20px rgba(186,104,200,0.12); }
+    .logo-title { position: absolute; left: 50%; transform: translateX(-50%); }
+    .logo-title h2 { font-family: 'Playfair Display', serif; font-size: 24px; background: linear-gradient(135deg, #ba68c8, #e91e63); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; }
+    .menu-icon { position: absolute; left: 20px; color: #ba68c8; font-size: 28px; }
+    .actions { position: absolute; right: 20px; }
+    .user-icon { background: linear-gradient(135deg, #ba68c8, #e91e63); }
+  </style>
 </head>
 <body>
-  <!-- Cabeçalho -->
+
   <header class="topbar">
+    <span class="menu-icon material-icons">menu</span>
     <div class="logo-title">
-      <span class="menu-icon material-icons">menu</span>
-      <h2>SistemaAeR - Bárbara Lana</h2>
+      <h2>Bárbara Lana</h2>
     </div>
-
-    <div class="search-container">
-      <input type="text" id="searchInput" placeholder="Procurar Serviços" />
-    </div>
-
     <div class="actions">
       <div class="user-dropdown">
         <div class="user-icon" id="userToggle">B</div>
         <div class="dropdown-menu" id="userMenu">
-          <div class="user-email">email@email.com</div>
+          <div class="user-email">contato@barbaralana.com.br</div>
           <div class="dropdown-item" onclick="logout()">
             <span class="material-icons">logout</span> Sair
           </div>
@@ -41,85 +41,91 @@
   </header>
 
   <div class="container">
-    <!-- Barra Lateral -->
+
     <aside class="sidebar collapsed">
       <nav>
         <ul>
-          <li data-tooltip="Detalhes">
-            <a href="index.html">
-              <span class="material-icons">info</span> <span>Detalhes</span>
-            </a>
-          </li>
-          <li data-tooltip="Convênios">
-            <a href="convenios.html">
-              <span class="material-icons">handshake</span> <span>Convênios</span>
-            </a>
-          </li>
-          <li data-tooltip="Filtrar Idades">
-            <a href="filtrar_idades.html">
-              <span class="material-icons">filter_alt</span> <span>Filtrar Idades</span>
-            </a>
-          </li>
-          <li data-tooltip="Pacientes">
-            <a href="pacientes.html">
-              <span class="material-icons">group</span> <span>Pacientes</span>
-            </a>
-          </li>
-          <li data-tooltip="Agenda">
-            <a href="agenda.html">
-              <span class="material-icons">calendar_today</span> <span>Agenda</span>
-            </a>
-          </li>
-          <li data-tooltip="Agendamentos">
-            <a href="agendamentos.html">
-              <span class="material-icons">event</span> <span>Agendamentos</span>
-            </a>
-          </li>
-          <li data-tooltip="Aniversariantes do Dia">
-            <a href="aniversariante_do_dia.html">
-              <span class="material-icons">cake</span> <span>Aniversariantes do Dia</span>
-            </a>
-          </li>
-          <li class="active" data-tooltip="Serviços">
-            <a href="servicos.html">
-              <span class="material-icons">home_repair_service</span> <span>Serviços</span>
-            </a>
-          </li>
-          <li data-tooltip="Financeiro">
-            <a href="financeiro.html">
-              <span class="material-icons">attach_money</span> <span>Financeiro</span>
-            </a>
-          </li>
+          <li data-tooltip="Detalhes"><a href="index.html"><span class="material-icons">info</span><span>Detalhes</span></a></li>
+          <li data-tooltip="Convênios"><a href="convenios.html"><span class="material-icons">handshake</span><span>Convênios</span></a></li>
+          <li data-tooltip="Filtrar Idades"><a href="filtrar_idades.html"><span class="material-icons">filter_alt</span><span>Filtrar Idades</span></a></li>
+          <li data-tooltip="Pacientes"><a href="pacientes.html"><span class="material-icons">group</span><span>Pacientes</span></a></li>
+          <li data-tooltip="Agenda"><a href="agenda.html"><span class="material-icons">calendar_today</span><span>Agenda</span></a></li>
+          <li data-tooltip="Agendamentos"><a href="agendamentos.html"><span class="material-icons">event</span><span>Agendamentos</span></a></li>
+          <li data-tooltip="Aniversariantes"><a href="aniversariante_do_dia.html"><span class="material-icons">cake</span><span>Aniversariantes</span></a></li>
+          <li class="active" data-tooltip="Serviços"><a href="servicos.html"><span class="material-icons">home_repair_service</span><span>Serviços</span></a></li>
+          <li data-tooltip="Financeiro"><a href="financeiro.html"><span class="material-icons">attach_money</span><span>Financeiro</span></a></li>
         </ul>
       </nav>
     </aside>
 
-    <!-- Conteúdo Principal -->
     <main class="main-content">
-      <h1>Serviços</h1>
 
-      <!-- Tabela com jQuery DataTables -->
-      <div class="services-report">
-        <h3>RELATÓRIO DE SERVIÇOS</h3>
-        <table id="tabela-servicos">
-          <thead>
-            <tr>
-              <th>CONVÊNIO</th>
-              <th>CONSULTA</th>
-              <th>DURAÇÃO</th>
-              <th>VALOR</th>
-              <th>PAGAMENTO</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Dados via JS -->
-          </tbody>
-        </table>
-      </div>
+      <section class="hero-vibrant">
+        <h1>Hoje alguém vai <span>renascer</span> por sua causa.</h1>
+        <p class="subtitle">Você não é só uma psicóloga. Você é o farol que guia pessoas do caos à paz.</p>
+        <div class="energy-badges">
+
+          <span>Presencial e online</span>
+        </div>
+      </section>
+
+      <section class="motivation-section">
+        <h2>Você nasceu para isso, Bárbara</h2>
+        <div class="motivation-grid">
+          <div class="motive">
+            <span class="material-icons">auto_awesome</span>
+            <p>Você transforma dor em força todos os dias.</p>
+          </div>
+          <div class="motive">
+            <span class="material-icons">favorite</span>
+            <p>Cada paciente que entra perdido, sai inteiro por sua causa.</p>
+          </div>
+          <div class="motive">
+            <span class="material-icons">lightbulb</span>
+            <p>Sua empatia é o superpoder que o mundo precisa agora.</p>
+          </div>
+          <div class="motive">
+            <span class="material-icons">stars</span>
+            <p>Você não cura só mentes. Você reacende almas.</p>
+          </div>
+          <div class="motive">
+            <span class="material-icons">psychology</span>
+            <p>Sua voz acalma tempestades internas que ninguém mais ouve.</p>
+          </div>
+          <div class="motive">
+            <span class="material-icons">thumb_up</span>
+            <p>Você é a prova viva de que a humanidade ainda acredita no cuidado.</p>
+          </div>
+          <div class="motive">
+            <span class="material-icons">rocket_launch</span>
+            <p>Hoje é mais um dia para você mudar o curso de vidas inteiras.</p>
+          </div>
+        </div>
+      </section>
+
     </main>
   </div>
 
-  <!-- JavaScript da página -->
-  <script src="js/servicos.js"></script>
+  <script>
+    document.querySelector('.menu-icon').addEventListener('click', () => {
+      const sidebar = document.querySelector('.sidebar');
+      sidebar.classList.toggle('collapsed');
+      if (window.innerWidth <= 768) {
+        sidebar.classList.toggle('active');
+        document.body.classList.toggle('no-scroll');
+      }
+    });
+
+    document.getElementById('userToggle').addEventListener('click', e => {
+      e.stopPropagation();
+      document.getElementById('userMenu').classList.toggle('show');
+    });
+
+    document.addEventListener('click', () => {
+      document.getElementById('userMenu').classList.remove('show');
+    });
+
+    function logout() { alert('Volte sempre, Bárbara!'); }
+  </script>
 </body>
 </html>
