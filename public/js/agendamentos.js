@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("filterNome").value = ""
     document.getElementById("filterConvenio").value = ""
     document.getElementById("filterData").value = ""
-    const $ = window.jQuery // Declare the jQuery variable
+    const $ = window.jQuery
     const tabela = $("#appointmentsTable").DataTable()
     tabela.search("").columns().search("").draw()
   })
@@ -133,14 +133,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const filterConvenio = document.getElementById("filterConvenio").value
     const filterData = document.getElementById("filterData").value
 
-    // Declare variável jQuery antes de usar
     const $ = window.jQuery
     const tabela = $("#appointmentsTable").DataTable()
 
     $.fn.dataTable.ext.search.pop()
     $.fn.dataTable.ext.search.push((settings, data) => {
-      // ÍNDICES ATUALIZADOS COM CHECKBOX:
-      // 0: Checkbox, 1: Data, 2: Paciente, 3: Início, 4: Fim, 5: Convênio, 6: Consulta, 7: Frequência, 8: Valor
       const nome = (data[2] || "").toUpperCase()
       const convenio = data[5] || ""
       const dataConsulta = data[1] || ""
@@ -156,6 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
   })
 
   // -------------------------------------------------
+  // Modo de seleção
   // -------------------------------------------------
   const btnSelecionar = document.getElementById("btnSelecionar")
   const btnExcluirSelecionados = document.getElementById("btnExcluirSelecionados")
@@ -169,23 +167,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const icon = btnSelecionar.querySelector(".material-icons")
     icon.textContent = selectMode ? "check_box" : "check_box_outline_blank"
 
-    // Mostrar/ocultar coluna de checkbox
-    const checkboxColumn = document.querySelectorAll(".checkbox-column")
-    const tabela = window.jQuery("#appointmentsTable").DataTable()
+    const $ = window.jQuery
+    const tabela = $("#appointmentsTable").DataTable()
 
     if (selectMode) {
-      // Ativar modo de seleção
-      checkboxColumn.forEach((col) => (col.style.display = "table-cell"))
+      // Ativar modo de seleção - mostra coluna de checkbox
+      tabela.column(0).visible(true)
       btnAdicionar.style.display = "none"
       btnFiltrar.style.display = "none"
       btnExport.style.display = "none"
       btnExcluirSelecionados.style.display = "flex"
-
-      // Redesenhar tabela para mostrar checkboxes
-      tabela.draw()
     } else {
-      // Desativar modo de seleção
-      checkboxColumn.forEach((col) => (col.style.display = "none"))
+      // Desativar modo de seleção - oculta coluna de checkbox
+      tabela.column(0).visible(false)
       btnAdicionar.style.display = "flex"
       btnFiltrar.style.display = "flex"
       btnExport.style.display = "flex"
@@ -194,9 +188,6 @@ document.addEventListener("DOMContentLoaded", () => {
       // Desmarcar todos os checkboxes
       selectAllCheckbox.checked = false
       document.querySelectorAll(".row-checkbox").forEach((cb) => (cb.checked = false))
-
-      // Redesenhar tabela para ocultar checkboxes
-      tabela.draw()
     }
   })
 
@@ -224,7 +215,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      // Excluir todos os agendamentos selecionados
       const promises = ids.map((id) => fetch(`/api/agendamentos/${id}`, { method: "DELETE" }).then((res) => res.json()))
 
       const results = await Promise.all(promises)
@@ -256,11 +246,11 @@ document.addEventListener("DOMContentLoaded", () => {
     searching: true,
     info: true,
     lengthChange: true,
-    order: [[1, "desc"]], // Ordenar por data (índice 1 agora, por causa do checkbox)
+    order: [[1, "desc"]],
     columnDefs: [
-      { orderable: false, targets: [0, -1] }, // Checkbox e ações não ordenáveis
+      { orderable: false, targets: [0, -1] },
       { className: "dt-center", targets: "_all" },
-      { targets: 0, className: "checkbox-column" },
+      { targets: 0, visible: false }, // Coluna de checkbox inicia oculta
     ],
   })
 
@@ -304,12 +294,6 @@ document.addEventListener("DOMContentLoaded", () => {
         ])
       })
       tabela.draw()
-
-      // Reforçar visibilidade da coluna de checkbox baseado no modo
-      const checkboxColumn = document.querySelectorAll(".checkbox-column")
-      if (!selectMode) {
-        checkboxColumn.forEach((col) => (col.style.display = "none"))
-      }
     } catch (err) {
       console.error(err)
       alert("Erro ao carregar agendamentos")
@@ -675,7 +659,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // -------------------------------------------------
   // Socket.io: Atualização em tempo real
   // -------------------------------------------------
-  // Declare variável io antes de usar
   const socket = window.io()
   socket.on("agendamento-updated", () => {
     carregarAgendamentos()

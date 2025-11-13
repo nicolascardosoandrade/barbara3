@@ -528,7 +528,7 @@ document.addEventListener("DOMContentLoaded", () => {
       type: "line",
       data: { labels: chartData[period].labels, datasets: [{ label: "Tendência de Faturamento", data: chartData[period].trend, borderColor: "#5e2d79", backgroundColor: "rgba(94, 45, 121, 0.1)", fill: true, tension: 0.4, pointBackgroundColor: "#5e2d79", pointBorderColor: "#fff", pointBorderWidth: 2, pointRadius: 5 }] },
       options: { ...chartConfig, scales: { y: { beginAtZero: true, ticks: { color: "#666", callback: (v) => "R$ " + v.toLocaleString("pt-BR", { minimumFractionDigits: 2 }) }, grid: { color: "#eee" } }, x: { ticks: { color: "#666" }, grid: { color: "#eee" } } } },
-    })
+    }) 
   }
 
   function updateAllCharts(period, chartData) {

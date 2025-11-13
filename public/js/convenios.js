@@ -230,22 +230,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const icon = btnSelecionar.querySelector(".material-icons")
     icon.textContent = selectMode ? "check_box" : "check_box_outline_blank"
 
-    // Mostrar/ocultar coluna de checkbox
-    const checkboxColumn = document.querySelectorAll(".checkbox-column")
     const tabela = window.jQuery("#conveniosTable").DataTable()
 
     if (selectMode) {
-      // Ativar modo de seleção
-      checkboxColumn.forEach((col) => (col.style.display = "table-cell"))
+      // Ativar modo de seleção - mostrar coluna de checkbox
+      tabela.column(0).visible(true)
       btnAdicionar.style.display = "none"
       btnFiltrar.style.display = "none"
       btnExcluirSelecionados.style.display = "flex"
-
-      // Redesenhar tabela para mostrar checkboxes
-      tabela.draw()
     } else {
-      // Desativar modo de seleção
-      checkboxColumn.forEach((col) => (col.style.display = "none"))
+      // Desativar modo de seleção - ocultar coluna de checkbox
+      tabela.column(0).visible(false)
       btnAdicionar.style.display = "flex"
       btnFiltrar.style.display = "flex"
       btnExcluirSelecionados.style.display = "none"
@@ -253,9 +248,6 @@ document.addEventListener("DOMContentLoaded", () => {
       // Desmarcar todos os checkboxes
       selectAllCheckbox.checked = false
       document.querySelectorAll(".row-checkbox").forEach((cb) => (cb.checked = false))
-
-      // Redesenhar tabela para ocultar checkboxes
-      tabela.draw()
     }
   })
 
@@ -440,12 +432,6 @@ document.addEventListener("DOMContentLoaded", () => {
       })
 
       tabela.draw()
-
-      // Reforçar visibilidade da coluna de checkbox baseado no modo
-      const checkboxColumn = document.querySelectorAll(".checkbox-column")
-      if (!selectMode) {
-        checkboxColumn.forEach((col) => (col.style.display = "none"))
-      }
     } catch (error) {
       console.error("Erro ao carregar convênios:", error)
       alert("Erro ao carregar dados do servidor.")
@@ -472,7 +458,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.style.overflow = "hidden"
   }
 
-  // Inicializa DataTable
   if (window.jQuery && window.$ && window.$.fn.dataTable) {
     const tabela = window.$("#conveniosTable").DataTable({
       colReorder: true,
@@ -484,6 +469,7 @@ document.addEventListener("DOMContentLoaded", () => {
           targets: 0,
           orderable: false,
           className: "checkbox-column",
+          visible: false, // Coluna inicia oculta
         },
       ],
       language: {

@@ -485,7 +485,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const tabela = window.$("#relatorio-pacientes").DataTable()
 
     window.$.fn.dataTable.ext.search.push((settings, data, dataIndex) => {
-      const nome = data[1] || "" // Coluna ajustada para considerar checkbox
+      const nome = data[1] || ""
       const convenio = data[4] || ""
       const situacao = data[5] || ""
 
@@ -515,22 +515,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const icon = btnSelecionar.querySelector(".material-icons")
     icon.textContent = selectMode ? "check_box" : "check_box_outline_blank"
 
-    // Mostrar/ocultar coluna de checkbox
-    const checkboxColumn = document.querySelectorAll(".checkbox-column")
     const tabela = window.jQuery("#relatorio-pacientes").DataTable()
 
     if (selectMode) {
-      // Ativar modo de seleção
-      checkboxColumn.forEach((col) => (col.style.display = "table-cell"))
+      // Ativar modo de seleção - mostrar coluna de checkbox
+      tabela.column(0).visible(true)
       btnAdicionar.style.display = "none"
       btnFiltrar.style.display = "none"
       btnExcluirSelecionados.style.display = "flex"
-
-      // Redesenhar tabela para mostrar checkboxes
-      tabela.draw()
     } else {
-      // Desativar modo de seleção
-      checkboxColumn.forEach((col) => (col.style.display = "none"))
+      // Desativar modo de seleção - ocultar coluna de checkbox
+      tabela.column(0).visible(false)
       btnAdicionar.style.display = "flex"
       btnFiltrar.style.display = "flex"
       btnExcluirSelecionados.style.display = "none"
@@ -538,9 +533,6 @@ document.addEventListener("DOMContentLoaded", () => {
       // Desmarcar todos os checkboxes
       selectAllCheckbox.checked = false
       document.querySelectorAll(".row-checkbox").forEach((cb) => (cb.checked = false))
-
-      // Redesenhar tabela para ocultar checkboxes
-      tabela.draw()
     }
   })
 
@@ -599,42 +591,21 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (window.jQuery && window.$ && window.$.fn.dataTable) {
-    const tabela = window.$("#relatorio-pacientes").DataTable({
+    const table = window.$("#relatorio-pacientes").DataTable({
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json",
+      },
       colReorder: true,
       paging: true,
       searching: true,
       info: true,
+      lengthChange: true,
+      order: [[1, "asc"]],
       columnDefs: [
-        {
-          targets: 0,
-          orderable: false,
-          className: "checkbox-column",
-        },
+        { orderable: false, targets: [0, -1] },
+        { className: "dt-center", targets: "_all" },
+        { targets: 0, visible: false }, // Coluna de checkbox inicia oculta, será mostrada via API
       ],
-      language: {
-        emptyTable: "Nenhum paciente encontrado",
-        loadingRecords: "Carregando...",
-        processing: "Processando...",
-        zeroRecords: "Nenhum registro encontrado",
-        info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
-        infoEmpty: "Mostrando 0 a 0 de 0 registros",
-        infoFiltered: "(filtrado de _MAX_ registros no total)",
-        paginate: {
-          first: "Primeiro",
-          last: "Último",
-          next: "Próximo",
-          previous: "Anterior",
-        },
-      },
-      createdRow: (row, data, dataIndex) => {
-        window
-          .$(row)
-          .find("td")
-          .each(function (index) {
-            const labels = ["", "PACIENTE", "IDADE", "CPF", "CONVÊNIO", "SITUAÇÃO", "AÇÕES"]
-            window.$(this).attr("data-label", labels[index])
-          })
-      },
     })
   } else {
     console.warn("jQuery ou DataTables não carregados corretamente.")
@@ -710,11 +681,6 @@ document.addEventListener("DOMContentLoaded", () => {
       })
 
       tabela.draw()
-
-      const checkboxColumn = document.querySelectorAll(".checkbox-column")
-      if (!selectMode) {
-        checkboxColumn.forEach((col) => (col.style.display = "none"))
-      }
     } catch (error) {
       console.error("Erro ao carregar pacientes:", error)
     }

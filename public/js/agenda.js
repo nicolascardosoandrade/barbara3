@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const calendarEl = document.getElementById("calendar")
-  const FullCalendar = window.FullCalendar // Declare FullCalendar variable
+  const FullCalendar = window.FullCalendar
   const calendar = new FullCalendar.Calendar(calendarEl, {
     initialDate: initialDate,
     initialView: initialView,
@@ -69,7 +69,17 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const response = await fetch("/api/agenda/events")
         if (!response.ok) throw new Error("Erro na resposta do servidor")
-        const events = await response.json()
+        let events = await response.json()
+
+        // Adiciona classe 'online-event' para eventos Online
+        events = events.map(event => {
+          if (event.extendedProps?.modalidade === 'Online') {
+            const classNames = Array.isArray(event.classNames) ? event.classNames : []
+            event.classNames = [...classNames, 'online-event']
+          }
+          return event
+        })
+
         successCallback(events)
       } catch (error) {
         console.error("Erro ao carregar eventos:", error)
@@ -84,37 +94,59 @@ document.addEventListener("DOMContentLoaded", () => {
     },
 
     eventDidMount: (info) => {
-      const isOnline = info.event.extendedProps.modalidade === 'Online';
-      const isGreen = info.event.classNames.includes("green");
+      const eventEl = info.el
+      const isOnline = info.event.extendedProps.modalidade === 'Online'
+      const classList = info.event.classNames || []
+      const isGreen = classList.includes("green")
+      const isBlue = classList.includes("blue")
+      const isRed = classList.includes("red")
+      const isLilac = classList.includes("lilac")
 
-      if (isOnline && isGreen) {
-        // Para agendamentos Online e agendados (green): fundo verde, mas letras laranja
-        info.el.style.background = "linear-gradient(135deg, #1b5e20, #2e7d32)"
-        info.el.style.borderColor = "#2e7d32"
-        info.el.style.color = "#ff9800" // Laranja para letras
-        info.el.style.fontWeight = "500"
-      } else if (info.event.classNames.includes("green")) {
-        // Para agendados Presencial: texto branco normal
-        info.el.style.background = "linear-gradient(135deg, #1b5e20, #2e7d32)"
-        info.el.style.borderColor = "#2e7d32"
-        info.el.style.color = "white"
-        info.el.style.fontWeight = "500"
-      } else if (info.event.classNames.includes("blue")) {
-        info.el.style.background = "linear-gradient(135deg, #1565c0, #1976d2)"
-        info.el.style.borderColor = "#1976d2"
-        info.el.style.color = "white"
-        info.el.style.fontWeight = "500"
-      } else if (info.event.classNames.includes("red")) {
-        info.el.style.background = "linear-gradient(135deg, #b71c1c, #d32f2f)"
-        info.el.style.borderColor = "#d32f2f"
-        info.el.style.color = "white"
-        info.el.style.fontWeight = "500"
-      } else if (info.event.classNames.includes("lilac")) {
-        info.el.style.background = "linear-gradient(135deg, #ab47bc, #ba68c8)"
-        info.el.style.borderColor = "#ba68c8"
-        info.el.style.color = "white"
-        info.el.style.fontWeight = "500"
+      // Define fundo conforme status
+      if (isGreen) {
+        eventEl.style.background = "linear-gradient(135deg, #1b5e20, #2e7d32)"
+        eventEl.style.borderColor = "#2e7d32"
+      } else if (isBlue) {
+        eventEl.style.background = "linear-gradient(135deg, #1565c0, #1976d2)"
+        eventEl.style.borderColor = "#1976d2"
+      } else if (isRed) {
+        eventEl.style.background = "linear-gradient(135deg, #b71c1c, #d32f2f)"
+        eventEl.style.borderColor = "#d32f2f"
+      } else if (isLilac) {
+        eventEl.style.background = "linear-gradient(135deg, #ab47bc, #ba68c8)"
+        eventEl.style.borderColor = "#ba68c8"
       }
+
+      // Aplica estilo para Online: texto laranja em TODAS as visões
+      if (isOnline) {
+        eventEl.style.color = "#ff9800"
+        eventEl.style.fontWeight = "600"
+
+        const titleEl = eventEl.querySelector('.fc-event-title')
+        const timeEl = eventEl.querySelector('.fc-event-time')
+
+        if (titleEl) {
+          titleEl.style.color = "#ff9800"
+          titleEl.style.fontWeight = "600"
+        }
+        if (timeEl) {
+          timeEl.style.color = "#ffcc80"
+          timeEl.style.fontWeight = "500"
+        }
+      } else {
+        // Texto branco para não-Online
+        eventEl.style.color = "white"
+        const titleEl = eventEl.querySelector('.fc-event-title')
+        const timeEl = eventEl.querySelector('.fc-event-time')
+        if (titleEl) titleEl.style.color = "white"
+        if (timeEl) {
+          timeEl.style.color = "#e0e0e0"
+          timeEl.style.fontWeight = "500"
+        }
+      }
+
+      // Garante peso da fonte
+      eventEl.style.fontWeight = isOnline ? "600" : "500"
     },
 
     eventClick: (info) => {
@@ -130,11 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function openAppointmentModal(appointmentId) {
     try {
       const response = await fetch(`/api/agendamentos/${appointmentId}`)
-
-      if (!response.ok) {
-        throw new Error("Erro ao buscar dados do agendamento")
-      }
-
+      if (!response.ok) throw new Error("Erro ao buscar dados do agendamento")
       const data = await response.json()
 
       document.getElementById("modalPatientName").textContent = data.nome_paciente || "Nome não disponível"
@@ -159,7 +187,6 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("modalValor").textContent = valorFormatado
 
       modal.dataset.appointmentId = appointmentId
-
       modal.classList.add("active")
       document.body.style.overflow = "hidden"
     } catch (error) {
@@ -174,17 +201,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   closeModalBtn.addEventListener("click", closeModal)
-
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) {
-      closeModal()
-    }
-  })
-
+  modal.addEventListener("click", (e) => { if (e.target === modal) closeModal() })
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modal.classList.contains("active")) {
-      closeModal()
-    }
+    if (e.key === "Escape" && modal.classList.contains("active")) closeModal()
   })
 
   document.querySelectorAll(".action-btn").forEach((btn) => {
@@ -192,10 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const action = e.currentTarget.dataset.action
       const appointmentId = modal.dataset.appointmentId
 
-      if (action === "voltar") {
-        closeModal()
-        return
-      }
+      if (action === "voltar") { closeModal(); return }
 
       if (action === "agenda_semanal") {
         try {
@@ -217,7 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
           }
 
           const promises = []
-          for (let i = 0; i < 4; i++) { // 4 semanas
+          for (let i = 0; i < 4; i++) {
             const newDate = new Date(baseDate)
             newDate.setDate(newDate.getDate() + 7 * (i + 1))
             details.data_consulta = newDate.toISOString().split("T")[0]
@@ -235,7 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
           calendar.refetchEvents()
           alert("Agendamentos semanais criados com sucesso!")
           calendar.changeView("timeGridWeek")
-          document.querySelectorAll(".view-btn").forEach((btn) => btn.classList.remove("active"))
+          document.querySelectorAll(".view-btn").forEach((b) => b.classList.remove("active"))
           document.querySelector('.view-btn[data-view="timeGridWeek"]').classList.add("active")
         } catch (error) {
           console.error("Erro ao criar agendamentos semanais:", error)
@@ -252,16 +268,12 @@ document.addEventListener("DOMContentLoaded", () => {
           body: JSON.stringify({ status: action })
         })
 
-        if (!response.ok) {
-          throw new Error("Erro na resposta do servidor")
-        }
-
-        const result = await response.json()
+        if (!response.ok) throw new Error("Erro na resposta do servidor")
+        await response.json()
 
         calendar.refetchEvents()
         closeModal()
-
-        alert(`Status atualizado com sucesso!`)
+        alert("Status atualizado com sucesso!")
       } catch (error) {
         console.error("Erro ao atualizar status:", error)
         alert("Erro ao atualizar status. Tente novamente.")
@@ -394,9 +406,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 
-  // Socket.io for real-time sync
-  const socket = io();
+  // Socket.io para sincronização em tempo real
+  const socket = io()
   socket.on('agendamento-updated', () => {
-    calendar.refetchEvents();
-  });
+    calendar.refetchEvents()
+  })
 })
