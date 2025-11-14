@@ -4,11 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SistemaAeR - Anotações</title>
-
+  <link rel="stylesheet" href="css/anotações.css" />
+  <link rel="icon" href="assets/img/Logo-barbara.png" type="image/x-icon">
   <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/public/css/anotações.css">
 </head>
 <body>
 
@@ -19,7 +19,7 @@
       <h2>SistemaAeR - Bárbara Lana</h2>
     </div>
     <div class="search-container">
-      <input type="text" placeholder="Buscar em anotações..." />
+      <input type="text" id="searchInput" placeholder="Buscar em anotações..." />
     </div>
     <div class="actions">
       <div class="user-dropdown">
@@ -34,209 +34,90 @@
     </div>
   </header>
 
-  <!-- === SIDEBAR === -->
-  <aside class="sidebar" id="sidebar">
-    <nav>
-      <ul>
-        <li data-tooltip="Detalhes">
-          <a href="index.html">
-            <span class="material-icons">info</span> <span>Detalhes</span>
-            <div class="tooltip">Detalhes</div>
-          </a>
-        </li>
-        <li data-tooltip="Convênios">
-          <a href="convenios.html">
-            <span class="material-icons">handshake</span> <span>Convênios</span>
-            <div class="tooltip">Convênios</div>
-          </a>
-        </li>
-        <li data-tooltip="Pacientes">
-          <a href="pacientes.html">
-            <span class="material-icons">group</span> <span>Pacientes</span>
-            <div class="tooltip">Pacientes</div>
-          </a>
-        </li>
-        <li data-tooltip="Agenda">
-          <a href="agenda.html">
-            <span class="material-icons">calendar_today</span> <span>Agenda</span>
-            <div class="tooltip">Agenda</div>
-          </a>
-        </li>
-        <li data-tooltip="Agendamentos">
-          <a href="agendamentos.html">
-            <span class="material-icons">event</span> <span>Agendamentos</span>
-            <div class="tooltip">Agendamentos</div>
-          </a>
-        </li>
-        <li data-tooltip="Aniversariantes">
-          <a href="aniversariante_do_dia.html">
-            <span class="material-icons">cake</span> <span>Aniversariantes</span>
-            <div class="tooltip">Aniversariantes do Dia</div>
-          </a>
-        </li>
-        <li class="active" data-tooltip="Anotações">
-          <a href="tarefas.html">
-            <span class="material-icons">task_alt</span> <span>Anotações</span>
-            <div class="tooltip">Anotações</div>
-          </a>
-        </li>
-        <li data-tooltip="Financeiro">
-          <a href="financeiro.html">
-            <span class="material-icons">attach_money</span> <span>Financeiro</span>
-            <div class="tooltip">Financeiro</div>
-          </a>
-        </li>
-      </ul>
-    </nav>
-  </aside>
+  <div class="container">
+    <!-- === SIDEBAR === -->
+    <aside class="sidebar collapsed" id="sidebar">
+      <nav>
+        <ul>
+          <li data-tooltip="Detalhes">
+            <a href="index.html">
+              <span class="material-icons">info</span> <span>Detalhes</span>
+            </a>
+          </li>
+          <li data-tooltip="Convênios">
+            <a href="convenios.html">
+              <span class="material-icons">handshake</span> <span>Convênios</span>
+            </a>
+          </li>
+          <li data-tooltip="Filtrar Idades">
+            <a href="filtrar_idades.html">
+              <span class="material-icons">filter_alt</span> <span>Filtrar Idades</span>
+            </a>
+          </li>
+          <li data-tooltip="Pacientes">
+            <a href="pacientes.html">
+              <span class="material-icons">group</span> <span>Pacientes</span>
+            </a>
+          </li>
+          <li data-tooltip="Agenda">
+            <a href="agenda.html">
+              <span class="material-icons">calendar_today</span> <span>Agenda</span>
+            </a>
+          </li>
+          <li data-tooltip="Agendamentos">
+            <a href="agendamentos.html">
+              <span class="material-icons">event</span> <span>Agendamentos</span>
+            </a>
+          </li>
+          <li data-tooltip="Aniversariantes do Dia">
+            <a href="aniversariante_do_dia.html">
+              <span class="material-icons">cake</span> <span>Aniversariantes do Dia</span>
+            </a>
+          </li>
+          <li class="active" data-tooltip="Anotações">
+            <a href="anotações.html">
+              <span class="material-icons">home_repair_service</span> <span>Anotações</span>
+            </a>
+          </li>
+          <li data-tooltip="Financeiro">
+            <a href="financeiro.html">
+              <span class="material-icons">attach_money</span> <span>Financeiro</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
 
-  <!-- === MAIN CONTENT === -->
-  <main class="main-content" id="mainContent">
-    <div class="page-title">
-      <h1>Anotações da Barbara</h1>
-    </div>
-
-    <!-- Formulário de Nova Tarefa -->
-    <div class="form-container">
-      <form id="addForm" class="form-group">
-        <input type="text" id="descricao" class="input-field" placeholder="O que precisa fazer?" required>
-        <input type="date" id="dataVencimento" class="input-field" required>
-        <button type="submit" class="btn">Adicionar Tarefa</button>
-      </form>
-    </div>
-
-    <!-- Lista de Tarefas -->
-    <div class="task-list" id="taskList">
-      <div class="empty-state">
-        <p>Nenhuma anotação ainda. Adicione uma!</p>
+    <!-- === MAIN CONTENT === -->
+    <main class="main-content" id="mainContent">
+      <div class="page-title">
+        <h1>Anotações da Barbara</h1>
       </div>
-    </div>
 
-    <footer>
-      Feito com carinho para a Barbara
-    </footer>
-  </main>
+      <!-- Formulário de Nova Tarefa -->
+      <div class="form-container">
+        <form id="addForm" class="form-group">
+          <input type="text" id="descricao" class="input-field" placeholder="O que precisa fazer?" required>
+          <input type="date" id="dataVencimento" class="input-field" required>
+          <button type="submit" class="btn">Adicionar Tarefa</button>
+        </form>
+      </div>
+
+      <!-- Lista de Tarefas -->
+      <div class="task-list" id="taskList">
+        <div class="empty-state">
+          <p>Nenhuma anotação ainda. Adicione uma!</p>
+        </div>
+      </div>
+
+      <footer>
+        Feito com carinho para a Barbara
+      </footer>
+    </main>
+  </div>
 
   <!-- Scripts -->
   <script src="/socket.io/socket.io.js"></script>
-  <script>
-    const socket = io();
-    const API_URL = '/api/tarefas';
-    const taskList = document.getElementById('taskList');
-    const addForm = document.getElementById('addForm');
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.getElementById('mainContent');
-    const toggleBtn = document.getElementById('toggleSidebar');
-    const userToggle = document.getElementById('userToggle');
-    const userMenu = document.getElementById('userMenu');
-
-    // === SIDEBAR TOGGLE ===
-    toggleBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('collapsed');
-      mainContent.classList.toggle('collapsed');
-    });
-
-    // === USER DROPDOWN ===
-    userToggle.addEventListener('click', () => {
-      userMenu.classList.toggle('show');
-    });
-    document.addEventListener('click', (e) => {
-      if (!userToggle.contains(e.target) && !userMenu.contains(e.target)) {
-        userMenu.classList.remove('show');
-      }
-    });
-
-    // === FUNÇÕES DE TAREFAS ===
-    async function carregarTarefas() {
-      try {
-        const res = await fetch(API_URL);
-        const tarefas = await res.json();
-
-        if (tarefas.length === 0) {
-          taskList.innerHTML = `<div class="empty-state"><p>Nenhuma anotação ainda. Adicione uma!</p></div>`;
-          return;
-        }
-
-        taskList.innerHTML = tarefas.map(t => `
-          <div class="task-item">
-            <div class="task-info">
-              <h3>${t.descricao}</h3>
-              <span class="task-date">${formatarData(t.data_vencimento)}</span>
-              <small style="color:#95a5a6;display:block;margin-top:4px;">Criada em ${t.criada_em_formatada || '—'}</small>
-            </div>
-            <div class="task-actions">
-              <button class="btn-small btn-edit" onclick="mostrarEdicao(${t.id}, '${t.descricao}', '${t.data_vencimento}')">
-                Editar
-              </button>
-              <button class="btn-small btn-delete" onclick="excluirTarefa(${t.id})">
-                Excluir
-              </button>
-            </div>
-            <form class="edit-form" id="form-${t.id}">
-              <input type="text" value="${t.descricao}" class="input-field" required>
-              <input type="date" value="${t.data_vencimento}" class="input-field" required>
-              <div style="display:flex;gap:8px;margin-top:8px;">
-                <button type="button" class="btn-small" style="background:#667eea;" onclick="salvarEdicao(${t.id})">Salvar</button>
-                <button type="button" class="btn-small btn-cancel" onclick="cancelarEdicao(${t.id})">Cancelar</button>
-              </div>
-            </form>
-          </div>
-        `).join('');
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    addForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const descricao = document.getElementById('descricao').value.trim();
-      const data_vencimento = document.getElementById('dataVencimento').value;
-      await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ descricao, data_vencimento })
-      });
-      addForm.reset();
-      carregarTarefas();
-    });
-
-    window.excluirTarefa = async (id) => {
-      if (confirm('Excluir esta anotação?')) {
-        await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-        carregarTarefas();
-      }
-    };
-
-    window.mostrarEdicao = (id) => {
-      document.getElementById(`form-${id}`).classList.add('active');
-    };
-    window.cancelarEdicao = (id) => {
-      document.getElementById(`form-${id}`).classList.remove('active');
-    };
-    window.salvarEdicao = async (id) => {
-      const form = document.getElementById(`form-${id}`);
-      const [desc, date] = form.querySelectorAll('input');
-      await fetch(`${API_URL}/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ descricao: desc.value, data_vencimento: date.value })
-      });
-      cancelarEdicao(id);
-      carregarTarefas();
-    };
-
-    function formatarData(data) {
-      const [y, m, d] = data.split('-');
-      return `${d}/${m}/${y}`;
-    }
-
-    // Atualização em tempo real
-    socket.on('tarefa-adicionada', () => carregarTarefas());
-    socket.on('tarefa-atualizada', () => carregarTarefas());
-    socket.on('tarefa-excluida', () => carregarTarefas());
-
-    // Iniciar
-    carregarTarefas();
-  </script>
+  <script src="js/anotações.js"></script>
 </body>
 </html>

@@ -77,6 +77,16 @@ CREATE TABLE agendamentos (
     INDEX idx_valor (valor),
     INDEX idx_status (status_pagamento)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE tarefas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    descricao TEXT NOT NULL,
+    data_vencimento DATE,
+    criada_em DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+
 -- ========================================
 -- 3. TABELA DE CONFIGURAÇÕES FINANCEIRAS
 -- ========================================
