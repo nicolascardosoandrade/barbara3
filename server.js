@@ -36,7 +36,7 @@ connectDB().then((connection) => {
 })
 
 app.use(express.json())
-app.use(express.static(path.join(__dirname, "public")))
+app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"))
@@ -1009,6 +1009,137 @@ app.post("/api/financeiro/porcentagens", async (req, res) => {
   } catch (error) {
     console.error("Erro ao salvar porcentagens:", error)
     res.status(500).json({ error: "Erro ao salvar porcentagens financeiras" })
+  }
+})
+
+// ========================
+// ANOTAÇÕES / TAREFAS DA BARBARA
+// ========================
+
+// Listar todas as tarefas
+app.get("/api/tarefas", async (req, res) => {
+  try {
+    if (!db) return res.status(500).json({ error: "Banco de dados não conectado" })
+
+    const [rows] = await db.execute(`
+      SELECT 
+        id,
+        descricao,
+        DATE_FORMAT(data_vencimento, '%Y-%m-%d') as data_vencimento,
+        DATE_FORMAT(criada_em, '%d/%m/%Y às %H:%i') as criada_em_formatada
+      FROM tarefas 
+      ORDER BY data_vencimento ASC, criada_em DESC
+    `)
+
+    res.json(rows)
+  } catch (error) {
+    console.error("Erro ao buscar tarefas:", error)
+    res.status(500).json({ error: "Erro ao buscar tarefas" })
+  }
+})
+
+// Adicionar nova tarefa
+app.post("/api/tarefas", async (req, res) => {
+  try {
+    if (!db) return res.status(500).json({ error: "Banco de dados não conectado" })
+
+    const { descricao, data_vencimento } = req.body
+
+    if (!descricao || !data_vencimento) {
+      return res.status(400).json({ error: "Descrição e data são obrigatórias." })
+    }
+
+    if (descricao.trim().length < 2) {
+      return res.status(400).json({ error: "Descrição muito curta." })
+    }
+
+    const [result] = await db.execute(
+      `INSERT INTO tarefas (descricao, data_vencimento) VALUES (?, ?)`,
+      [descricao.trim(), data_vencimento]
+    )
+
+    const novaTarefa = {
+      id: result.insertId,
+      descricao: descricao.trim(),
+      data_vencimento,
+      criada_em_formatada: new Date().toLocaleString('pt-BR', {
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      }).replace(',', ' às')
+    }
+
+    io.emit("tarefa-adicionada", novaTarefa)
+
+    res.json({
+      success: true,
+      message: "Tarefa adicionada com sucesso!",
+      tarefa: novaTarefa
+    })
+  } catch (error) {
+    console.error("Erro ao adicionar tarefa:", error)
+    res.status(500).json({ error: "Erro ao adicionar tarefa." })
+  }
+})
+
+// Editar tarefa
+app.put("/api/tarefas/:id", async (req, res) => {
+  try {
+    if (!db) return res.status(500).json({ error: "Banco de dados não conectado" })
+
+    const { id } = req.params
+    const { descricao, data_vencimento } = req.body
+
+    if (!descricao || !data_vencimento) {
+      return res.status(400).json({ error: "Descrição e data são obrigatórias." })
+    }
+
+    const [result] = await db.execute(
+      `UPDATE tarefas SET descricao = ?, data_vencimento = ? WHERE id = ?`,
+      [descricao.trim(), data_vencimento, id]
+    )
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Tarefa não encontrada." })
+    }
+
+    const tarefaAtualizada = {
+      id: parseInt(id),
+      descricao: descricao.trim(),
+      data_vencimento
+    }
+
+    io.emit("tarefa-atualizada", tarefaAtualizada)
+
+    res.json({
+      success: true,
+      message: "Tarefa atualizada com sucesso!",
+      tarefa: tarefaAtualizada
+    })
+  } catch (error) {
+    console.error("Erro ao atualizar tarefa:", error)
+    res.status(500).json({ error: "Erro ao atualizar tarefa." })
+  }
+})
+
+// Excluir tarefa
+app.delete("/api/tarefas/:id", async (req, res) => {
+  try {
+    if (!db) return res.status(500).json({ error: "Banco de dados não conectado" })
+
+    const { id } = req.params
+
+    const [result] = await db.execute("DELETE FROM tarefas WHERE id = ?", [id])
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Tarefa não encontrada." })
+    }
+
+    io.emit("tarefa-excluida", { id: parseInt(id) })
+
+    res.json({ success: true, message: "Tarefa excluída com sucesso!" })
+  } catch (error) {
+    console.error("Erro ao excluir tarefa:", error)
+    res.status(500).json({ error: "Erro ao excluir tarefa." })
   }
 })
 
